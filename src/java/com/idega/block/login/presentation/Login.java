@@ -784,17 +784,19 @@ public class Login extends Block {
 		if (sendUserToHomePage && LoginBusinessBean.isLogOnAction(iwc)) {
 			com.idega.user.data.User newUser = Converter.convertToNewUser(user);
 			com.idega.user.data.Group newGroup = newUser.getPrimaryGroup();
-			if (newUser.getHomePageID() != -1) iwc.forwardToIBPage(this.getParentPage(), newUser.getHomePage());
-			if (newGroup != null && newGroup.getHomePageID() != -1) iwc.forwardToIBPage(this.getParentPage(), newGroup.getHomePage());
+			if (getParentPage() != null) {
+				if (newUser.getHomePageID() != -1) iwc.forwardToIBPage(this.getParentPage(), newUser.getHomePage());
+				if (newGroup != null && newGroup.getHomePageID() != -1) iwc.forwardToIBPage(this.getParentPage(), newGroup.getHomePage());
+			}
 		}
 		
 		if (LoginBusinessBean.isLogOnAction(iwc)) {
-			if (LoginDBHandler.getNumberOfSuccessfulLogins((LoginDBHandler.findUserLogin(user.getID())).getID()) == 1 && firstLogOnPage != null) {
+			if (getParentPage() != null && LoginDBHandler.getNumberOfSuccessfulLogins((LoginDBHandler.findUserLogin(user.getID())).getID()) == 1 && firstLogOnPage != null) {
 				iwc.forwardToIBPage(getParentPage(), firstLogOnPage);
 			}
 		}
 		
-		if (loggedOnPage != null && LoginBusinessBean.isLogOnAction(iwc)) {
+		if (getParentPage() != null && loggedOnPage != null && LoginBusinessBean.isLogOnAction(iwc)) {
 			iwc.forwardToIBPage(getParentPage(), loggedOnPage);
 		}
 
