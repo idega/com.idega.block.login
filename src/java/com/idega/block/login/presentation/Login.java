@@ -140,16 +140,16 @@ public class Login extends Block {
 				startState(iwc);
 				break;
 			case LoginBusinessBean.STATE_LOGIN_FAILED :
-				loginFailed(iwrb.getLocalizedString("login_failed", "Login failed"));
+				loginFailed(iwc, iwrb.getLocalizedString("login_failed", "Login failed"));
 				break;
 			case LoginBusinessBean.STATE_NO_USER :
-				loginFailed(iwrb.getLocalizedString("login_no_user", "Invalid user"));
+				loginFailed(iwc, iwrb.getLocalizedString("login_no_user", "Invalid user"));
 				break;
 			case LoginBusinessBean.STATE_WRONG_PASSW :
-				loginFailed(iwrb.getLocalizedString("login_wrong", "Invalid password"));
+				loginFailed(iwc, iwrb.getLocalizedString("login_wrong", "Invalid password"));
 				break;
 			case LoginBusinessBean.STATE_LOGIN_EXPIRED :
-				loginFailed(iwrb.getLocalizedString("login_expired", "Login expired"));
+				loginFailed(iwc, iwrb.getLocalizedString("login_expired", "Login expired"));
 				break;
 			default :
 				startState(iwc);
@@ -585,88 +585,93 @@ public class Login extends Block {
 			}
 		}
 	}
-	private void loginFailed(String message) {
-		Text mistokst = new Text(message);
-		if (userTextSize != -1) {
-			mistokst.setFontSize(userTextSize);
+	private void loginFailed(IWContext iwc, String message) {
+		if (this.LAYOUT != Login.LAYOUT_FORWARD_LINK) {
+			startState(iwc);
 		}
-		if (userTextColor != null) {
-			mistokst.setFontColor(userTextColor);
-		}
-		mistokst.setFontStyle(textStyles);
-		Table loginTable = new Table();
-		loginTable.setBorder(0);
-		if (backgroundImageUrl != null)
-			loginTable.setBackgroundImage(new Image(backgroundImageUrl));
-		loginTable.setAlignment(loginAlignment);
-		if (loginWidth != null)
-			loginTable.setWidth(loginWidth);
-		if (loginHeight != null)
-			loginTable.setHeight(loginHeight);
-		loginTable.setCellpadding(0);
-		loginTable.setCellspacing(0);
-		if (!(color.equals(""))) {
-			loginTable.setColor(color);
-		}
-		if (this.LAYOUT != Login.SINGLE_LINE) {
-			loginTable.setHeight(1, "50%");
-			loginTable.setHeight(2, "50%");
-			loginTable.setVerticalAlignment(1, 1, "bottom");
-			loginTable.setVerticalAlignment(1, 2, "top");
-		} else {
-			//loginTable.setWidth(1, 1, "100%");
-			loginTable.setCellpadding(3);
-			loginTable.setAlignment(1, 1, "right");
-		}
-		Table inputTable = new Table(1, 1);
-		inputTable.setBorder(0);
-		if (!(color.equals(""))) {
-			inputTable.setColor(color);
-		}
-		inputTable.setCellpadding(0);
-		inputTable.setCellspacing(0);
-		if (LAYOUT != SINGLE_LINE) {
-			inputTable.setAlignment(1, 1, "center");
-			inputTable.setVerticalAlignment(1, 1, "middle");
-			inputTable.setWidth("100%");
-		}
-		inputTable.add(mistokst, 1, 1);
-		Table submitTable = new Table();
-		submitTable.setBorder(0);
-		if (!(color.equals(""))) {
-			submitTable.setColor(color);
-		}
-		if (LAYOUT != SINGLE_LINE) {
-			submitTable.setAlignment(1, 1, "center");
-			submitTable.setVerticalAlignment(1, 1, "middle");
-			submitTable.setWidth("100%");
-		}
-		if (_buttonAsLink) {
-			submitTable.setCellpadding(0);
-			submitTable.setCellspacing(0);
-			loginTable.setCellpadding(0);
-			int column = 1;
-			Link link = this.getStyleLink(iwrb.getLocalizedString("tryagain_text", "Try again"), _linkStyleClass);
-			link.setToFormSubmit(myForm);
-			if (_iconImage != null) {
-				submitTable.add(_iconImage, column++, 1);
-				submitTable.setWidth(column++, 1, String.valueOf(_spaceBetween));
+		else {
+			Text mistokst = new Text(message);
+			if (userTextSize != -1) {
+				mistokst.setFontSize(userTextSize);
 			}
-			submitTable.add(link, column, 1);
-		} else
-			submitTable.add(new SubmitButton(tryAgainImage, "tryAgain"));
-		submitTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, "tryagain"));
-		if (LAYOUT != SINGLE_LINE) {
-			loginTable.add(inputTable, 1, 1);
-			loginTable.add(submitTable, 1, 2);
-		} else {
-			int column = 1;
-			loginTable.add(inputTable, column++, 1);
-			if (_buttonAsLink)
-				loginTable.setWidth(column++, 1, String.valueOf(_spaceBetween * 2));
-			loginTable.add(submitTable, column, 1);
+			if (userTextColor != null) {
+				mistokst.setFontColor(userTextColor);
+			}
+			mistokst.setFontStyle(textStyles);
+			Table loginTable = new Table();
+			loginTable.setBorder(0);
+			if (backgroundImageUrl != null)
+				loginTable.setBackgroundImage(new Image(backgroundImageUrl));
+			loginTable.setAlignment(loginAlignment);
+			if (loginWidth != null)
+				loginTable.setWidth(loginWidth);
+			if (loginHeight != null)
+				loginTable.setHeight(loginHeight);
+			loginTable.setCellpadding(0);
+			loginTable.setCellspacing(0);
+			if (!(color.equals(""))) {
+				loginTable.setColor(color);
+			}
+			if (this.LAYOUT != Login.SINGLE_LINE) {
+				loginTable.setHeight(1, "50%");
+				loginTable.setHeight(2, "50%");
+				loginTable.setVerticalAlignment(1, 1, "bottom");
+				loginTable.setVerticalAlignment(1, 2, "top");
+			} else {
+				//loginTable.setWidth(1, 1, "100%");
+				loginTable.setCellpadding(3);
+				loginTable.setAlignment(1, 1, "right");
+			}
+			Table inputTable = new Table(1, 1);
+			inputTable.setBorder(0);
+			if (!(color.equals(""))) {
+				inputTable.setColor(color);
+			}
+			inputTable.setCellpadding(0);
+			inputTable.setCellspacing(0);
+			if (LAYOUT != SINGLE_LINE) {
+				inputTable.setAlignment(1, 1, "center");
+				inputTable.setVerticalAlignment(1, 1, "middle");
+				inputTable.setWidth("100%");
+			}
+			inputTable.add(mistokst, 1, 1);
+			Table submitTable = new Table();
+			submitTable.setBorder(0);
+			if (!(color.equals(""))) {
+				submitTable.setColor(color);
+			}
+			if (LAYOUT != SINGLE_LINE) {
+				submitTable.setAlignment(1, 1, "center");
+				submitTable.setVerticalAlignment(1, 1, "middle");
+				submitTable.setWidth("100%");
+			}
+			if (_buttonAsLink) {
+				submitTable.setCellpadding(0);
+				submitTable.setCellspacing(0);
+				loginTable.setCellpadding(0);
+				int column = 1;
+				Link link = this.getStyleLink(iwrb.getLocalizedString("tryagain_text", "Try again"), _linkStyleClass);
+				link.setToFormSubmit(myForm);
+				if (_iconImage != null) {
+					submitTable.add(_iconImage, column++, 1);
+					submitTable.setWidth(column++, 1, String.valueOf(_spaceBetween));
+				}
+				submitTable.add(link, column, 1);
+			} else
+				submitTable.add(new SubmitButton(tryAgainImage, "tryAgain"));
+			submitTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, "tryagain"));
+			if (LAYOUT != SINGLE_LINE) {
+				loginTable.add(inputTable, 1, 1);
+				loginTable.add(submitTable, 1, 2);
+			} else {
+				int column = 1;
+				loginTable.add(inputTable, column++, 1);
+				if (_buttonAsLink)
+					loginTable.setWidth(column++, 1, String.valueOf(_spaceBetween * 2));
+				loginTable.add(submitTable, column, 1);
+			}
+			myForm.add(loginTable);
 		}
-		myForm.add(loginTable);
 	}
 	private void isNotSignedOn(String what) {
 		Text textinn = new Text("");
