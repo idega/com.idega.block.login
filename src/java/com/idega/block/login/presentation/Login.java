@@ -117,6 +117,7 @@ public class Login extends Block {
 	private int _spaceBetween = 4;
 
 	private boolean _buttonAsLink = false;
+	private boolean _loginImageAsForwardLink = false;
 	private boolean _enterSubmit = false;
 	private final String _linkStyleClass = "Link";
 	private Image _iconImage;
@@ -588,7 +589,14 @@ public class Login extends Block {
 				submitTable.setCellpadding(0);
 				submitTable.setCellspacing(0);
 				int column = 1;
-				Link link = this.getStyleLink(iwrb.getLocalizedString("login_text", "Login"), _linkStyleClass);
+				Link link = null;
+				if (_loginImageAsForwardLink && _iconImage != null) {
+					link = new Link(_iconImage);
+				}
+				else {
+					link = this.getStyleLink(iwrb.getLocalizedString("login_text", "Login"), _linkStyleClass);
+				}
+				
 				switch (LAYOUT) {
 					case LAYOUT_FORWARD_LINK:
 						if (_loginPageID != -1) {
@@ -610,7 +618,7 @@ public class Login extends Block {
 					default:
 						link.setToFormSubmit(getMainForm());
 				}
-				if (_iconImage != null) {
+				if (!_loginImageAsForwardLink && _iconImage != null) {
 					submitTable.add(_iconImage, column++, 1);
 					submitTable.setWidth(column++, 1, String.valueOf(_spaceBetween));
 				}
@@ -1452,5 +1460,11 @@ public class Login extends Block {
 	 */
 	public void setShowOnlyInputs(boolean showOnlyInputs) {
 		this.showOnlyInputs = showOnlyInputs;
+	}
+	/**
+	 * @param imageAsForwardLink The _loginImageAsForwardLink to set.
+	 */
+	public void setLoginImageAsForwardLink(boolean imageAsForwardLink) {
+		_loginImageAsForwardLink = imageAsForwardLink;
 	}
 }
