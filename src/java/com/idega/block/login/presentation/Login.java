@@ -83,6 +83,7 @@ public class Login extends Block
 	}
 	public void main(IWContext iwc) throws Exception
 	{
+		myForm.setEventListener(loginHandlerClass);
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
 		if (loginImage == null)			//loginImage = iwrb.getImage("login.gif");
@@ -633,12 +634,12 @@ public class Login extends Block
 	{
 		LAYOUT = layout;
 	}
-	private void setDefaultValues()
+	protected void setDefaultValues()
 	{
 		submitButtonAlignment = "center";
 		LAYOUT = LAYOUT_VERTICAL;
 		myForm = new Form();
-		myForm.setEventListener(loginHandlerClass);
+		//myForm.setEventListener(loginHandlerClass);
 		myForm.setMethod("post");
 		myForm.maintainAllParameters();
 	}
@@ -650,10 +651,10 @@ public class Login extends Block
 	public void setLoginHandlerClass(String className)
 	{
 		this.loginHandlerClass = className;
-		if (myForm != null)
+		/*if (myForm != null)
 		{
 			myForm.setEventListener(className);
-		}
+		}*/
 	}
 	/**
 	 * Sets the login handler business class which this class sends the login/logout event to.<br><br>
