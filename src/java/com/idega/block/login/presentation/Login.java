@@ -690,7 +690,7 @@ public class Login extends Block
 		myForm = new Form();
 		//myForm.setEventListener(loginHandlerClass);
 		myForm.setMethod("post");
-		myForm.maintainAllParameters();
+		//myForm.maintainAllParameters();
 	}
 	/**
 	 * Sets the login handler business class which this class sends the login/logout event to.<br><br>
