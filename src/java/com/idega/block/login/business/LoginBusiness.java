@@ -18,6 +18,7 @@ import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.business.NotLoggedOnException;
 import com.idega.business.IWEventListener;
 import com.idega.idegaweb.IWException;
+import com.idega.idegaweb.IWUserContext;
 import com.idega.util.Encrypter;
 import com.idega.util.idegaTimestamp;
 
@@ -52,7 +53,7 @@ public class LoginBusiness implements IWEventListener{
   }
 
 
-  public static boolean isLoggedOn(IWContext iwc){
+  public static boolean isLoggedOn(IWUserContext iwc){
       if(iwc.getSessionAttribute(LoginAttributeParameter)==null){
         return false;
       }
@@ -124,7 +125,7 @@ public class LoginBusiness implements IWEventListener{
     return iwc.isAdmin();
   }
 */
-  public static void setLoginAttribute(String key, Object value, IWContext iwc) throws NotLoggedOnException{
+  public static void setLoginAttribute(String key, Object value, IWUserContext iwc) throws NotLoggedOnException{
     if (isLoggedOn(iwc)){
       Object obj = iwc.getSessionAttribute(LoginAttributeParameter);
       ((Hashtable)obj).put(key,value);
@@ -133,7 +134,7 @@ public class LoginBusiness implements IWEventListener{
     }
   }
 
-  public static Object getLoginAttribute(String key, IWContext iwc) throws NotLoggedOnException {
+  public static Object getLoginAttribute(String key, IWUserContext iwc) throws NotLoggedOnException {
     if(isLoggedOn(iwc)){
       Object obj = iwc.getSessionAttribute(LoginAttributeParameter);
       if(obj == null){
@@ -158,7 +159,7 @@ public class LoginBusiness implements IWEventListener{
   }
 
 
-  public static User getUser(IWContext iwc) /* throws NotLoggedOnException */ {
+  public static User getUser(IWUserContext iwc) /* throws NotLoggedOnException */ {
     try {
       return (User)LoginBusiness.getLoginAttribute(UserAttributeParameter,iwc);
     }
@@ -175,32 +176,32 @@ public class LoginBusiness implements IWEventListener{
     */
   }
 
-  public static List getPermissionGroups(IWContext iwc)throws NotLoggedOnException {
+  public static List getPermissionGroups(IWUserContext iwc)throws NotLoggedOnException {
     return (List)LoginBusiness.getLoginAttribute(PermissionGroupParameter,iwc);
   }
 
-  public static UserGroupRepresentative getUserRepresentativeGroup(IWContext iwc)throws NotLoggedOnException {
+  public static UserGroupRepresentative getUserRepresentativeGroup(IWUserContext iwc)throws NotLoggedOnException {
     return (UserGroupRepresentative)LoginBusiness.getLoginAttribute(UserGroupRepresentativeParameter,iwc);
   }
 
-  public static GenericGroup getPrimaryGroup(IWContext iwc)throws NotLoggedOnException {
+  public static GenericGroup getPrimaryGroup(IWUserContext iwc)throws NotLoggedOnException {
     return (GenericGroup)LoginBusiness.getLoginAttribute(PrimaryGroupParameter,iwc);
   }
 
 
-  protected static void setUser(IWContext iwc, User user){
+  protected static void setUser(IWUserContext iwc, User user){
     LoginBusiness.setLoginAttribute(UserAttributeParameter,user,iwc);
   }
 
-  protected static void setPermissionGroups(IWContext iwc, List value){
+  protected static void setPermissionGroups(IWUserContext iwc, List value){
     LoginBusiness.setLoginAttribute(PermissionGroupParameter,value,iwc);
   }
 
-  protected static void setUserRepresentativeGroup(IWContext iwc, UserGroupRepresentative value){
+  protected static void setUserRepresentativeGroup(IWUserContext iwc, UserGroupRepresentative value){
     LoginBusiness.setLoginAttribute(UserGroupRepresentativeParameter,value,iwc);
   }
 
-  protected static void setPrimaryGroup(IWContext iwc, GenericGroup value){
+  protected static void setPrimaryGroup(IWUserContext iwc, GenericGroup value){
     LoginBusiness.setLoginAttribute(PrimaryGroupParameter,value,iwc);
   }
 
@@ -290,7 +291,7 @@ public class LoginBusiness implements IWEventListener{
     return loggedOnList;
   }
 
-  public static LoggedOnInfo getLoggedOnInfo(IWContext iwc)throws NotLoggedOnException{
+  public static LoggedOnInfo getLoggedOnInfo(IWUserContext iwc)throws NotLoggedOnException{
     return (LoggedOnInfo)getLoginAttribute(_LOGGINADDRESS_LOGGED_ON_INFO,iwc);
   }
 
