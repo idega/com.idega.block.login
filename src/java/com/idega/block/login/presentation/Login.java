@@ -16,9 +16,12 @@ import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginInfo;
+import com.idega.core.accesscontrol.data.LoginInfoHome;
+import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.contact.data.Email;
 import com.idega.core.user.data.User;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -131,7 +134,6 @@ public class Login extends Block {
 		if (hintAnswer != null && hintAnswer.length() > 0) {
 			try {
 				boolean hintRight = testHint(iwc, hintAnswer);
-				;
 				if (hintRight) {
 					String sentTo = resetPasswordAndsendMessage(iwc);
 					if(sentTo==null) {
@@ -250,6 +252,23 @@ public class Login extends Block {
 					Iterator emailIter = emailCol.iterator();
 
 					LoginBusinessBean.resetPassword(login, tmpPassword, true);
+					
+					try {
+						LoginTable[] login_table = (LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumn(com.idega.core.accesscontrol.data.LoginTableBMPBean.getUserLoginColumnName(), login);
+						LoginTable loginTable = login_table==null?null:login_table[0];
+						if(loginTable!=null) {
+							LoginInfoHome loginInfoHome = (LoginInfoHome) IDOLookup.getHome(LoginInfo.class);
+							LoginInfo loginInfo = loginInfoHome.findByPrimaryKey(loginTable.getPrimaryKey());
+							loginInfo.setChangeNextTime(true);
+							loginInfo.setFailedAttemptCount(0);
+							loginInfo.store();
+						} else {
+							System.out.println("Login table not found for user " + login + ", very odd because password for it has just been changed!!!");
+						}
+					} catch (Exception e) {
+						System.out.println("Failed to reset login info after password change, not terrible but perhaps inconvenient");
+						e.printStackTrace();
+					}
 
 					buf = new StringBuffer();
 					boolean firstAddress = true;
