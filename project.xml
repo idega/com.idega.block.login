@@ -1,8 +1,8 @@
 <project>
     <pomVersion>3</pomVersion>
-    <groupId>com.idega.builder.bundle</groupId>
-    <artifactId>com.idega.builder.bundle</artifactId>
-    <name>com.idega.builder.bundle</name>
+    <groupId>com.idega.block</groupId>
+    <artifactId>com.idega.block.login</artifactId>
+    <name>idegaWeb Login Block</name>
     <currentVersion>2.0</currentVersion>
     <organization>
         <name>idega software</name>
