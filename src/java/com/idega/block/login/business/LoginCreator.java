@@ -97,7 +97,9 @@ public class LoginCreator {
             sb.append(third.charAt(thirdIndex++));
             break;
         }
+        //System.err.println(sb.toString());
       }
+      //System.err.println(sb.toString());
       return sb.toString();
     }
 
@@ -107,7 +109,7 @@ public class LoginCreator {
       if(L ==null)
         return false;
       else
-        return false;
+        return true;
       }
       catch(java.sql.SQLException ex){
         return false;
