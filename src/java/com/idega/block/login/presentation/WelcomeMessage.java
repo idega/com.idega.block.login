@@ -23,6 +23,7 @@ public class WelcomeMessage extends Text {
 	private static final String WELCOME_KEY_EVENING = "welcome_message.evening";
 	
 	private boolean iShowUserName = true;
+	private boolean displayDate = false;
 
 	public WelcomeMessage() {
 		super("");
@@ -44,6 +45,11 @@ public class WelcomeMessage extends Text {
 					User newUser = iwc.getCurrentUser();
 					welcomeString = welcomeString + " " + newUser.getName();
 				}
+				if(displayDate) {
+					IWTimestamp s = IWTimestamp.RightNow();
+					String date = s.getDateString("EEEEEEEEEEEE dd.MM.yyyy",iwc.getCurrentLocale()); 
+					welcomeString = welcomeString + Text.BREAK + date;
+				}
 				super.setText(welcomeString);	
 			}
 			catch (Exception e) {
@@ -62,5 +68,8 @@ public class WelcomeMessage extends Text {
 	
 	public void showUserName(boolean showUserName) {
 		iShowUserName = showUserName;
+	}
+	public void showDate(boolean showDate) {
+		displayDate = showDate;
 	}
 }
