@@ -1,79 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <project>
-    <extend>../com.idega.core.bundle/block-dependencies.xml</extend>
-    <artifactId>com.idega.block.login</artifactId>
-    <name>idegaWeb Login Block</name>
-    <currentVersion>1.0</currentVersion>
-    <inceptionYear>2000</inceptionYear>
-    <shortDescription>This is the default login module for idegaWeb</shortDescription>
-    <versions/>
-    <branches/>
-    <mailingLists>
-        <mailingList>
-            <name>${pom.name} Dev List</name>
-        </mailingList>
-        <mailingList>
-            <name>${pom.name} User List</name>
-        </mailingList>
-    </mailingLists>
-    <developers>
-        <developer>
-            <id>tryggvil</id>
-            <name>Tryggvi Larusson</name>
-            <email>tryggvi@idega.is</email>
-            <organization>idega software</organization>
-            <roles/>
-        </developer>
-        <developer>
-            <id>palli</id>
-            <name>Pall Helgason</name>
-            <email>palli@idega.is</email>
-            <organization>idega software</organization>
-            <roles/>
-        </developer>
-        <developer>
-            <id>eiki</id>
-            <name>Eirikur Sveinn Hrafnsson</name>
-            <email>eiki@idega.is</email>
-            <organization>idega software</organization>
-            <roles/>
-        </developer>
-        <developer>
-            <id>laddi</id>
-            <name>Thorhallur Helgason</name>
-            <email>laddi@idega.is</email>
-            <organization>idega software</organization>
-            <roles/>
-        </developer>
-    </developers>
-    <dependencies>
-        <dependency>
-            <groupId>bundles</groupId>
-            <artifactId>com.idega.core</artifactId>
-            <version>1.9</version>
-            <type>jar</type>
-            <url>http://www.idega.com/</url>
-            <properties>
-                <eclipse.dependency>true</eclipse.dependency>
-            </properties>
-        </dependency>
-    </dependencies>
-    <build>
-        <sourceDirectory>src/java</sourceDirectory>
-        <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
-        <unitTest>
-            <includes>
-                <include>**/*Test.java</include>
-            </includes>
-        </unitTest>
-    </build>
-    <reports>
-        <report>maven-tasklist-plugin</report>
-        <report>maven-changelog-plugin</report>
-        <report>maven-developer-activity-plugin</report>
-        <report>maven-simian-plugin</report>
-        <report>maven-jcoverage-plugin</report>
-        <report>maven-faq-plugin</report>
-        <report>maven-file-activity-plugin</report>
-        <report>maven-changes-plugin</report>
-    </reports>
+  <extend>../com.idega.core.bundle/block-dependencies.xml</extend>
+  <artifactId>com.idega.block.login</artifactId>
+  <name>idegaWeb Login Block</name>
+  <currentVersion>1.0</currentVersion>
+  <inceptionYear>2000</inceptionYear>
+  <shortDescription>This is the default login module for idegaWeb</shortDescription>
+  <versions>
+    <version>
+      <id>1.0</id>
+      <name>1.0</name>
+      <tag>LOGIN_1_0</tag>
+    </version>
+  </versions>
+  <branches/>
+  <mailingLists>
+    <mailingList>
+      <name>${pom.name} Dev List</name>
+    </mailingList>
+    <mailingList>
+      <name>${pom.name} User List</name>
+    </mailingList>
+  </mailingLists>
+  <developers>
+    <developer>
+      <id>tryggvil</id>
+      <name>Tryggvi Larusson</name>
+      <email>tryggvi@idega.is</email>
+      <organization>idega software</organization>
+      <roles/>
+    </developer>
+    <developer>
+      <id>palli</id>
+      <name>Pall Helgason</name>
+      <email>palli@idega.is</email>
+      <organization>idega software</organization>
+      <roles/>
+    </developer>
+    <developer>
+      <id>eiki</id>
+      <name>Eirikur Sveinn Hrafnsson</name>
+      <email>eiki@idega.is</email>
+      <organization>idega software</organization>
+      <roles/>
+    </developer>
+    <developer>
+      <id>laddi</id>
+      <name>Thorhallur Helgason</name>
+      <email>laddi@idega.is</email>
+      <organization>idega software</organization>
+      <roles/>
+    </developer>
+  </developers>
+  <dependencies>
+    <dependency>
+      <groupId>bundles</groupId>
+      <artifactId>com.idega.core</artifactId>
+      <version>1.9</version>
+      <type>jar</type>
+      <url>http://www.idega.com/</url>
+      <properties>
+        <eclipse.dependency>true</eclipse.dependency>
+      </properties>
+    </dependency>
+  </dependencies>
+  <build>
+    <sourceDirectory>src/java</sourceDirectory>
+    <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
+    <unitTest>
+      <includes>
+        <include>**/*Test.java</include>
+      </includes>
+    </unitTest>
+  </build>
 </project>
