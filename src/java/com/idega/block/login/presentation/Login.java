@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.ejb.FinderException;
-
 import com.idega.block.login.business.LoginCookieListener;
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
@@ -37,7 +35,6 @@ import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
-import com.idega.user.data.AbstractGroupBMPBean;
 import com.idega.user.util.Converter;
 import com.idega.util.SendMail;
 import com.idega.util.StringHandler;

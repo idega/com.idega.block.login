@@ -17,6 +17,7 @@ package com.idega.block.login.presentation;
 import java.awt.Color;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+
 import javax.ejb.FinderException;
 
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
@@ -35,11 +36,11 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWColor;
+
 public class LoginEditor extends PresentationObjectContainer {
 	private User eUser = null;
 	private String sUnionId = null;
