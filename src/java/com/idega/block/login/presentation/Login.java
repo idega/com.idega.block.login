@@ -9,7 +9,6 @@ import com.idega.core.user.data.User;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
-import com.idega.util.text.TextStyler;
 import java.util.*;
 import com.idega.block.login.business.*;
 import com.idega.core.accesscontrol.business.AccessControl;
@@ -48,7 +47,7 @@ private int passwordTextSize = -1;
 private int inputLength = 10;
 
 private String styleAttribute = "font-family: Verdana; font-size: 8pt; border: 1 solid #000000";
-private String textStyles = TextStyler.getDefaultStyle();
+private String textStyles = "font-family: Arial,Helvetica,sans-serif; font-size: 8pt; font-weight: bold; color: #000000; text-decoration: none;";
 private String submitButtonAlignment;
 
 private Form myForm;
