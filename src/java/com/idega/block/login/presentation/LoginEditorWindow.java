@@ -9,12 +9,18 @@ package com.idega.block.login.presentation;
  * @version 1.0
  */
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 
 public class LoginEditorWindow extends IWAdminWindow {
 	
+    public static String PARAM_MESSAGE="msg";
+    public static String PARAM_CHANGE="chg";
+    
 	String msg = "";
 	boolean change = false;
 	
@@ -35,19 +41,22 @@ public class LoginEditorWindow extends IWAdminWindow {
 	}
 	
 	public String getURL(IWContext iwc){
-		String url = getWindowURL(getClass(),iwc.getApplicationContext());
-		url += "&msg="+msg;
-		if(change)
-			url+="&chg=true";
+	    Map parameters = new HashMap();
+	    parameters.put(PARAM_MESSAGE,msg);
+	    if(change){
+	        parameters.put(PARAM_CHANGE,"true");
+	    }
+		String url = getWindowURLWithParameters(getClass(),iwc.getApplicationContext(),parameters);
 		return url;
 	}
 	
 	public void main(IWContext iwc) throws Exception {
 		//debugParameters(iwc);
 		LoginEditor BE = new LoginEditor();
-		if(iwc.isParameterSet("msg"))
-			BE.setMessage(iwc.getParameter("msg"));
-		if(iwc.isParameterSet("chg"))
+		if(iwc.isParameterSet(PARAM_MESSAGE)){
+			BE.setMessage(iwc.getParameter(PARAM_MESSAGE));
+		}
+		if(iwc.isParameterSet(PARAM_CHANGE))
 			BE.setChangeLoginNextTime(true);
 		Table T = new Table(1, 1);
 		T.setAlignment(1, 1, "center");
