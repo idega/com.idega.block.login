@@ -6,9 +6,9 @@ package com.idega.block.login.presentation;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.idega.block.login.business.LoginBusiness;
 import com.idega.block.login.business.LoginCookieListener;
 import com.idega.builder.data.IBPage;
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.core.user.data.User;
@@ -81,7 +81,7 @@ public class Login extends Block
 	private int LAYOUT = -1;
 	protected IWResourceBundle iwrb;
 	protected IWBundle iwb;
-	private String loginHandlerClass = LoginBusiness.class.getName();
+	private String loginHandlerClass = LoginBusinessBean.class.getName();
 	protected boolean sendToHTTPS=false;
 	protected boolean sendUserToHomePage=false;
   private boolean allowCookieLogin = false;
@@ -133,22 +133,22 @@ public class Login extends Block
 		passwordText = iwrb.getLocalizedString("password", "Password");
 		int state = internalGetState(iwc);
 		switch (state) {
-			case LoginBusiness.STATE_LOGGED_ON :
+			case LoginBusinessBean.STATE_LOGGED_ON :
 				isLoggedOn(iwc);
 			break;
-			case LoginBusiness.STATE_LOGGED_OUT :
+			case LoginBusinessBean.STATE_LOGGED_OUT :
 				startState();
 			break;
-			case LoginBusiness.STATE_LOGIN_FAILED :
+			case LoginBusinessBean.STATE_LOGIN_FAILED :
 				loginFailed(iwrb.getLocalizedString("login_failed","Login failed"));
 			break;
-			case LoginBusiness.STATE_NO_USER :
+			case LoginBusinessBean.STATE_NO_USER :
 				loginFailed(iwrb.getLocalizedString("login_no_user","Invalid user"));
 			break;
-			case LoginBusiness.STATE_WRONG_PASSW :
+			case LoginBusinessBean.STATE_WRONG_PASSW :
 				loginFailed(iwrb.getLocalizedString("login_wrong","Invalid password"));
 			break;
-			case LoginBusiness.STATE_LOGIN_EXPIRED :
+			case LoginBusinessBean.STATE_LOGIN_EXPIRED :
 				loginFailed(iwrb.getLocalizedString("login_expired","Login expired"));
 			break;
 			default :
@@ -165,7 +165,7 @@ public class Login extends Block
 	*/
 	public static User getUser(IWContext iwc)
 	{
-		return LoginBusiness.getUser(iwc);
+		return LoginBusinessBean.getUser(iwc);
 	}
 	private void startState()
 	{
@@ -176,7 +176,7 @@ public class Login extends Block
 		if (_redirectPage > 0)
 		{
 			//System.err.println("adding hidden redirect parameter");
-			myForm.add(new HiddenInput(LoginBusiness.LoginRedirectPageParameter, String.valueOf(_redirectPage)));
+			myForm.add(new HiddenInput(LoginBusinessBean.LoginRedirectPageParameter, String.valueOf(_redirectPage)));
 		}
 		Table loginTable = new Table();
 		loginTable.setAlignment(loginAlignment);
@@ -424,7 +424,7 @@ public class Login extends Block
 			loginTable.add(submitTable, xpos, ypos);
 		}
 
-		submitTable.add(new Parameter(LoginBusiness.LoginStateParameter, "login"));
+		submitTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, "login"));
 		myForm.add(loginTable);
 	}
 
@@ -450,7 +450,7 @@ public class Login extends Block
 			myForm.setPageToSubmitTo(loggedOffPageId);
 		User user = (User) getUser(iwc);
 		
-		if ( sendUserToHomePage && LoginBusiness.isLogOnAction(iwc) ) {
+		if ( sendUserToHomePage && LoginBusinessBean.isLogOnAction(iwc) ) {
 			com.idega.user.data.User newUser = Converter.convertToNewUser(user);
 			com.idega.user.data.Group newGroup = newUser.getPrimaryGroup();
 			if ( newUser.getHomePageID() != -1 )
@@ -566,7 +566,7 @@ public class Login extends Block
 		else
 			submitTable.add(new SubmitButton(logoutImage, "utskraning"));
 			
-		submitTable.add(new Parameter(LoginBusiness.LoginStateParameter, "logoff"));
+		submitTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, "logoff"));
 		if (loggedOffPageId > 0)
 			submitTable.add(new Parameter(getIBPageParameterName(), String.valueOf(loggedOffPageId)));
 		if (LAYOUT != SINGLE_LINE)
@@ -587,7 +587,7 @@ public class Login extends Block
 		{
 			myForm.add(loginTable);
 		}
-		if(LoginBusiness.isLogOnAction(iwc)){
+		if(LoginBusinessBean.isLogOnAction(iwc)){
 			LoginInfo loginInfo = LoginDBHandler.getLoginInfo((LoginDBHandler.findUserLogin(user.getID())).getID());
 			if(loginInfo.getAllowedToChange() && loginInfo.getChangeNextTime()){
 				Script s = new Script();
@@ -681,7 +681,7 @@ public class Login extends Block
 		}
 		else
 			submitTable.add(new SubmitButton(tryAgainImage, "tryAgain"));
-		submitTable.add(new Parameter(LoginBusiness.LoginStateParameter, "tryagain"));
+		submitTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, "tryagain"));
 		if (LAYOUT != SINGLE_LINE)
 		{
 			loginTable.add(inputTable, 1, 1);
@@ -770,7 +770,7 @@ public class Login extends Block
 	}
 	public int internalGetState(IWContext iwc)
 	{
-		return LoginBusiness.internalGetState(iwc);
+		return LoginBusinessBean.internalGetState(iwc);
 	}
 	public String getBundleIdentifier()
 	{

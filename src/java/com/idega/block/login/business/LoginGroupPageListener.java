@@ -5,6 +5,8 @@ import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWException;
 import com.idega.user.data.Group;
 import com.idega.builder.business.BuilderLogic;
+import com.idega.core.accesscontrol.business.*;
+
 import java.util.*;
 
 /**
@@ -17,7 +19,7 @@ public class LoginGroupPageListener implements IWEventListener {
 	
 	public boolean actionPerformed(IWContext iwc)throws IWException{
 		/** todo: */
-		if ( iwc.isLoggedOn() && LoginBusiness.isLogOnAction(iwc) ){
+		if ( iwc.isLoggedOn() && LoginBusinessBean.isLogOnAction(iwc) ){
 			System.err.println("trying to get page for usergroup");
 			String page = checkUserGroups(iwc);
 			if(page!=null){
@@ -29,7 +31,7 @@ public class LoginGroupPageListener implements IWEventListener {
 	}
 	
 	private String checkUserGroups(IWContext iwc){
-		List userGroups = LoginBusiness.getPermissionGroups(iwc);
+		List userGroups = LoginBusinessBean.getPermissionGroups(iwc);
 		Map G2P = getLoginGroupPageMap(iwc);
 		if(userGroups!=null ){
 			if(G2P !=null){

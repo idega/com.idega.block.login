@@ -4,6 +4,7 @@ import javax.servlet.http.Cookie;
 
 import com.idega.presentation.*;
 import com.idega.business.IWEventListener;
+import com.idega.core.accesscontrol.business.*;
 import com.idega.idegaweb.*;
 import com.idega.util.CypherText;
 
@@ -26,7 +27,7 @@ public class LoginCookieListener implements IWEventListener{
   public boolean actionPerformed(IWContext iwc)throws IWException{
     Cookie userIDCookie = iwc.getCookie(userIDCookieName);
     //System.err.println("actionPerformed in LoginCookieListener");
-    if( LoginBusiness.isLogOffAction(iwc) &&  userIDCookie!=null){
+    if( LoginBusinessBean.isLogOffAction(iwc) &&  userIDCookie!=null){
       userIDCookie.setMaxAge(0);
       iwc.addCookies(userIDCookie);
     }
@@ -37,7 +38,7 @@ public class LoginCookieListener implements IWEventListener{
         String cypheredLoginName = userIDCookie.getValue();
         String loginName = deCypherUserLogin(iwc,cypheredLoginName);
         try{
-          new LoginBusiness().logInUnVerified(iwc,loginName);
+          new LoginBusinessBean().logInUnVerified(iwc,loginName);
         }
         catch(Exception ex){
           throw new IWException("Cookie login failed : "+ex.getMessage());
@@ -46,10 +47,10 @@ public class LoginCookieListener implements IWEventListener{
       else{//System.err.println("no cookie found");
       }
     }
-    else if(iwc.isParameterSet(prmUserAllowsLogin) && LoginBusiness.isLoggedOn(iwc)){
+    else if(iwc.isParameterSet(prmUserAllowsLogin) && LoginBusinessBean.isLoggedOn(iwc)){
       if(userIDCookie==null){
         //System.err.println("adding cookie");
-        String login = LoginBusiness.getLoggedOnInfo(iwc).getLogin();
+        String login = LoginBusinessBean.getLoggedOnInfo(iwc).getLogin();
         userIDCookie = new Cookie(userIDCookieName,cypherUserLogin(iwc,login));
         userIDCookie.setMaxAge(60*60*24*30);
         iwc.addCookies(userIDCookie);

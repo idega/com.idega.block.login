@@ -18,7 +18,8 @@ import java.awt.Color;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import javax.ejb.FinderException;
-import com.idega.block.login.business.LoginBusiness;
+
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.user.data.User;
@@ -100,7 +101,7 @@ public class LoginEditor extends PresentationObjectContainer {
 		//      eUser = LoginBusiness.getUser(iwc);
 		/** Gimmi 04.11.2002 */
 		if (sUserId == null) {
-			eUser = LoginBusiness.getUser(iwc);
+			eUser = LoginBusinessBean.getUser(iwc);
 		}
 		else {
 			try {
@@ -282,7 +283,7 @@ public class LoginEditor extends PresentationObjectContainer {
 	}
 	public void main(IWContext iwc) {
 		iwrb = getResourceBundle(iwc);
-		if (LoginBusiness.isLoggedOn(iwc))
+		if (LoginBusinessBean.isLoggedOn(iwc))
 			control(iwc);
 		else
 			add(iwrb.getLocalizedString("not logged on", "Not logged on"));

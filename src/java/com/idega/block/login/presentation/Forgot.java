@@ -10,9 +10,9 @@ package com.idega.block.login.presentation;
 
 import java.text.MessageFormat;
 
-import com.idega.block.login.business.LoginBusiness;
 import com.idega.block.login.business.LoginContext;
 import com.idega.block.login.business.LoginCreator;
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.data.Email;
@@ -154,7 +154,7 @@ public class Forgot extends Block{
     LoginContext context = null;
     if(u!=null){
       try{
-         context = LoginBusiness.changeUserPassword(u,LoginCreator.createPasswd(8));
+         context = LoginBusinessBean.changeUserPassword(u,LoginCreator.createPasswd(8));
       }
       catch(Exception ex){
         ex.printStackTrace();
