@@ -159,9 +159,11 @@ public class LoginEditor extends PresentationObjectContainer{
       LoginTable logTable = LoginDBHandler.findUserLogin(iUserId);
       if (logTable == null) {
         try {
-          LoginDBHandler.createLogin(iUserId,sPasswd,sConfirm);
-          returner = true;
-          errorMsg = iwrb.getLocalizedString("login_created","Login created");
+          if (sPasswd.equals(sConfirm) ) {
+            LoginDBHandler.createLogin(iUserId,sUserLogin,sPasswd);
+            returner = true;
+            errorMsg = iwrb.getLocalizedString("login_created","Login created");
+          }
         }
         catch (Exception ex) {
           ex.printStackTrace();
@@ -173,9 +175,11 @@ public class LoginEditor extends PresentationObjectContainer{
       else if (logTable != null  ) {
 
           try {
-            LoginDBHandler.updateLogin(iUserId,sPasswd,sConfirm);
-            returner = true;
-            errorMsg =  iwrb.getLocalizedString("updated","Login updated");
+            if (sPasswd.equals(sConfirm) ) {
+              LoginDBHandler.updateLogin(iUserId,sUserLogin,sPasswd);
+              returner = true;
+              errorMsg =  iwrb.getLocalizedString("updated","Login updated");
+            }
           }
           catch (Exception ex) {
             ex.printStackTrace();
