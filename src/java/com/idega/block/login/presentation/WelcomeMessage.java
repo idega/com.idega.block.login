@@ -70,13 +70,13 @@ public class WelcomeMessage extends Text {
 		return IW_BUNDLE_IDENTIFIER;
 	}
 	
-	public void showUserName(boolean showUserName) {
+	public void setShowUserName(boolean showUserName) {
 		iShowUserName = showUserName;
 	}
-	public void showDate(boolean showDate) {
+	public void setShowDate(boolean showDate) {
 		displayDate = showDate;
 	}
-	public void showWelcomeMessage(boolean showWM) {
+	public void setShowWelcomeMessage(boolean showWM) {
 	  displayWelcomeMessage = showWM;
 	}
 }
