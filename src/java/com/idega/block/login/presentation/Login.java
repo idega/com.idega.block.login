@@ -75,9 +75,12 @@ protected IWBundle iwb;
     iwb = getBundle(modinfo);
     iwrb = getResourceBundle(modinfo);
 
-    loginImage = iwrb.getImage("login.gif");
-    logoutImage = iwrb.getImage("logout.gif");
-    tryAgainImage = iwrb.getImage("try_again.gif");
+    if ( loginImage == null )
+      loginImage = iwrb.getImage("login.gif");
+    if ( logoutImage == null )
+      logoutImage = iwrb.getImage("logout.gif");
+    if ( tryAgainImage == null )
+      tryAgainImage = iwrb.getImage("try_again.gif");
 
 		userText = iwrb.getLocalizedString("user","User");
 		passwordText = iwrb.getLocalizedString("password","Password");
@@ -532,6 +535,10 @@ protected IWBundle iwb;
 
   public void setLogoutButton(Image logoutImage) {
     this.logoutImage=logoutImage;
+  }
+
+  public void setTryAgainButton(Image tryAgainImage) {
+    this.tryAgainImage=tryAgainImage;
   }
 
 }
