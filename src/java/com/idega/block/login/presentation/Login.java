@@ -74,7 +74,7 @@ public class Login extends Block {
 	public static final int LAYOUT_HORIZONTAL = 2;
 	public static final int LAYOUT_STACKED = 3;
 	public static final int SINGLE_LINE = 4;
-	public static final int LAYOUT_POPUP = 5;
+	public static final int LAYOUT_FORWARD_LINK = 5;
 	private int LAYOUT = -1;
 	protected IWResourceBundle iwrb;
 	protected IWBundle iwb;
@@ -90,7 +90,7 @@ public class Login extends Block {
 	private final String _linkStyleClass = "Link";
 	private Image _iconImage;
 
-	private int _popupPageID = -1;
+	private int _loginPageID = -1;
 	private final static String FROM_PAGE_PARAMETER = "log_from_page";
 
 	public Login() {
@@ -300,7 +300,7 @@ public class Login extends Block {
 				loginTable.add(inputTable, xpos, ypos);
 				xpos = 2;
 				break;
-			case LAYOUT_POPUP :
+			case LAYOUT_FORWARD_LINK :
 				_buttonAsLink = true;  
 				inputTable = new Table(1, 1);
 				inputTable.setBorder(0);
@@ -330,10 +330,10 @@ public class Login extends Block {
 			int column = 1;
 			Link link = this.getStyleLink(iwrb.getLocalizedString("login_text", "Login"), _linkStyleClass);
 			switch (LAYOUT) {
-				case LAYOUT_POPUP :
-					if (_popupPageID != -1) {
+				case LAYOUT_FORWARD_LINK :
+					if (_loginPageID != -1) {
 						//PopUp Link parameters
-						link.setPage(_popupPageID);
+						link.setPage(_loginPageID);
 						link.setParameter(FROM_PAGE_PARAMETER,String.valueOf(iwc.getCurrentIBPageID()));
 						link.setHttps(sendToHTTPS);
 						
@@ -960,15 +960,24 @@ public class Login extends Block {
 	 * @return
 	 */
 	public int getPopupPageID() {
-		return _popupPageID;
+		return _loginPageID;
 	}
 
 	/**
 	 * @param pageID
-	 * 
+	 * @deprecated replaced with setLogInPageID(int pageID)
 	 */
 	public void setPopupPageID(int pageID) {
-		_popupPageID = pageID;
+		setLogInPageID(pageID);
+	}
+	
+	
+	/**
+	 * @param pageID
+	 * 
+	 */
+	public void setLogInPageID(int pageID) {
+		_loginPageID = pageID;
 	}
 
 }
