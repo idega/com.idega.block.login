@@ -658,7 +658,7 @@ public class Login extends Block {
 			loggedOnLink.setText(user.getName());
 			loggedOnLink.setFontStyle(textStyles);
 		}
-		Text userText = new Text();
+		Text userText = new Text(user.getName());
 		if (userTextSize > -1) {
 			userText.setFontSize(userTextSize);
 		}
@@ -666,7 +666,6 @@ public class Login extends Block {
 			userText.setFontColor(userTextColor);
 		}
 		userText.setFontStyle(textStyles);
-		userText.addToText(user.getName());
 		Table loginTable = new Table();
 		loginTable.setBorder(0);
 		if (backgroundImageUrl != null)
