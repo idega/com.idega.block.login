@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project>
-  <extend>${base.project.dir}/block-dependencies.xmlend>
+  <extend>${base.project.dir}/block-dependencies.xml</extend>
   <artifactId>com.idega.block.login</artifactId>
   <name>idegaWeb Login Block</name>
   <currentVersion>1.1-SNAPSHOT</currentVersion>
