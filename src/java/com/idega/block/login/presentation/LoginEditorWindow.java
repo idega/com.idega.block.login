@@ -11,12 +11,11 @@ package com.idega.block.login.presentation;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 
-public class LoginEditorWindow extends IWAdminWindow {
+public class LoginEditorWindow extends StyledIWAdminWindow {
 	
     public static String PARAM_MESSAGE="msg";
     public static String PARAM_CHANGE="chg";
@@ -60,9 +59,11 @@ public class LoginEditorWindow extends IWAdminWindow {
 			BE.setChangeLoginNextTime(true);
 		Table T = new Table(1, 1);
 		T.setAlignment(1, 1, "center");
+		T.setStyleClass(MAIN_STYLECLASS);
 		T.add(BE, 1, 1);
-		add(T);
-		setTitle("Login Editor");
+		add(T,iwc);
+		addTitle(getResourceBundle(iwc).getLocalizedString("login_editor","Login Editor"),TITLE_STYLECLASS);
+		//setTitle("Login Editor");
 		//addTitle("Login Editor");
 	}
 }
