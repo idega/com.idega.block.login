@@ -121,7 +121,9 @@ public class Login extends Block {
 	private boolean _enterSubmit = false;
 	private final String _linkStyleClass = "Link";
 	private Image _iconImage;
-
+	private boolean useImageButton=true;
+	private boolean setNoStyles=false;
+	
 	private int _loginPageID = -1;
 	private final static String FROM_PAGE_PARAMETER = "log_from_page";
 
@@ -195,9 +197,12 @@ public class Login extends Block {
 				loginImage = iwrb.getLocalizedImageButton("login_text", "Login");
 		if (logoutImage == null) //logoutImage = iwrb.getImage("logout.gif");
 				logoutImage = iwrb.getLocalizedImageButton("logout_text", "Log out");
-		if (tryAgainImage == null)
+		if (tryAgainImage == null){
 		// tryAgainImage = iwrb.getImage("try_again.gif");
+			if(useImageButton){
 				tryAgainImage = iwrb.getLocalizedImageButton("tryagain_text", "Try again");
+			}		
+		}
 		userText = iwrb.getLocalizedString("user", "User");
 		passwordText = iwrb.getLocalizedString("password", "Password");
 		LoginState state = internalGetState(iwc);
@@ -464,7 +469,9 @@ public class Login extends Block {
 		if (userTextColor != null) {
 			loginTexti.setFontColor(userTextColor);
 		}
-		loginTexti.setFontStyle(textStyles);
+		if(!setNoStyles){
+			loginTexti.setFontStyle(textStyles);
+		}
 		Text passwordTexti = new Text(passwordText);
 		if (passwordTextSize != -1) {
 			passwordTexti.setFontSize(passwordTextSize);
@@ -472,15 +479,21 @@ public class Login extends Block {
 		if (passwordTextColor != null) {
 			passwordTexti.setFontColor(passwordTextColor);
 		}
-		passwordTexti.setFontStyle(textStyles);
+		if(!setNoStyles){
+			passwordTexti.setFontStyle(textStyles);
+		}
 		Table inputTable;
 		TextInput login = new TextInput(LOGIN_PARAMETER_NAME);
-		login.setMarkupAttribute("style", styleAttribute);
+		if(!setNoStyles){
+			login.setMarkupAttribute("style", styleAttribute);
+		}
 		login.setSize(inputLength);
 		login.setInFocusOnPageLoad(true);
 		if (_enterSubmit) login.setOnKeyPress("return enterSubmit(this,event)");
 		PasswordInput passw = new PasswordInput(PASSWORD_PARAMETER_NAME);
-		passw.setMarkupAttribute("style", styleAttribute);
+		if(!setNoStyles){
+			passw.setMarkupAttribute("style", styleAttribute);
+		}
 		passw.setSize(inputLength);
 		if (_enterSubmit) passw.setOnKeyPress("return enterSubmit(this,event)");
 		switch (LAYOUT) {
@@ -649,7 +662,14 @@ public class Login extends Block {
 				loginTable.add(submitTable, xpos, ypos);
 			}
 			else {
-				SubmitButton button = new SubmitButton(loginImage, "tengja");
+				
+				SubmitButton button;
+				if(useImageButton){
+					button = new SubmitButton(loginImage, "tengja");
+				}
+				else{
+					button = new SubmitButton(iwrb.getLocalizedString("login_text", "login"),"tengja");
+				}
 				button.setContent(iwrb.getLocalizedString("login_text", "login"));
 				if (!helpButton) {
 					submitTable.add(button, 1, 1);
@@ -673,7 +693,9 @@ public class Login extends Block {
 								//CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
 								CheckBox cookieCheck = new CheckBox(IWAuthenticator.PARAMETER_ALLOWS_COOKIE_LOGIN);
 								Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Remember me"));
-								cookieText.setFontStyle(this.textStyles);
+								if(!setNoStyles){
+									cookieText.setFontStyle(this.textStyles);
+								}
 								row++;
 								submitTable.mergeCells(1, row, 2, row);
 								submitTable.add(cookieCheck, 1, row);
@@ -696,7 +718,9 @@ public class Login extends Block {
 								//CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
 								CheckBox cookieCheck = new CheckBox(IWAuthenticator.PARAMETER_ALLOWS_COOKIE_LOGIN);
 								Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Remember me"));
-								cookieText.setFontStyle(this.textStyles);
+								if(!setNoStyles){
+									cookieText.setFontStyle(this.textStyles);
+								}
 								submitTable.mergeCells(1, row, 2, row);
 								submitTable.add(cookieCheck, 1, row);
 								submitTable.add(cookieText, 1, row);
@@ -711,7 +735,9 @@ public class Login extends Block {
 								//CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
 								CheckBox cookieCheck = new CheckBox(IWAuthenticator.PARAMETER_ALLOWS_COOKIE_LOGIN);
 								Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Remember me"));
-								cookieText.setFontStyle(this.textStyles);
+								if(!setNoStyles){
+									cookieText.setFontStyle(this.textStyles);
+								}
 								submitTable.add(cookieCheck, col, 1);
 								submitTable.add(cookieText, col++, 1);
 							}
@@ -734,11 +760,15 @@ public class Login extends Block {
 		Table myTable = new Table(1,5);
 		
 		TextInput login = new TextInput(LOGIN_PARAMETER_NAME);
-		login.setMarkupAttribute("style", styleAttribute);
+		if(!setNoStyles){
+			login.setMarkupAttribute("style", styleAttribute);
+		}
 		login.setSize(inputLength);
 		
 		PasswordInput passw = new PasswordInput(PASSWORD_PARAMETER_NAME);
-		passw.setMarkupAttribute("style", styleAttribute);
+		if(!setNoStyles){
+			passw.setMarkupAttribute("style", styleAttribute);
+		}
 		passw.setSize(inputLength);
 		
 		Label loginTexti = new Label(userText,login);
@@ -761,15 +791,19 @@ public class Login extends Block {
 
 	private Link getRegisterLink() {
 		Link link = new Link(iwrb.getLocalizedString("register.register", "Register"));
-		link.setFontStyle(this.textStyles);
+		if(!setNoStyles){
+			link.setFontStyle(this.textStyles);
+		}
 		link.setWindowToOpen(RegisterWindow.class);
 		link.setAsImageButton(true);
 		return link;
 	}
 
 	private Link getForgotLink() {
-		Link L = new Link(iwrb.getLocalizedString("register.forgot", "Forgot password�"));
-		L.setFontStyle(this.textStyles);
+		Link L = new Link(iwrb.getLocalizedString("register.forgot", "Forgot password?"));
+		if(!setNoStyles){
+			L.setFontStyle(this.textStyles);
+		}
 		L.setWindowToOpen(ForgotWindow.class);
 		return L;
 	}
@@ -810,7 +844,9 @@ public class Login extends Block {
 			if (userTextSize > -1) loggedOnLink.setFontSize(userTextSize);
 			if (userTextColor != null && !userTextColor.equals("")) loggedOnLink.setFontColor(userTextColor);
 			loggedOnLink.setText(user.getName());
-			loggedOnLink.setFontStyle(textStyles);
+			if(!setNoStyles){
+				loggedOnLink.setFontStyle(textStyles);
+			}
 		}
 		Text userText = new Text(user.getName());
 		if (userTextSize > -1) {
@@ -819,7 +855,9 @@ public class Login extends Block {
 		if (userTextColor != null && !(userTextColor.equals(""))) {
 			userText.setFontColor(userTextColor);
 		}
-		userText.setFontStyle(textStyles);
+		if(!setNoStyles){
+			userText.setFontStyle(textStyles);
+		}
 		Table loginTable = new Table();
 		loginTable.setBorder(0);
 		if (backgroundImageUrl != null) loginTable.setBackgroundImage(new Image(backgroundImageUrl));
@@ -890,7 +928,13 @@ public class Login extends Block {
 			submitTable.add(link, column, 1);
 		}
 		else {
-			SubmitButton button = new SubmitButton(logoutImage, "utskraning");
+			SubmitButton button;
+			if(useImageButton){
+				button = new SubmitButton(logoutImage, "utskraning");
+			}
+			else{
+				button = new SubmitButton(iwrb.getLocalizedString("logout_text", "logout"),"utskraning");
+			}
 			submitTable.add(button);
 			button.setContent(iwrb.getLocalizedString("logout_text", "logout"));
 		}
@@ -951,7 +995,9 @@ public class Login extends Block {
 			if (userTextColor != null) {
 				mistokst.setFontColor(userTextColor);
 			}
-			mistokst.setFontStyle(textStyles);
+			if(!setNoStyles){
+				mistokst.setFontStyle(textStyles);
+			}
 			Table loginTable = new Table();
 			loginTable.setBorder(0);
 			if (backgroundImageUrl != null) loginTable.setBackgroundImage(new Image(backgroundImageUrl));
@@ -1009,8 +1055,16 @@ public class Login extends Block {
 				}
 				submitTable.add(link, column, 1);
 			}
-			else
-				submitTable.add(new SubmitButton(tryAgainImage, ACTION_TRY_AGAIN));
+			else{
+				SubmitButton button;
+				if(useImageButton){
+					button = new SubmitButton(tryAgainImage,ACTION_TRY_AGAIN);
+				}
+				else{
+					button = new SubmitButton(iwrb.getLocalizedString("tryagain_text", "Try again"),ACTION_TRY_AGAIN);
+				}
+				submitTable.add(button);
+			}
 			submitTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, ACTION_TRY_AGAIN));
 			if (LAYOUT != SINGLE_LINE) {
 				loginTable.add(inputTable, 1, 1);
@@ -1036,7 +1090,9 @@ public class Login extends Block {
 		else if (what.equals("toBig")) {
 			textinn.addToText(iwrb.getLocalizedString("without_hyphen", "Social-security number must be written without a hyphen"));
 		}
-		textinn.setFontStyle(textStyles);
+		if(!setNoStyles){
+			textinn.setFontStyle(textStyles);
+		}
 		Table loginTable = new Table(1, 2);
 		if (backgroundImageUrl != null) loginTable.setBackgroundImage(new com.idega.presentation.Image(backgroundImageUrl));
 		if (loginWidth != null) loginTable.setWidth(loginWidth);
@@ -1071,7 +1127,14 @@ public class Login extends Block {
 			submitTable.setVerticalAlignment(1, 1, "middle");
 			submitTable.setWidth("100%");
 		}
-		submitTable.add(new SubmitButton(tryAgainImage), 1, 1);
+		SubmitButton button;
+		if(useImageButton){
+			button = new SubmitButton(tryAgainImage);
+		}
+		else{
+			button = new SubmitButton(iwrb.getLocalizedString("tryagain_text", "Try again"),"tryagain");
+		}
+		submitTable.add(button, 1, 1);
 		if (LAYOUT != SINGLE_LINE) {
 			loginTable.add(inputTable, 1, 1);
 			loginTable.add(submitTable, 1, 2);
@@ -1155,10 +1218,12 @@ public class Login extends Block {
 
 	public void setInputStyle(String styleAttribute) {
 		this.styleAttribute = styleAttribute;
+		setNoStyles=false;
 	}
 
 	public void setTextStyle(String styleAttribute) {
 		this.textStyles = styleAttribute;
+		setNoStyles=false;
 	}
 
 	public void setInputLength(int inputLength) {
@@ -1215,6 +1280,7 @@ public class Login extends Block {
 
 	public void setLoginButton(Image loginImage) {
 		this.loginImage = loginImage;
+		setUseImageButton();
 	}
 
 	public void setLogoutButtonImageURL(String logoutImageURL) {
@@ -1223,10 +1289,12 @@ public class Login extends Block {
 
 	public void setLogoutButton(Image logoutImage) {
 		this.logoutImage = logoutImage;
+		setUseImageButton();
 	}
 
 	public void setTryAgainButton(Image tryAgainImage) {
 		this.tryAgainImage = tryAgainImage;
+		setUseImageButton();
 	}
 
 	public void setViewOnlyLogoutButton(boolean logout) {
@@ -1489,4 +1557,25 @@ public class Login extends Block {
 		return urlToForwardToOnLogin;
 	}
 	
+	/**
+	 * Sets to use a "image" style button, either a set image or a generated button image.
+	 */
+	public void setUseImageButton(){
+		useImageButton=true;
+	}
+	/**
+	 * Sets to use a "regular" style submitbutton.
+	 * This can not be set at the same time as an Image button.
+	 */
+	public void setUseRegularButton(){
+		useImageButton=false;
+	}
+	
+	/**
+	 * This must be called explicitly to make the login module by default set no styles on its inner objects.
+	 * This is done to maintain backwards compatability;
+	 */
+	public void setNoStyles(){
+		setNoStyles=true;
+	}
 }
