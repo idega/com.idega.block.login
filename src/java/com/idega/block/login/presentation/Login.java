@@ -132,6 +132,8 @@ public class Login extends Block {
 	
 	private boolean lockedAsWapLayout = false;
 	private String classToOpenOnLogin;
+	
+	private ICPage loggedOnPage;
 
 	public Login() {
 		super();
@@ -749,6 +751,10 @@ public class Login extends Block {
 			com.idega.user.data.Group newGroup = newUser.getPrimaryGroup();
 			if (newUser.getHomePageID() != -1) iwc.forwardToIBPage(this.getParentPage(), newUser.getHomePage());
 			if (newGroup != null && newGroup.getHomePageID() != -1) iwc.forwardToIBPage(this.getParentPage(), newGroup.getHomePage());
+		}
+		
+		if (loggedOnPage != null) {
+			iwc.forwardToIBPage(getParentPage(), loggedOnPage);
 		}
 
 		if (loggedOnLink != null) {
@@ -1403,5 +1409,9 @@ public class Login extends Block {
 	 */
 	public void setClassToOpenOnLogin(String classToOpen) {
 		classToOpenOnLogin = classToOpen;
+	}
+	
+	public void setToForwardOnLogin(ICPage page) {
+		loggedOnPage = page;
 	}
 }
