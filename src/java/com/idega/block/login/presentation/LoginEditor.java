@@ -105,7 +105,7 @@ public class LoginEditor extends PresentationObjectContainer {
 		//      eUser = LoginBusiness.getUser(iwc);
 		/** Gimmi 04.11.2002 */
 		if (sUserId == null) {
-			eUser = LoginBusinessBean.getUser(iwc);
+			eUser = iwc.getCurrentUser();
 		}
 		else {
 			try {

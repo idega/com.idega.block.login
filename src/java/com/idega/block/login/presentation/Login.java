@@ -16,6 +16,7 @@ import com.idega.block.login.business.LoginCookieListener;
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
+import com.idega.core.accesscontrol.business.LoginState;
 import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.core.accesscontrol.data.LoginInfoHome;
 import com.idega.core.accesscontrol.data.LoginTable;
@@ -193,39 +194,39 @@ public class Login extends Block {
 				tryAgainImage = iwrb.getLocalizedImageButton("tryagain_text", "Try again");
 		userText = iwrb.getLocalizedString("user", "User");
 		passwordText = iwrb.getLocalizedString("password", "Password");
-		int state = internalGetState(iwc);
-		switch (state) {
-			case LoginBusinessBean.STATE_LOGGED_ON:
-				isLoggedOn(iwc);
-				break;
-			case LoginBusinessBean.STATE_LOGGED_OUT:
+		LoginState state = internalGetState(iwc);
+	
+		if(state.equals(LoginState.LoggedOn)){
+			isLoggedOn(iwc);
+		}
+		else if(state.equals(LoginState.LoggedOut)){
+			startState(iwc);
+		}
+		else if(state.equals(LoginState.Failed)){
+			loginFailed(iwc, iwrb.getLocalizedString("login_failed", "Login failed"));
+		}
+		else if(state.equals(LoginState.NoUser)){
+			loginFailed(iwc, iwrb.getLocalizedString("login_no_user", "Invalid user"));
+		}
+		else if(state.equals(LoginState.WrongPassword)){
+			loginFailed(iwc, iwrb.getLocalizedString("login_wrong", "Invalid password"));
+		}
+		else if(state.equals(LoginState.Expired)){
+			loginFailed(iwc, iwrb.getLocalizedString("login_expired", "Login expired"));
+		}
+		else if(state.equals(LoginState.FailedDisabledNextTime)){
+			loginFailed(iwc, iwrb.getLocalizedString("login_wrong_disabled_next_time", "Invalid password, access closed next time login fails"));
+			if (hintMessage == null) {
+				handleHint(iwc);
+			}
+		}
+		else {
+			if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(iwc.getMarkupLanguage())) {
+				startStateWML(iwc);
+			} else {
 				startState(iwc);
-				break;
-			case LoginBusinessBean.STATE_LOGIN_FAILED:
-				loginFailed(iwc, iwrb.getLocalizedString("login_failed", "Login failed"));
-				break;
-			case LoginBusinessBean.STATE_NO_USER:
-				loginFailed(iwc, iwrb.getLocalizedString("login_no_user", "Invalid user"));
-				break;
-			case LoginBusinessBean.STATE_WRONG_PASSW:
-				loginFailed(iwc, iwrb.getLocalizedString("login_wrong", "Invalid password"));
-				break;
-			case LoginBusinessBean.STATE_LOGIN_EXPIRED:
-				loginFailed(iwc, iwrb.getLocalizedString("login_expired", "Login expired"));
-				break;
-			case LoginBusinessBean.STATE_LOGIN_FAILED_DISABLED_NEXT_TIME:
-				loginFailed(iwc, iwrb.getLocalizedString("login_wrong_disabled_next_time", "Invalid password, access closed next time login fails"));
-				if (hintMessage == null) {
-					handleHint(iwc);
-				}
-				break;
-			default:
-				if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(iwc.getMarkupLanguage())) {
-					startStateWML(iwc);
-				} else {
-					startState(iwc);
-				}
-				break;
+			}
+			
 		}
 
 		add(getMainForm());
@@ -407,7 +408,7 @@ public class Login extends Block {
 	 * Admin(); }
 	 */
 	public static User getUser(IWContext iwc) {
-		return LoginBusinessBean.getUser(iwc);
+		return iwc.getCurrentUser();
 	}
 
 	protected void startState(IWContext iwc) {
@@ -1021,7 +1022,7 @@ public class Login extends Block {
 		getMainForm().add(loginTable);
 	}
 
-	public int internalGetState(IWContext iwc) {
+	public LoginState internalGetState(IWContext iwc) {
 		return LoginBusinessBean.internalGetState(iwc);
 	}
 
