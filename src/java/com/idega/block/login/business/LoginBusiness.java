@@ -90,13 +90,14 @@ public class LoginBusiness implements IWEventListener{
 
                                 boolean canLogin = false;
 				if ((iwc.getParameter("login") != null) && (iwc.getParameter("password") != null)) {
-					canLogin = verifyPasswordAndLogin(iwc, iwc.getParameter("login"),iwc.getParameter("password"));
+                                        canLogin = verifyPasswordAndLogin(iwc, iwc.getParameter("login"),iwc.getParameter("password"));
 					if (canLogin) {
-						isLoggedOn(iwc);
-                                                internalSetState(iwc,"loggedon");
+                                          isLoggedOn(iwc);
+                                          internalSetState(iwc,"loggedon");
 					}
 					else {
-                                                internalSetState(iwc,"loginfailed");
+                                          logOut(iwc);
+                                          internalSetState(iwc,"loginfailed");
 					}
 				}
 			}
@@ -111,14 +112,20 @@ public class LoginBusiness implements IWEventListener{
 
       }
       catch(Exception ex){
-          ex.printStackTrace(System.err);
+        try {
+          logOut(iwc);
+        }
+        catch (Exception e) {
+          e.printStackTrace();
+        }
+        ex.printStackTrace(System.err);
           //throw (IdegaWebException)ex.fillInStackTrace();
       }
 
   }
 
   public boolean isAdmin(IWContext iwc)throws SQLException{
-    return AccessControl.isAdmin(iwc);
+    return iwc.getAccessControler().isAdmin(iwc);
   }
 
   public static void setLoginAttribute(String key, Object value, IWContext iwc) throws NotLoggedOnException{
@@ -211,9 +218,10 @@ public class LoginBusiness implements IWEventListener{
     if(groups!=null){
       LoginBusiness.setPermissionGroups(iwc,groups);
     }
-
-    LoginBusiness.setUserRepresentativeGroup(iwc,new UserGroupRepresentative(user.getGroupID()));
-
+    int userGroupId = user.getGroupID();
+    if(userGroupId != -1){
+      LoginBusiness.setUserRepresentativeGroup(iwc,new UserGroupRepresentative(userGroupId));
+    }
     if(user.getPrimaryGroupID() != -1){
       GenericGroup primaryGroup = new GenericGroup(user.getPrimaryGroupID());
       LoginBusiness.setPrimaryGroup(iwc,primaryGroup);

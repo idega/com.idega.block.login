@@ -110,25 +110,25 @@ protected IWBundle iwb;
   }
 
   public static boolean isAdmin(IWContext iwc)throws Exception{
-    return AccessControl.isAdmin(iwc);
-	}
+    return iwc.getAccessControler().isAdmin(iwc);
+  }
 
-	public static User getUser(IWContext iwc){
-		return LoginBusiness.getUser(iwc);
-	}
+  public static User getUser(IWContext iwc){
+  return LoginBusiness.getUser(iwc);
+  }
 
-	private void startState(){
-		Table loginTable = new Table(1,2);
-			loginTable.setAlignment(loginAlignment);
-			loginTable.setBorder(0);
-			loginTable.setWidth(loginWidth);
-			loginTable.setHeight(loginHeight);
-			if (!(color.equals(""))) {
-			  loginTable.setColor(color);
-			}
-			loginTable.setCellpadding(0);
-			loginTable.setCellspacing(0);
-			loginTable.setBackgroundImage(new Image(backgroundImageUrl));
+  private void startState(){
+  Table loginTable = new Table(1,2);
+      loginTable.setAlignment(loginAlignment);
+      loginTable.setBorder(0);
+      loginTable.setWidth(loginWidth);
+      loginTable.setHeight(loginHeight);
+      if (!(color.equals(""))) {
+        loginTable.setColor(color);
+      }
+      loginTable.setCellpadding(0);
+      loginTable.setCellspacing(0);
+      loginTable.setBackgroundImage(new Image(backgroundImageUrl));
 
     HelpButton helpImage = new HelpButton(iwrb.getLocalizedString("help_headline","Web Access"),iwrb.getLocalizedString("help",""),iwrb.getImage("help_image.gif").getURL());
 
