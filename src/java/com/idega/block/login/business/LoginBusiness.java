@@ -131,7 +131,7 @@ public class LoginBusiness implements IWEventListener
 		internalSetState(iwc, "loggedon");
 	}
 
-	 protected static boolean isLogOnAction(IWContext iwc){
+	 public static boolean isLogOnAction(IWContext iwc){
 	  	return "login".equals(getControlActionValue(iwc));
 	  }
 

@@ -24,6 +24,7 @@ import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.user.Converter;
 import com.idega.user.data.Group;
 /**
  * Title:        Login - The standard login block in idegaWeb
@@ -363,6 +364,16 @@ public class Login extends Block
 		if (this.loggedOffPageId != -1)
 			myForm.setPageToSubmitTo(loggedOffPageId);
 		User user = (User) getUser(iwc);
+		
+		if ( LoginBusiness.isLogOnAction(iwc) ) {
+			com.idega.user.data.User newUser = Converter.convertToNewUser(user);
+			com.idega.user.data.Group newGroup = newUser.getPrimaryGroup();
+			if ( newUser.getHomePageID() != -1 )
+				iwc.forwardToIBPage(this.getParentPage(), newUser.getHomePage());
+			if ( newGroup.getHomePageID() != -1 )
+				iwc.forwardToIBPage(this.getParentPage(), newGroup.getHomePage());
+		}
+		
 		if (loggedOnLink != null)
 		{
 			if (userTextSize > -1)
