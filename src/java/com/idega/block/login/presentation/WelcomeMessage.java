@@ -27,10 +27,10 @@ public class WelcomeMessage extends Text {
 	}
 	
 	public void main(IWContext iwc) {
-		User newUser = iwc.getCurrentUser();
 		
-		if(newUser!=null){
+		if(iwc.isLoggedOn()){
 			try {
+				User newUser = iwc.getCurrentUser();
 				IWTimestamp stamp = new IWTimestamp();
 				String welcomeString = newUser.getName();
 				if (stamp.getHour() < 12)

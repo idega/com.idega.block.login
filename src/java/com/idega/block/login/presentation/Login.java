@@ -148,12 +148,12 @@ public class Login extends Block {
 			}
 		}
 
-		myForm.setEventListener(loginHandlerClass);
+		getMainForm().setEventListener(loginHandlerClass);
 		if (allowCookieLogin) {
 			iwc.getIWMainApplication().addApplicationEventListener(LoginCookieListener.class);
 		}
 		if (this.sendToHTTPS) {
-			myForm.setToSendToHTTPS();
+			getMainForm().setToSendToHTTPS();
 		}
 		if (loginImage == null) //loginImage = iwrb.getImage("login.gif");
 			loginImage = iwrb.getLocalizedImageButton("login_text", "Login");
@@ -198,7 +198,7 @@ public class Login extends Block {
 				break;
 		}
 
-		add(myForm);
+		add(getMainForm());
 		if(hintMessage!=null) {
 			add(hintMessage);
 		}
@@ -345,7 +345,7 @@ public class Login extends Block {
 
 	private void startState(IWContext iwc) {
 		if (_logOnPage > 0) {
-			myForm.setPageToSubmitTo(_logOnPage);
+			getMainForm().setPageToSubmitTo(_logOnPage);
 		}
 		/*if (_redirectPage > 0) {
 			//System.err.println("adding hidden redirect parameter");
@@ -529,7 +529,7 @@ public class Login extends Block {
 					}
 					break;
 				default :
-					link.setToFormSubmit(myForm);
+					link.setToFormSubmit(getMainForm());
 			}
 			if (_iconImage != null) {
 				submitTable.add(_iconImage, column++, 1);
@@ -612,7 +612,7 @@ public class Login extends Block {
 		}
 		
 		submitTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, "login"));
-		myForm.add(loginTable);
+		getMainForm().add(loginTable);
 	}
 
 
@@ -632,7 +632,7 @@ public class Login extends Block {
 	private void isLoggedOn(IWContext iwc) throws Exception {
 
 		if (this.loggedOffPageId != -1){
-			myForm.setPageToSubmitTo(loggedOffPageId);
+			getMainForm().setPageToSubmitTo(loggedOffPageId);
 		}
 		
 		User user = (User)getUser(iwc);
@@ -724,7 +724,7 @@ public class Login extends Block {
 			loginTable.setCellpadding(0);
 			int column = 1;
 			Link link = this.getStyleLink(iwrb.getLocalizedString("logout_text", "Logoff"), _linkStyleClass);
-			link.setToFormSubmit(myForm);
+			link.setToFormSubmit(getMainForm());
 			if (_iconImage != null) {
 				submitTable.add(_iconImage, column++, 1);
 				submitTable.setWidth(column++, 1, String.valueOf(_spaceBetween));
@@ -744,9 +744,9 @@ public class Login extends Block {
 			loginTable.add(submitTable, 2, 1);
 		}
 		if (onlyLogoutButton) {
-			myForm.add(submitTable);
+			getMainForm().add(submitTable);
 		} else {
-			myForm.add(loginTable);
+			getMainForm().add(loginTable);
 		}
 		if (LoginBusinessBean.isLogOnAction(iwc)) {
 			LoginInfo loginInfo = LoginDBHandler.getLoginInfo((LoginDBHandler.findUserLogin(user.getID())).getID());
@@ -756,7 +756,7 @@ public class Login extends Block {
 				window.setMessage(iwrb.getLocalizedString("change_password", "You need to change your password"));
 				window.setToChangeNextTime();
 				s.addMethod("wop", window.getCallingScriptString(iwc));
-				myForm.add(s);
+				getMainForm().add(s);
 			}
 		}
 	}
@@ -825,7 +825,7 @@ public class Login extends Block {
 				loginTable.setCellpadding(0);
 				int column = 1;
 				Link link = this.getStyleLink(iwrb.getLocalizedString("tryagain_text", "Try again"), _linkStyleClass);
-				link.setToFormSubmit(myForm);
+				link.setToFormSubmit(getMainForm());
 				if (_iconImage != null) {
 					submitTable.add(_iconImage, column++, 1);
 					submitTable.setWidth(column++, 1, String.valueOf(_spaceBetween));
@@ -844,7 +844,7 @@ public class Login extends Block {
 					loginTable.setWidth(column++, 1, String.valueOf(_spaceBetween * 2));
 				loginTable.add(submitTable, column, 1);
 			}
-			myForm.add(loginTable);
+			getMainForm().add(loginTable);
 		}
 	}
 	private void isNotSignedOn(String what) {
@@ -902,7 +902,7 @@ public class Login extends Block {
 			loginTable.add(inputTable, 1, 1);
 			loginTable.add(submitTable, 2, 1);
 		}
-		myForm.add(loginTable);
+		getMainForm().add(loginTable);
 	}
 	public int internalGetState(IWContext iwc) {
 		return LoginBusinessBean.internalGetState(iwc);
@@ -916,9 +916,9 @@ public class Login extends Block {
 	protected void setDefaultValues() {
 		submitButtonAlignment = "center";
 		LAYOUT = LAYOUT_VERTICAL;
-		myForm = new Form();
+		//setMainForm(new Form());
 		//myForm.setEventListener(loginHandlerClass);
-		myForm.setMethod("post");
+		//getMainForm().setMethod("post");
 		//myForm.maintainAllParameters();
 	}
 	/**
@@ -1075,7 +1075,7 @@ public class Login extends Block {
 		try {
 			obj = (Login)super.clone();
 			if (this.myForm != null) {
-				obj.myForm = (Form)this.myForm.clone();
+				obj.setMainForm((Form)this.myForm.clone());
 			}
 			if (this.loginImage != null) {
 				obj.loginImage = (Image)this.loginImage.clone();
@@ -1106,8 +1106,8 @@ public class Login extends Block {
 	 * Set if the form should automatically send over to a corresponding HTTPS address
 	 **/
 	public void setToSendToHTTPS(boolean doSendToHTTPS) {
-		if (myForm != null) {
-			myForm.setToSendToHTTPS(doSendToHTTPS);
+		if (getMainForm() != null) {
+			getMainForm().setToSendToHTTPS(doSendToHTTPS);
 		}
 		sendToHTTPS = doSendToHTTPS;
 	}
@@ -1183,6 +1183,22 @@ public class Login extends Block {
 	
 	private UserBusiness getUserBusiness(IWContext iwc) throws RemoteException{
 		return (UserBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(),UserBusiness.class);
+	}
+	
+	public void empty(){
+		super.empty();
+		this.myForm=null;
+	}
+
+	protected void setMainForm(Form myForm) {
+		this.myForm = myForm;
+	}
+
+	protected Form getMainForm() {
+		if(myForm==null){
+			myForm=new Form();
+		}
+		return myForm;
 	}
 
 }
