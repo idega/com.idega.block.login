@@ -31,8 +31,8 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.Window;
+import com.idega.presentation.util.TextFormat;
 import com.idega.util.SendMail;
-import com.idega.util.text.TextFormat;
 
 
 public class Forgot extends Block{
