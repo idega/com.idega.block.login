@@ -129,7 +129,10 @@ public class LoginBusiness implements IWEventListener{
             if ( Encrypter.verifyOneWayEncrypted(login_table[i].getUserPassword(), password)) {
               User user = new User(login_table[i].getUserId());
               modinfo.getSession().setAttribute(UserAttributeParameter, user);
-              modinfo.setSessionAttribute(PermissionGroupParameter, AccessControl.getPermissionGroups(user));
+              PermissionGroup[] groups = AccessControl.getPermissionGroups(user);
+              if(groups!=null){
+                modinfo.setSessionAttribute(PermissionGroupParameter,groups);
+              }
               returner = true;
             }else{
               System.err.println(login_table[i].getUserPassword()+" != "+ Encrypter.encryptOneWay(password));
