@@ -526,4 +526,12 @@ protected IWBundle iwb;
     submitButtonAlignment = alignment;
   }
 
+  public void setLoginButton(Image loginImage) {
+    this.loginImage=loginImage;
+  }
+
+  public void setLogoutButton(Image logoutImage) {
+    this.logoutImage=logoutImage;
+  }
+
 }
