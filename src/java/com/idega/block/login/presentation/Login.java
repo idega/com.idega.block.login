@@ -755,7 +755,7 @@ public class Login extends Block {
 			if (newGroup != null && newGroup.getHomePageID() != -1) iwc.forwardToIBPage(this.getParentPage(), newGroup.getHomePage());
 		}
 		
-		if (loggedOnPage != null) {
+		if (loggedOnPage != null && LoginBusinessBean.isLogOnAction(iwc)) {
 			iwc.forwardToIBPage(getParentPage(), loggedOnPage);
 		}
 
