@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.idega.block.login.business.LoginCookieListener;
+import com.idega.servlet.filter.IWAuthenticator;
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
@@ -184,7 +184,8 @@ public class Login extends Block {
 
 		getMainForm().setEventListener(loginHandlerClass);
 		if (allowCookieLogin) {
-			iwc.getIWMainApplication().addApplicationEventListener(LoginCookieListener.class);
+			//LoginCookieListener is swapped out for IWAuthenticator
+			//iwc.getIWMainApplication().addApplicationEventListener(LoginCookieListener.class);
 		}
 		if (this.sendToHTTPS) {
 			getMainForm().setToSendToHTTPS();
@@ -667,8 +668,9 @@ public class Login extends Block {
 							if (register) submitTable.add(registerLink, 1, row);
 							if (forgot) submitTable.add(forgotLink, 2, row);
 							if (allowCookieLogin) {
-								CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
-								Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
+								//CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
+								CheckBox cookieCheck = new CheckBox(IWAuthenticator.PARAMETER_ALLOWS_COOKIE_LOGIN);
+								Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Remember me"));
 								cookieText.setFontStyle(this.textStyles);
 								row++;
 								submitTable.mergeCells(1, row, 2, row);
@@ -689,8 +691,9 @@ public class Login extends Block {
 								row++;
 							}
 							if (allowCookieLogin) {
-								CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
-								Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
+								//CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
+								CheckBox cookieCheck = new CheckBox(IWAuthenticator.PARAMETER_ALLOWS_COOKIE_LOGIN);
+								Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Remember me"));
 								cookieText.setFontStyle(this.textStyles);
 								submitTable.mergeCells(1, row, 2, row);
 								submitTable.add(cookieCheck, 1, row);
@@ -703,8 +706,9 @@ public class Login extends Block {
 							if (register) submitTable.add(registerLink, col++, 1);
 							if (forgot) submitTable.add(forgotLink, col++, 1);
 							if (allowCookieLogin) {
-								CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
-								Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
+								//CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
+								CheckBox cookieCheck = new CheckBox(IWAuthenticator.PARAMETER_ALLOWS_COOKIE_LOGIN);
+								Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Remember me"));
 								cookieText.setFontStyle(this.textStyles);
 								submitTable.add(cookieCheck, col, 1);
 								submitTable.add(cookieText, col++, 1);
