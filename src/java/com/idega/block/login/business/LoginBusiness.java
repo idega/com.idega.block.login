@@ -246,9 +246,7 @@ public class LoginBusiness implements IWEventListener{
 
     if(login_table != null && login_table.length > 0){
       if ( Encrypter.verifyOneWayEncrypted(login_table[0].getUserPassword(), password)) {
-        if ( login_table[0].getUserPassword().equals(password) ) {
-          returner = logIn(iwc,login_table[0].getUserId(),login);
-        }
+        returner = logIn(iwc,login_table[0].getUserId(),login);
       }
     }
 
@@ -261,14 +259,13 @@ public class LoginBusiness implements IWEventListener{
 
     if(login_table != null && login_table.length > 0){
       if ( Encrypter.verifyOneWayEncrypted(login_table[0].getUserPassword(), password)) {
-        if ( login_table[0].getUserPassword().equals(password) ) {
-          returner = true;
-        }
+        returner = true;
       }
     }
 
     return returner;
   }
+
 
 
   private void logOut(IWContext iwc) throws Exception{
