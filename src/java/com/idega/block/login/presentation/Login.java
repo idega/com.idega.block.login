@@ -7,12 +7,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.idega.block.login.business.LoginCookieListener;
+import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.data.IBPage;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -39,8 +41,7 @@ import com.idega.user.data.Group;
   *@author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>,<a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.1
  */
-public class Login extends Block
-{
+public class Login extends Block {
 	private Link loggedOnLink;
 	private String backgroundImageUrl;
 	private String newUserImageUrl = "";
@@ -57,8 +58,7 @@ public class Login extends Block
 	private int inputLength = 10;
 	private int loggedOffPageId = -1;
 	private String styleAttribute = "font-family: Verdana; font-size: 8pt; border: 1 solid #000000";
-	private String textStyles =
-		"font-family: Arial,Helvetica,sans-serif; font-size: 8pt; font-weight: bold; color: #000000; text-decoration: none;";
+	private String textStyles = "font-family: Arial,Helvetica,sans-serif; font-size: 8pt; font-weight: bold; color: #000000; text-decoration: none;";
 	private String submitButtonAlignment;
 	private Form myForm;
 	private Image loginImage;
@@ -78,13 +78,14 @@ public class Login extends Block
 	public static final int LAYOUT_HORIZONTAL = 2;
 	public static final int LAYOUT_STACKED = 3;
 	public static final int SINGLE_LINE = 4;
+	public static final int LAYOUT_POPUP = 5;
 	private int LAYOUT = -1;
 	protected IWResourceBundle iwrb;
 	protected IWBundle iwb;
 	private String loginHandlerClass = LoginBusinessBean.class.getName();
-	protected boolean sendToHTTPS=false;
-	protected boolean sendUserToHomePage=false;
-  private boolean allowCookieLogin = false;
+	protected boolean sendToHTTPS = false;
+	protected boolean sendUserToHomePage = false;
+	private boolean allowCookieLogin = false;
 
 	private int _spaceBetween = 4;
 
@@ -93,13 +94,14 @@ public class Login extends Block
 	private final String _linkStyleClass = "Link";
 	private Image _iconImage;
 
-	public Login()
-	{
+	private int _popupPageID = -1;
+	private final static String FROM_PAGE_PARAMETER = "log_from_page";
+
+	public Login() {
 		super();
 		setDefaultValues();
 	}
-	public void main(IWContext iwc) throws Exception
-	{
+	public void main(IWContext iwc) throws Exception {
 		if (this._buttonAsLink) {
 			if (getParentPage() != null) {
 				Script script = null;
@@ -113,21 +115,22 @@ public class Login extends Block
 				_enterSubmit = true;
 			}
 		}
-		
+
 		myForm.setEventListener(loginHandlerClass);
-    if(allowCookieLogin){
-      iwc.getApplication().addApplicationEventListener(LoginCookieListener.class);
-    }
-		if(this.sendToHTTPS){
+		if (allowCookieLogin) {
+			iwc.getApplication().addApplicationEventListener(LoginCookieListener.class);
+		}
+		if (this.sendToHTTPS) {
 			myForm.setToSendToHTTPS();
 		}
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
-		if (loginImage == null)			//loginImage = iwrb.getImage("login.gif");
+		if (loginImage == null) //loginImage = iwrb.getImage("login.gif");
 			loginImage = iwrb.getLocalizedImageButton("login_text", "Login");
-		if (logoutImage == null)			//logoutImage = iwrb.getImage("logout.gif");
+		if (logoutImage == null) //logoutImage = iwrb.getImage("logout.gif");
 			logoutImage = iwrb.getLocalizedImageButton("logout_text", "Log out");
-		if (tryAgainImage == null)			// tryAgainImage = iwrb.getImage("try_again.gif");
+		if (tryAgainImage == null)
+			// tryAgainImage = iwrb.getImage("try_again.gif");
 			tryAgainImage = iwrb.getLocalizedImageButton("tryagain_text", "Try again");
 		userText = iwrb.getLocalizedString("user", "User");
 		passwordText = iwrb.getLocalizedString("password", "Password");
@@ -135,27 +138,27 @@ public class Login extends Block
 		switch (state) {
 			case LoginBusinessBean.STATE_LOGGED_ON :
 				isLoggedOn(iwc);
-			break;
+				break;
 			case LoginBusinessBean.STATE_LOGGED_OUT :
-				startState();
-			break;
+				startState(iwc);
+				break;
 			case LoginBusinessBean.STATE_LOGIN_FAILED :
-				loginFailed(iwrb.getLocalizedString("login_failed","Login failed"));
-			break;
+				loginFailed(iwrb.getLocalizedString("login_failed", "Login failed"));
+				break;
 			case LoginBusinessBean.STATE_NO_USER :
-				loginFailed(iwrb.getLocalizedString("login_no_user","Invalid user"));
-			break;
+				loginFailed(iwrb.getLocalizedString("login_no_user", "Invalid user"));
+				break;
 			case LoginBusinessBean.STATE_WRONG_PASSW :
-				loginFailed(iwrb.getLocalizedString("login_wrong","Invalid password"));
-			break;
+				loginFailed(iwrb.getLocalizedString("login_wrong", "Invalid password"));
+				break;
 			case LoginBusinessBean.STATE_LOGIN_EXPIRED :
-				loginFailed(iwrb.getLocalizedString("login_expired","Login expired"));
-			break;
+				loginFailed(iwrb.getLocalizedString("login_expired", "Login expired"));
+				break;
 			default :
-				startState();
-			break;
+				startState(iwc);
+				break;
 		}
-		
+
 		add(myForm);
 	}
 	/*
@@ -163,18 +166,15 @@ public class Login extends Block
 	    return iwc.isAdmin();
 	  }
 	*/
-	public static User getUser(IWContext iwc)
-	{
+	public static User getUser(IWContext iwc) {
 		return LoginBusinessBean.getUser(iwc);
 	}
-	private void startState()
-	{
-		if (_logOnPage > 0)
-		{
+
+	private void startState(IWContext iwc) {
+		if (_logOnPage > 0) {
 			myForm.setPageToSubmitTo(_logOnPage);
 		}
-		if (_redirectPage > 0)
-		{
+		if (_redirectPage > 0) {
 			//System.err.println("adding hidden redirect parameter");
 			myForm.add(new HiddenInput(LoginBusinessBean.LoginRedirectPageParameter, String.valueOf(_redirectPage)));
 		}
@@ -185,8 +185,7 @@ public class Login extends Block
 			loginTable.setWidth(loginWidth);
 		if (loginHeight != null)
 			loginTable.setHeight(loginHeight);
-		if (!(color.equals("")))
-		{
+		if (!(color.equals(""))) {
 			loginTable.setColor(color);
 		}
 		loginTable.setCellpadding(0);
@@ -201,22 +200,18 @@ public class Login extends Block
 				iwrb.getLocalizedString("help", ""),
 				iwrb.getImage("help_image.gif").getURL());*/
 		Text loginTexti = new Text(userText);
-		if (userTextSize != -1)
-		{
+		if (userTextSize != -1) {
 			loginTexti.setFontSize(userTextSize);
 		}
-		if (userTextColor != null)
-		{
+		if (userTextColor != null) {
 			loginTexti.setFontColor(userTextColor);
 		}
 		loginTexti.setFontStyle(textStyles);
 		Text passwordTexti = new Text(passwordText);
-		if (passwordTextSize != -1)
-		{
+		if (passwordTextSize != -1) {
 			passwordTexti.setFontSize(passwordTextSize);
 		}
-		if (passwordTextColor != null)
-		{
+		if (passwordTextColor != null) {
 			passwordTexti.setFontColor(passwordTextColor);
 		}
 		passwordTexti.setFontStyle(textStyles);
@@ -231,13 +226,11 @@ public class Login extends Block
 		passw.setSize(inputLength);
 		if (_enterSubmit)
 			passw.setOnKeyPress("return enterSubmit(this,event)");
-		switch (LAYOUT)
-		{
+		switch (LAYOUT) {
 			case LAYOUT_HORIZONTAL :
 				inputTable = new Table(2, 2);
 				inputTable.setBorder(0);
-				if (!(color.equals("")))
-				{
+				if (!(color.equals(""))) {
 					inputTable.setColor(color);
 				}
 				inputTable.setCellpadding(1);
@@ -253,8 +246,7 @@ public class Login extends Block
 			case LAYOUT_VERTICAL :
 				inputTable = new Table(3, 3);
 				inputTable.setBorder(0);
-				if (!(color.equals("")))
-				{
+				if (!(color.equals(""))) {
 					inputTable.setColor(color);
 				}
 				inputTable.setCellpadding(1);
@@ -279,8 +271,7 @@ public class Login extends Block
 				inputTable.setAlignment("center");
 				inputTable.addText("", 1, 3);
 				inputTable.setHeight(3, "5");
-				if (!(color.equals("")))
-				{
+				if (!(color.equals(""))) {
 					inputTable.setColor(color);
 				}
 				inputTable.setAlignment(1, 1, "left");
@@ -298,15 +289,14 @@ public class Login extends Block
 				inputTable.setCellpadding(0);
 				inputTable.setCellspacing(0);
 				inputTable.setAlignment("center");
-				if (!(color.equals("")))
-				{
+				if (!(color.equals(""))) {
 					inputTable.setColor(color);
 				}
 				inputTable.setAlignment(1, 1, "right");
 				inputTable.setAlignment(3, 1, "right");
-				inputTable.setWidth(2,1,String.valueOf(_spaceBetween));
-				inputTable.setWidth(4,1,String.valueOf(_spaceBetween * 2));
-				inputTable.setWidth(6,1,String.valueOf(_spaceBetween));
+				inputTable.setWidth(2, 1, String.valueOf(_spaceBetween));
+				inputTable.setWidth(4, 1, String.valueOf(_spaceBetween * 2));
+				inputTable.setWidth(6, 1, String.valueOf(_spaceBetween));
 				inputTable.add(loginTexti, 1, 1);
 				inputTable.add(login, 3, 1);
 				inputTable.add(passwordTexti, 5, 1);
@@ -314,23 +304,27 @@ public class Login extends Block
 				loginTable.add(inputTable, xpos, ypos);
 				xpos = 2;
 				break;
+			case LAYOUT_POPUP :
+				_buttonAsLink = true;  
+				inputTable = new Table(1, 1);
+				inputTable.setBorder(0);
+				inputTable.setCellpadding(0);
+				inputTable.setCellspacing(0);
+				//inputTable.add(this.getLoginLinkForPopup(loginTexti));
+				break;
 		}
 		Table submitTable = new Table();
 		//if ( helpButton ) {
 		//  submitTable = new Table(2,1);
 		//}
 		submitTable.setBorder(0);
-		if (!(color.equals("")))
-		{
+		if (!(color.equals(""))) {
 			submitTable.setColor(color);
 		}
 		submitTable.setRowVerticalAlignment(1, "middle");
-		if (!helpButton)
-		{
+		if (!helpButton) {
 			submitTable.setAlignment(1, 1, submitButtonAlignment);
-		}
-		else
-		{
+		} else {
 			submitTable.setAlignment(2, 1, "right");
 		}
 		submitTable.setWidth("100%");
@@ -339,33 +333,45 @@ public class Login extends Block
 			submitTable.setCellspacing(0);
 			int column = 1;
 			Link link = this.getStyleLink(iwrb.getLocalizedString("login_text", "Login"), _linkStyleClass);
-			link.setToFormSubmit(myForm);
+			switch (LAYOUT) {
+				case LAYOUT_POPUP :
+					if (_popupPageID != -1) {
+						//PopUp Link parameters
+						link.setPage(_popupPageID);
+						link.setParameter(FROM_PAGE_PARAMETER,String.valueOf(iwc.getCurrentIBPageID()));
+						
+					} else {
+						try {
+							throw new Exception(this.getClassName()+": No login page is set");
+						} catch (Exception e) {
+							System.err.println(e.getMessage());
+							e.printStackTrace();
+						}
+					}
+					break;
+				default :
+					link.setToFormSubmit(myForm);
+			}
 			if (_iconImage != null) {
-				submitTable.add(_iconImage,column++,1);
-				submitTable.setWidth(column++,1,String.valueOf(_spaceBetween));
+				submitTable.add(_iconImage, column++, 1);
+				submitTable.setWidth(column++, 1, String.valueOf(_spaceBetween));
 			}
-			submitTable.add(link,column,1);
-			loginTable.setWidth(xpos++,ypos,String.valueOf(_spaceBetween * 2));
+			submitTable.add(link, column, 1);
+			loginTable.setWidth(xpos++, ypos, String.valueOf(_spaceBetween * 2));
 			loginTable.add(submitTable, xpos, ypos);
-		}
-		else {
+		} else {
 			SubmitButton button = new SubmitButton(loginImage, "tengja");
-			if (!helpButton)
-			{
+			if (!helpButton) {
 				submitTable.add(button, 1, 1);
-			}
-			else
-			{
+			} else {
 				submitTable.add(button, 2, 1);
 			}
-			if (register || forgot || allowCookieLogin)
-			{
+			if (register || forgot || allowCookieLogin) {
 				Link registerLink = getRegisterLink();
 				Link forgotLink = getForgotLink();
 				int row = 2;
 				int col = 1;
-				switch (LAYOUT)
-				{
+				switch (LAYOUT) {
 					case LAYOUT_HORIZONTAL :
 					case LAYOUT_VERTICAL :
 						row = 2;
@@ -373,37 +379,37 @@ public class Login extends Block
 							submitTable.add(registerLink, 1, row);
 						if (forgot)
 							submitTable.add(forgotLink, 2, row);
-	          if(allowCookieLogin){
-	            CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
-	            Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
-			        cookieText.setFontStyle(this.textStyles);
-	            row++;
-	            submitTable.mergeCells(1, row, 2, row);
-	            submitTable.add(cookieCheck,1,row);
-	            submitTable.add(cookieText,1,row);
-	          }
+						if (allowCookieLogin) {
+							CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
+							Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
+							cookieText.setFontStyle(this.textStyles);
+							row++;
+							submitTable.mergeCells(1, row, 2, row);
+							submitTable.add(cookieCheck, 1, row);
+							submitTable.add(cookieText, 1, row);
+						}
 						break;
 					case LAYOUT_STACKED :
 						row = 2;
-						if (register){
+						if (register) {
 							submitTable.mergeCells(1, row, 2, row);
 							submitTable.add(registerLink, 1, row);
 							row++;
 						}
-						if (forgot){
+						if (forgot) {
 							submitTable.mergeCells(1, row, 2, row);
 							submitTable.add(forgotLink, 1, row);
-	            row++;
+							row++;
 						}
-	          if(allowCookieLogin){
-	            CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
-	            Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
-			        cookieText.setFontStyle(this.textStyles);
-	            submitTable.mergeCells(1, row, 2, row);
-	            submitTable.add(cookieCheck,1,row);
-	            submitTable.add(cookieText,1,row);
-	            row++;
-	          }
+						if (allowCookieLogin) {
+							CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
+							Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
+							cookieText.setFontStyle(this.textStyles);
+							submitTable.mergeCells(1, row, 2, row);
+							submitTable.add(cookieCheck, 1, row);
+							submitTable.add(cookieText, 1, row);
+							row++;
+						}
 						break;
 					case SINGLE_LINE :
 						col = 3;
@@ -411,13 +417,13 @@ public class Login extends Block
 							submitTable.add(registerLink, col++, 1);
 						if (forgot)
 							submitTable.add(forgotLink, col++, 1);
-	          if(allowCookieLogin){
-	            CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
-	            Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
-			        cookieText.setFontStyle(this.textStyles);
-	            submitTable.add(cookieCheck,col,1);
-	            submitTable.add(cookieText,col++,1);
-	          }
+						if (allowCookieLogin) {
+							CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
+							Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
+							cookieText.setFontStyle(this.textStyles);
+							submitTable.add(cookieCheck, col, 1);
+							submitTable.add(cookieText, col++, 1);
+						}
 						break;
 				}
 			}
@@ -429,38 +435,35 @@ public class Login extends Block
 	}
 
 
-	private Link getRegisterLink()
-	{
+
+	private Link getRegisterLink() {
 		Link L = new Link(iwrb.getLocalizedString("register.register", "Nýskráning"));
 		L.setFontStyle(this.textStyles);
 		L.setWindowToOpen(RegisterWindow.class);
 		return L;
 	}
-	private Link getForgotLink()
-	{
+	private Link getForgotLink() {
 		Link L = new Link(iwrb.getLocalizedString("register.forgot", "Gleymt lykilorð"));
 		L.setFontStyle(this.textStyles);
 		L.setWindowToOpen(ForgotWindow.class);
 		return L;
 	}
-	private void isLoggedOn(IWContext iwc) throws Exception
-	{
-		
+	private void isLoggedOn(IWContext iwc) throws Exception {
+
 		if (this.loggedOffPageId != -1)
 			myForm.setPageToSubmitTo(loggedOffPageId);
-		User user = (User) getUser(iwc);
-		
-		if ( sendUserToHomePage && LoginBusinessBean.isLogOnAction(iwc) ) {
+		User user = (User)getUser(iwc);
+
+		if (sendUserToHomePage && LoginBusinessBean.isLogOnAction(iwc)) {
 			com.idega.user.data.User newUser = Converter.convertToNewUser(user);
 			com.idega.user.data.Group newGroup = newUser.getPrimaryGroup();
-			if ( newUser.getHomePageID() != -1 )
+			if (newUser.getHomePageID() != -1)
 				iwc.forwardToIBPage(this.getParentPage(), newUser.getHomePage());
-			if (newGroup != null && newGroup.getHomePageID() != -1 )
+			if (newGroup != null && newGroup.getHomePageID() != -1)
 				iwc.forwardToIBPage(this.getParentPage(), newGroup.getHomePage());
 		}
 
-		if (loggedOnLink != null)
-		{
+		if (loggedOnLink != null) {
 			if (userTextSize > -1)
 				loggedOnLink.setFontSize(userTextSize);
 			if (userTextColor != null && !userTextColor.equals(""))
@@ -469,12 +472,10 @@ public class Login extends Block
 			loggedOnLink.setFontStyle(textStyles);
 		}
 		Text userText = new Text();
-		if (userTextSize > -1)
-		{
+		if (userTextSize > -1) {
 			userText.setFontSize(userTextSize);
 		}
-		if (userTextColor != null && !(userTextColor.equals("")))
-		{
+		if (userTextColor != null && !(userTextColor.equals(""))) {
 			userText.setFontColor(userTextColor);
 		}
 		userText.setFontStyle(textStyles);
@@ -490,64 +491,50 @@ public class Login extends Block
 			loginTable.setHeight(loginHeight);
 		loginTable.setCellpadding(0);
 		loginTable.setCellspacing(0);
-		if (!(color.equals("")))
-		{
+		if (!(color.equals(""))) {
 			loginTable.setColor(color);
 		}
-		if (this.LAYOUT != this.SINGLE_LINE)
-		{
+		if (this.LAYOUT != this.SINGLE_LINE) {
 			loginTable.setHeight(1, "50%");
 			loginTable.setHeight(2, "50%");
 			loginTable.setVerticalAlignment(1, 1, "bottom");
 			loginTable.setVerticalAlignment(1, 2, "top");
-		}
-		else
-		{
+		} else {
 			loginTable.setWidth(1, 1, "100%");
 			loginTable.setCellpadding(3);
 			loginTable.setAlignment(1, 1, "right");
 		}
 		Table inputTable = new Table(1, 1);
-		if (!(color.equals("")))
-		{
+		if (!(color.equals(""))) {
 			inputTable.setColor(color);
 		}
 		inputTable.setBorder(0);
 		inputTable.setCellpadding(0);
 		inputTable.setCellspacing(0);
-		if (LAYOUT != SINGLE_LINE)
-		{
+		if (LAYOUT != SINGLE_LINE) {
 			inputTable.setAlignment(1, 1, "center");
 			inputTable.setVerticalAlignment(1, 1, "middle");
 			inputTable.setWidth("100%");
 		}
-		if (loggedOnLink != null)
-		{
+		if (loggedOnLink != null) {
 			inputTable.add(loggedOnLink);
-		}
-		else
-		{
+		} else {
 			inputTable.add(userText);
 		}
 		Table submitTable = new Table();
 		submitTable.setBorder(0);
-		if (!(color.equals("")))
-		{
+		if (!(color.equals(""))) {
 			submitTable.setColor(color);
 		}
-		if (LAYOUT != SINGLE_LINE)
-		{
+		if (LAYOUT != SINGLE_LINE) {
 			submitTable.setAlignment(1, 1, "center");
 			submitTable.setVerticalAlignment(1, 1, "middle");
 		}
-		if (onlyLogoutButton)
-		{
+		if (onlyLogoutButton) {
 			submitTable.setWidth(loginWidth);
 			submitTable.setHeight(loginHeight);
 			submitTable.setAlignment(loginAlignment);
-		}
-		else
-		{
+		} else {
 			submitTable.setWidth("100%");
 		}
 		if (_buttonAsLink) {
@@ -558,56 +545,46 @@ public class Login extends Block
 			Link link = this.getStyleLink(iwrb.getLocalizedString("logout_text", "Logoff"), _linkStyleClass);
 			link.setToFormSubmit(myForm);
 			if (_iconImage != null) {
-				submitTable.add(_iconImage,column++,1);
-				submitTable.setWidth(column++,1,String.valueOf(_spaceBetween));
+				submitTable.add(_iconImage, column++, 1);
+				submitTable.setWidth(column++, 1, String.valueOf(_spaceBetween));
 			}
-			submitTable.add(link,column,1);
-		}
-		else
+			submitTable.add(link, column, 1);
+		} else
 			submitTable.add(new SubmitButton(logoutImage, "utskraning"));
-			
+
 		submitTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, "logoff"));
 		if (loggedOffPageId > 0)
 			submitTable.add(new Parameter(getIBPageParameterName(), String.valueOf(loggedOffPageId)));
-		if (LAYOUT != SINGLE_LINE)
-		{
+		if (LAYOUT != SINGLE_LINE) {
 			loginTable.add(inputTable, 1, 1);
 			loginTable.add(submitTable, 1, 2);
-		}
-		else
-		{
+		} else {
 			loginTable.add(inputTable, 1, 1);
 			loginTable.add(submitTable, 2, 1);
 		}
-		if (onlyLogoutButton)
-		{
+		if (onlyLogoutButton) {
 			myForm.add(submitTable);
-		}
-		else
-		{
+		} else {
 			myForm.add(loginTable);
 		}
-		if(LoginBusinessBean.isLogOnAction(iwc)){
+		if (LoginBusinessBean.isLogOnAction(iwc)) {
 			LoginInfo loginInfo = LoginDBHandler.getLoginInfo((LoginDBHandler.findUserLogin(user.getID())).getID());
-			if(loginInfo.getAllowedToChange() && loginInfo.getChangeNextTime()){
+			if (loginInfo.getAllowedToChange() && loginInfo.getChangeNextTime()) {
 				Script s = new Script();
 				LoginEditorWindow window = new LoginEditorWindow();
-				window.setMessage(iwrb.getLocalizedString("change_password","You need to change your password"));
+				window.setMessage(iwrb.getLocalizedString("change_password", "You need to change your password"));
 				window.setToChangeNextTime();
-				s.addMethod("wop",window.getCallingScriptString(iwc));
+				s.addMethod("wop", window.getCallingScriptString(iwc));
 				myForm.add(s);
 			}
 		}
 	}
-	private void loginFailed(String message)
-	{
+	private void loginFailed(String message) {
 		Text mistokst = new Text(message);
-		if (userTextSize != -1)
-		{
+		if (userTextSize != -1) {
 			mistokst.setFontSize(userTextSize);
 		}
-		if (userTextColor != null)
-		{
+		if (userTextColor != null) {
 			mistokst.setFontColor(userTextColor);
 		}
 		mistokst.setFontStyle(textStyles);
@@ -622,33 +599,27 @@ public class Login extends Block
 			loginTable.setHeight(loginHeight);
 		loginTable.setCellpadding(0);
 		loginTable.setCellspacing(0);
-		if (!(color.equals("")))
-		{
+		if (!(color.equals(""))) {
 			loginTable.setColor(color);
 		}
-		if (this.LAYOUT != this.SINGLE_LINE)
-		{
+		if (this.LAYOUT != this.SINGLE_LINE) {
 			loginTable.setHeight(1, "50%");
 			loginTable.setHeight(2, "50%");
 			loginTable.setVerticalAlignment(1, 1, "bottom");
 			loginTable.setVerticalAlignment(1, 2, "top");
-		}
-		else
-		{
+		} else {
 			//loginTable.setWidth(1, 1, "100%");
 			loginTable.setCellpadding(3);
 			loginTable.setAlignment(1, 1, "right");
 		}
 		Table inputTable = new Table(1, 1);
 		inputTable.setBorder(0);
-		if (!(color.equals("")))
-		{
+		if (!(color.equals(""))) {
 			inputTable.setColor(color);
 		}
 		inputTable.setCellpadding(0);
 		inputTable.setCellspacing(0);
-		if (LAYOUT != SINGLE_LINE)
-		{
+		if (LAYOUT != SINGLE_LINE) {
 			inputTable.setAlignment(1, 1, "center");
 			inputTable.setVerticalAlignment(1, 1, "middle");
 			inputTable.setWidth("100%");
@@ -656,12 +627,10 @@ public class Login extends Block
 		inputTable.add(mistokst, 1, 1);
 		Table submitTable = new Table();
 		submitTable.setBorder(0);
-		if (!(color.equals("")))
-		{
+		if (!(color.equals(""))) {
 			submitTable.setColor(color);
 		}
-		if (LAYOUT != SINGLE_LINE)
-		{
+		if (LAYOUT != SINGLE_LINE) {
 			submitTable.setAlignment(1, 1, "center");
 			submitTable.setVerticalAlignment(1, 1, "middle");
 			submitTable.setWidth("100%");
@@ -674,42 +643,33 @@ public class Login extends Block
 			Link link = this.getStyleLink(iwrb.getLocalizedString("tryagain_text", "Try again"), _linkStyleClass);
 			link.setToFormSubmit(myForm);
 			if (_iconImage != null) {
-				submitTable.add(_iconImage,column++,1);
-				submitTable.setWidth(column++,1,String.valueOf(_spaceBetween));
+				submitTable.add(_iconImage, column++, 1);
+				submitTable.setWidth(column++, 1, String.valueOf(_spaceBetween));
 			}
-			submitTable.add(link,column,1);
-		}
-		else
+			submitTable.add(link, column, 1);
+		} else
 			submitTable.add(new SubmitButton(tryAgainImage, "tryAgain"));
 		submitTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, "tryagain"));
-		if (LAYOUT != SINGLE_LINE)
-		{
+		if (LAYOUT != SINGLE_LINE) {
 			loginTable.add(inputTable, 1, 1);
 			loginTable.add(submitTable, 1, 2);
-		}
-		else
-		{
+		} else {
 			int column = 1;
 			loginTable.add(inputTable, column++, 1);
 			if (_buttonAsLink)
-				loginTable.setWidth(column++,1,String.valueOf(_spaceBetween * 2));
+				loginTable.setWidth(column++, 1, String.valueOf(_spaceBetween * 2));
 			loginTable.add(submitTable, column, 1);
 		}
 		myForm.add(loginTable);
 	}
-	private void isNotSignedOn(String what)
-	{
+	private void isNotSignedOn(String what) {
 		Text textinn = new Text("");
 		textinn.setFontSize(1);
 		textinn.setBold();
-		if (what.equals("empty"))
-		{
+		if (what.equals("empty")) {
 			textinn.addToText(iwrb.getLocalizedString("write_ssn", "Type social-security number in user input"));
-		}
-		else if (what.equals("toBig"))
-		{
-			textinn.addToText(
-				iwrb.getLocalizedString("without_hyphen", "Social-security number must be written without a hyphen"));
+		} else if (what.equals("toBig")) {
+			textinn.addToText(iwrb.getLocalizedString("without_hyphen", "Social-security number must be written without a hyphen"));
 		}
 		textinn.setFontStyle(textStyles);
 		Table loginTable = new Table(1, 2);
@@ -721,67 +681,55 @@ public class Login extends Block
 		if (loginHeight != null)
 			loginTable.setHeight(loginHeight);
 		loginTable.setBorder(0);
-		if (!(color.equals("")))
-		{
+		if (!(color.equals(""))) {
 			loginTable.setColor(color);
 		}
 		loginTable.setCellpadding(0);
 		loginTable.setCellspacing(0);
 		loginTable.setColor(1, 2, "#FFFFFF");
 		Table inputTable = new Table(1, 1);
-		if (!(color.equals("")))
-		{
+		if (!(color.equals(""))) {
 			inputTable.setColor(color);
 		}
 		inputTable.setBorder(0);
 		inputTable.setCellpadding(0);
 		inputTable.setCellspacing(0);
-		if (LAYOUT != SINGLE_LINE)
-		{
+		if (LAYOUT != SINGLE_LINE) {
 			inputTable.setAlignment(1, 1, "center");
 			inputTable.setVerticalAlignment(1, 1, "middle");
 			inputTable.setWidth("100%");
 		}
 		inputTable.add(textinn, 1, 1);
 		Table submitTable = new Table(1, 1);
-		if (!(color.equals("")))
-		{
+		if (!(color.equals(""))) {
 			submitTable.setColor(color);
 		}
 		submitTable.setBorder(0);
-		if (LAYOUT != SINGLE_LINE)
-		{
+		if (LAYOUT != SINGLE_LINE) {
 			submitTable.setAlignment(1, 1, "center");
 			submitTable.setVerticalAlignment(1, 1, "middle");
 			submitTable.setWidth("100%");
 		}
 		submitTable.add(new SubmitButton(tryAgainImage), 1, 1);
-		if (LAYOUT != SINGLE_LINE)
-		{
+		if (LAYOUT != SINGLE_LINE) {
 			loginTable.add(inputTable, 1, 1);
 			loginTable.add(submitTable, 1, 2);
-		}
-		else
-		{
+		} else {
 			loginTable.add(inputTable, 1, 1);
 			loginTable.add(submitTable, 2, 1);
 		}
 		myForm.add(loginTable);
 	}
-	public int internalGetState(IWContext iwc)
-	{
+	public int internalGetState(IWContext iwc) {
 		return LoginBusinessBean.internalGetState(iwc);
 	}
-	public String getBundleIdentifier()
-	{
+	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
-	public void setLayout(int layout)
-	{
+	public void setLayout(int layout) {
 		LAYOUT = layout;
 	}
-	protected void setDefaultValues()
-	{
+	protected void setDefaultValues() {
 		submitButtonAlignment = "center";
 		LAYOUT = LAYOUT_VERTICAL;
 		myForm = new Form();
@@ -794,8 +742,7 @@ public class Login extends Block
 	 * This Class must implement com.idega.event.IWEventHandler.<br>
 	 * The default is LoginBusiness
 	 */
-	public void setLoginHandlerClass(String className)
-	{
+	public void setLoginHandlerClass(String className) {
 		this.loginHandlerClass = className;
 		/*if (myForm != null)
 		{
@@ -807,208 +754,157 @@ public class Login extends Block
 	 * This Class must implement com.idega.event.IWEventHandler.<br>
 	 * The default is LoginBusiness
 	 */
-	public void setLoginHandlerClass(Class handlerClass)
-	{
+	public void setLoginHandlerClass(Class handlerClass) {
 		setLoginHandlerClass(handlerClass.getName());
 	}
-	public void addHelpButton()
-	{
+	public void addHelpButton() {
 		helpButton = true;
 	}
-	public void setHelpButton(boolean usehelp)
-	{
+	public void setHelpButton(boolean usehelp) {
 		helpButton = usehelp;
 	}
-	public void setVertical()
-	{
+	public void setVertical() {
 		LAYOUT = LAYOUT_VERTICAL;
 	}
-	public void setHorizontal()
-	{
+	public void setHorizontal() {
 		LAYOUT = LAYOUT_HORIZONTAL;
 	}
-	public void setStacked()
-	{
+	public void setStacked() {
 		LAYOUT = this.LAYOUT_STACKED;
 	}
-	public void setStyle(String styleAttribute)
-	{
+	public void setStyle(String styleAttribute) {
 		setInputStyle(styleAttribute);
 	}
-	public void setInputStyle(String styleAttribute)
-	{
+	public void setInputStyle(String styleAttribute) {
 		this.styleAttribute = styleAttribute;
 	}
-	public void setTextStyle(String styleAttribute)
-	{
+	public void setTextStyle(String styleAttribute) {
 		this.textStyles = styleAttribute;
 	}
-	public void setInputLength(int inputLength)
-	{
+	public void setInputLength(int inputLength) {
 		this.inputLength = inputLength;
 	}
-	public void setUserText(String text)
-	{
+	public void setUserText(String text) {
 		userText = text;
 	}
-	public void setUserTextSize(int size)
-	{
+	public void setUserTextSize(int size) {
 		userTextSize = size;
 	}
-	public void setUserTextColor(String color)
-	{
+	public void setUserTextColor(String color) {
 		userTextColor = color;
 	}
-	public void setPasswordText(String text)
-	{
+	public void setPasswordText(String text) {
 		passwordText = text;
 	}
-	public void setPasswordTextSize(int size)
-	{
+	public void setPasswordTextSize(int size) {
 		passwordTextSize = size;
 	}
-	public void setPasswordTextColor(String color)
-	{
+	public void setPasswordTextColor(String color) {
 		passwordTextColor = color;
 	}
-	public void setColor(String color)
-	{
+	public void setColor(String color) {
 		this.color = color;
 	}
-	public void setHeight(String height)
-	{
+	public void setHeight(String height) {
 		loginHeight = height;
 	}
-	public void setWidth(String width)
-	{
+	public void setWidth(String width) {
 		loginWidth = width;
 	}
-	public void setBackgroundImageUrl(String url)
-	{
+	public void setBackgroundImageUrl(String url) {
 		backgroundImageUrl = url;
 	}
-	public void setSubmitButtonAlignment(String alignment)
-	{
+	public void setSubmitButtonAlignment(String alignment) {
 		submitButtonAlignment = alignment;
 	}
-	public void setLoginButton(Image loginImage)
-	{
+	public void setLoginButton(Image loginImage) {
 		this.loginImage = loginImage;
 	}
-	public void setLogoutButton(Image logoutImage)
-	{
+	public void setLogoutButton(Image logoutImage) {
 		this.logoutImage = logoutImage;
 	}
-	public void setTryAgainButton(Image tryAgainImage)
-	{
+	public void setTryAgainButton(Image tryAgainImage) {
 		this.tryAgainImage = tryAgainImage;
 	}
-	public void setViewOnlyLogoutButton(boolean logout)
-	{
+	public void setViewOnlyLogoutButton(boolean logout) {
 		onlyLogoutButton = logout;
 	}
-	public void setLoginAlignment(String alignment)
-	{
+	public void setLoginAlignment(String alignment) {
 		loginAlignment = alignment;
 	}
-	public void setLoggedOnLink(Link link)
-	{
-		loggedOnLink = (Link) link.clone();
+	public void setLoggedOnLink(Link link) {
+		loggedOnLink = (Link)link.clone();
 	}
-	public void setLogOnPage(IBPage page)
-	{
+	public void setLogOnPage(IBPage page) {
 		_logOnPage = page.getID();
 	}
-	public void setLogOnPage(int page)
-	{
+	public void setLogOnPage(int page) {
 		_logOnPage = page;
 	}
-	public void setLoggedOnWindow(boolean window)
-	{
-		if (window)
-		{
+	public void setLoggedOnWindow(boolean window) {
+		if (window) {
 			loggedOnLink = new Link();
 			loggedOnLink.setWindowToOpen(LoginEditorWindow.class);
 		}
 	}
-	public void setLoggedOnPage(IBPage page)
-	{
+	public void setLoggedOnPage(IBPage page) {
 		loggedOnLink = new Link();
 		loggedOnLink.setPage(page);
 	}
-	public void setLoggedOffPage(int ibPageId)
-	{
+	public void setLoggedOffPage(int ibPageId) {
 		loggedOffPageId = ibPageId;
 	}
-	public void setLoggedOffPage(IBPage page)
-	{
+	public void setLoggedOffPage(IBPage page) {
 		loggedOffPageId = page.getID();
 	}
-	public void setRegister(boolean register)
-	{
+	public void setRegister(boolean register) {
 		this.register = register;
 	}
-	public void setForgot(boolean forgot)
-	{
+	public void setForgot(boolean forgot) {
 		this.forgot = forgot;
 	}
 
-  public void setAllowCookieLogin(boolean cookies){
-    this.allowCookieLogin = cookies;
-  }
+	public void setAllowCookieLogin(boolean cookies) {
+		this.allowCookieLogin = cookies;
+	}
 
 	/** todo: implement */
-	public void setRedirectPage(int page)
-	{
+	public void setRedirectPage(int page) {
 		System.err.println("setting redirect page");
 		_redirectPage = page;
 	}
-	public void setGroupForwardPage(Group group, IBPage page)
-	{
-		try
-		{
+	public void setGroupForwardPage(Group group, IBPage page) {
+		try {
 			getGroupPageMap().put(group.getPrimaryKey().toString(), page.getPrimaryKey().toString());
+		} catch (Exception ex) {
 		}
-		catch (Exception ex)
-		{}
 	}
-	private Map getGroupPageMap()
-	{
-		if (groupPageMap == null)
-		{
+	private Map getGroupPageMap() {
+		if (groupPageMap == null) {
 			groupPageMap = new HashMap();
 		}
 		return groupPageMap;
 	}
-	public Object clone()
-	{
+	public Object clone() {
 		Login obj = null;
-		try
-		{
-			obj = (Login) super.clone();
-			if (this.myForm != null)
-			{
-				obj.myForm = (Form) this.myForm.clone();
+		try {
+			obj = (Login)super.clone();
+			if (this.myForm != null) {
+				obj.myForm = (Form)this.myForm.clone();
 			}
-			if (this.loginImage != null)
-			{
-				obj.loginImage = (Image) this.loginImage.clone();
+			if (this.loginImage != null) {
+				obj.loginImage = (Image)this.loginImage.clone();
 			}
-			if (this.logoutImage != null)
-			{
-				obj.logoutImage = (Image) this.logoutImage.clone();
+			if (this.logoutImage != null) {
+				obj.logoutImage = (Image)this.logoutImage.clone();
 			}
-			if (this.tryAgainImage != null)
-			{
-				obj.tryAgainImage = (Image) this.tryAgainImage.clone();
+			if (this.tryAgainImage != null) {
+				obj.tryAgainImage = (Image)this.tryAgainImage.clone();
 			}
-			if (this.loggedOnLink != null)
-			{
-				obj.loggedOnLink = (Link) this.loggedOnLink.clone();
+			if (this.loggedOnLink != null) {
+				obj.loggedOnLink = (Link)this.loggedOnLink.clone();
 			}
-		}
-		catch (Exception ex)
-		{
+		} catch (Exception ex) {
 			ex.printStackTrace(System.err);
 		}
 		return obj;
@@ -1017,26 +913,25 @@ public class Login extends Block
 	/**
 	 * Set the form to automatically send over to a corresponding HTTPS address
 	 **/
-	public void setToSendToHTTPS(){
+	public void setToSendToHTTPS() {
 		setToSendToHTTPS(true);
 	}
 
 	/**
 	 * Set if the form should automatically send over to a corresponding HTTPS address
 	 **/
-	public void setToSendToHTTPS(boolean doSendToHTTPS){
-		if(myForm!=null){
+	public void setToSendToHTTPS(boolean doSendToHTTPS) {
+		if (myForm != null) {
 			myForm.setToSendToHTTPS(doSendToHTTPS);
 		}
-		sendToHTTPS=doSendToHTTPS;
+		sendToHTTPS = doSendToHTTPS;
 	}
-
 
 	/**
 	 * Set if the form should send the user to his home page after login.
 	 **/
-	public void setToSendUserToHomePage(boolean doSendToHomePage){
-		sendUserToHomePage=doSendToHomePage;
+	public void setToSendUserToHomePage(boolean doSendToHomePage) {
+		sendUserToHomePage = doSendToHomePage;
 	}
 
 	/**
@@ -1045,7 +940,7 @@ public class Login extends Block
 	public Map getStyleNames() {
 		Map styleMap = new HashMap();
 		styleMap.put(_linkStyleClass, "");
-		styleMap.put(_linkStyleClass+":hover", "");
+		styleMap.put(_linkStyleClass + ":hover", "");
 		return styleMap;
 	}
 
@@ -1071,6 +966,21 @@ public class Login extends Block
 	 */
 	public void setIconImage(Image iconImage) {
 		_iconImage = iconImage;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getPopupPageID() {
+		return _popupPageID;
+	}
+
+	/**
+	 * @param pageID
+	 * 
+	 */
+	public void setPopupPageID(int pageID) {
+		_popupPageID = pageID;
 	}
 
 }

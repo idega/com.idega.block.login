@@ -1,5 +1,5 @@
 /*
- * $Id: LoginLayoutHandler.java,v 1.4 2003/04/03 07:54:23 laddi Exp $
+ * $Id: LoginLayoutHandler.java,v 1.5 2003/05/27 21:57:54 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -45,6 +45,7 @@ public class LoginLayoutHandler implements PropertyHandler {
     menu.addMenuElement(Login.LAYOUT_HORIZONTAL,"Horizontal");
     menu.addMenuElement(Login.LAYOUT_STACKED,"Stacked");
     menu.addMenuElement(Login.SINGLE_LINE,"Single row");
+    menu.addMenuElement(Login.LAYOUT_POPUP,"PopUp");
     menu.setSelectedElement(value);
     return(menu);
   }
