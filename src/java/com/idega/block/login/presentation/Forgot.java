@@ -129,7 +129,7 @@ public class Forgot extends Block{
 	}
 	
     Table T = new Table(2,rows);
-    T.setBorder(1);
+    //T.setBorder(1);
     
     if(!_hideMessage){
 		String manual = iwrb.getLocalizedString("forgotten.manual","Enter your username and a new password will be sent to your registered email address");
