@@ -118,7 +118,7 @@ protected IWBundle iwb;
 
 	private void startState(){
 		Table loginTable = new Table(1,2);
-			loginTable.setAlignment("center");
+			//loginTable.setAlignment("center");
 			loginTable.setBorder(0);
 			loginTable.setWidth(loginWidth);
 			loginTable.setHeight(loginHeight);
@@ -277,7 +277,7 @@ protected IWBundle iwb;
 		Table loginTable = new Table(1,2);
 			loginTable.setBorder(0);
 			loginTable.setBackgroundImage(new Image(backgroundImageUrl));
-			loginTable.setAlignment("center");
+			//loginTable.setAlignment("center");
 			loginTable.setWidth(loginWidth);
 			loginTable.setHeight(loginHeight);
       loginTable.setHeight(1,"50%");
@@ -332,7 +332,7 @@ protected IWBundle iwb;
 
 		Table loginTable = new Table(1,2);
 			loginTable.setBackgroundImage(new Image(backgroundImageUrl));
-			loginTable.setAlignment("center");
+			//loginTable.setAlignment("center");
 			loginTable.setWidth(loginWidth);
 			loginTable.setHeight(loginHeight);
       loginTable.setHeight(1,"50%");
