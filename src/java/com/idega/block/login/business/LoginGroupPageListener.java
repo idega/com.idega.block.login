@@ -6,6 +6,7 @@ import com.idega.idegaweb.IWException;
 import com.idega.user.data.Group;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.core.accesscontrol.business.*;
+import com.idega.event.*;
 
 import java.util.*;
 
@@ -13,7 +14,7 @@ import java.util.*;
  * @author aron
  *
  */
-public class LoginGroupPageListener implements IWEventListener {
+public class LoginGroupPageListener implements IWPageEventListener {
 	
 	private static String prmGroupToPageMap = "login_group_to_page_map";
 	

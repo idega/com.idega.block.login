@@ -3,8 +3,8 @@ package com.idega.block.login.business;
 import javax.servlet.http.Cookie;
 
 import com.idega.presentation.*;
-import com.idega.business.IWEventListener;
 import com.idega.core.accesscontrol.business.*;
+import com.idega.event.IWPageEventListener;
 import com.idega.idegaweb.*;
 import com.idega.util.CypherText;
 
@@ -18,7 +18,7 @@ import com.idega.util.CypherText;
  */
 
 
-public class LoginCookieListener implements IWEventListener{
+public class LoginCookieListener implements IWPageEventListener{
 
   public String userIDCookieName = "iwrbusid";
   public String IW_BUNDLE_IDENTIFIER = "com.idega.block.login";
