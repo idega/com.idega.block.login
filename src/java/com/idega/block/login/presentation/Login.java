@@ -779,6 +779,7 @@ public class Login extends Block {
 			submitTable.add(new SubmitButton(logoutImage, "utskraning"));
 
 		submitTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, ACTION_LOG_OFF));
+		//TODO: TL Look into this. Is this Necessary?
 		if (loggedOffPageId > 0) submitTable.add(new Parameter(IB_PAGE_PARAMETER, String.valueOf(loggedOffPageId)));
 		if (LAYOUT != SINGLE_LINE) {
 			loginTable.add(inputTable, 1, 1);
