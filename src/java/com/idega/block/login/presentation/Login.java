@@ -586,7 +586,7 @@ public class Login extends Block {
 		}
 	}
 	private void loginFailed(IWContext iwc, String message) {
-		if (this.LAYOUT != Login.LAYOUT_FORWARD_LINK) {
+		if (this.LAYOUT == Login.LAYOUT_FORWARD_LINK) {
 			startState(iwc);
 		}
 		else {
