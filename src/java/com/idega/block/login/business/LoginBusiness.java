@@ -123,11 +123,11 @@ public class LoginBusiness implements IWEventListener{
       }
 
   }
-
+/*
   public boolean isAdmin(IWContext iwc)throws Exception{
     return iwc.isAdmin();
   }
-
+*/
   public static void setLoginAttribute(String key, Object value, IWContext iwc) throws NotLoggedOnException{
     if (isLoggedOn(iwc)){
       Object obj = iwc.getSessionAttribute(LoginAttributeParameter);

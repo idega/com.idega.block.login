@@ -108,11 +108,11 @@ protected IWBundle iwb;
 
     add(myForm);
   }
-
+/*
   public static boolean isAdmin(IWContext iwc)throws Exception{
     return iwc.isAdmin();
   }
-
+*/
   public static User getUser(IWContext iwc){
   return LoginBusiness.getUser(iwc);
   }
