@@ -44,7 +44,7 @@ public class OnlineUsers extends Block {
 		Text tUsers = new Text(iwrb.getLocalizedString("online_users","Online users:"));
 		tUsers.setBold();
 		table.add(tUsers,1,row++);
-		Collection usersLoggedIn = LoginBusinessBean.getLoggedOnInfoList(iwc);
+		Collection usersLoggedIn = LoginBusinessBean.getLoggedOnInfoCollection(iwc);
 		if(usersLoggedIn!=null && !usersLoggedIn.isEmpty()){
 			for (Iterator iter = usersLoggedIn.iterator(); iter.hasNext();) {
 				int col = 1;
