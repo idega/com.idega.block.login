@@ -22,7 +22,7 @@ import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
 /**
  * Title:        LoginBusiness The default login business handler for the Login presentation module
- * Description:  
+ * Description:
  * Copyright:    Copyright (c) 2000-2002 idega.is All Rights Reserved
  * Company:      idega
   *@author <a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>,<a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -130,19 +130,19 @@ public class LoginBusiness implements IWEventListener
 	{
 		internalSetState(iwc, "loggedon");
 	}
-	
+
 	 protected static boolean isLogOnAction(IWContext iwc){
 	  	return "login".equals(getControlActionValue(iwc));
 	  }
-  
+
 	  protected static boolean isLogOffAction(IWContext iwc){
 	  	return "logoff".equals(getControlActionValue(iwc));
 	  }
-  
+
 	  protected static boolean isTryAgainAction(IWContext iwc){
 	  	return "tryagain".equals(getControlActionValue(iwc));
 	  }
-  
+
 	  private static String getControlActionValue(IWContext iwc){
 	  	return iwc.getParameter(LoginBusiness.LoginStateParameter);
 	  }
@@ -166,7 +166,7 @@ public class LoginBusiness implements IWEventListener
 			}
 			else
 			{
-				
+
 					if (isLogOnAction(iwc))
 					{
 						boolean canLogin = false;
@@ -201,7 +201,7 @@ public class LoginBusiness implements IWEventListener
 					{
 						internalSetState(iwc, "loggedoff");
 					}
-				
+
 			}
 		}
 		catch (Exception ex)
@@ -220,13 +220,13 @@ public class LoginBusiness implements IWEventListener
 		return true;
 	}
 	/*
-	
+
 	  public boolean isAdmin(IWContext iwc)throws Exception{
-	
+
 	    return iwc.isAdmin();
-	
+
 	  }
-	
+
 	*/
 	public static void setLoginAttribute(String key, Object value, IWUserContext iwc) throws NotLoggedOnException
 	{
@@ -285,17 +285,17 @@ public class LoginBusiness implements IWEventListener
 			return null;
 		}
 		/*Object obj = iwc.getSessionAttribute(UserAttributeParameter);
-		
+
 		if (obj != null){
-		
+
 		  return (User)obj;
-		
+
 		}else{
-		
+
 		  throw new NotLoggedOnException();
-		
+
 		}
-		
+
 		*/
 	}
 	public static List getPermissionGroups(IWUserContext iwc) throws NotLoggedOnException
@@ -421,9 +421,9 @@ public class LoginBusiness implements IWEventListener
 		}
 	}
 	/**
-	
+
 	 * returns empty List if no one is logged on
-	
+
 	 */
 	public static List getLoggedOnInfoList(IWContext iwc)
 	{
@@ -496,5 +496,15 @@ public class LoginBusiness implements IWEventListener
 		}
 		return loginContext;
 	}
+
+	// added for cookie login maybe unsafe ( Aron )
+	protected boolean logInUnVerified(IWContext iwc,String login) throws Exception{
+    boolean returner = false;
+    LoginTable[] login_table = (LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumn(com.idega.core.accesscontrol.data.LoginTableBMPBean.getUserLoginColumnName(),login);
+    if(login_table != null && login_table.length > 0){
+        returner = logIn(iwc,login_table[0],login);
+    }
+    return returner;
+  }
 
 }
