@@ -5,6 +5,12 @@
   </properties>
   <body>
   
+    <release version="1.1.1" date="2005-03-10">
+      <action dev="tryggvil" type="fix" issue="x">
+        Bugfix of Login2 component to use GenericButton instead of SubmitButton to work inside Workspace environmen.
+      </action>              
+    </release>
+
     <release version="1.1.0" date="2005-03-10">
       <action dev="tryggvil" type="update">
         Declaration of version for use in new systems based on JSF.
