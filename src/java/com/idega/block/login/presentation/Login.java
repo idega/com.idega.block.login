@@ -6,6 +6,7 @@
 package com.idega.block.login.presentation;
 
 import com.idega.core.user.data.User;
+import com.idega.builder.data.IBPage;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
@@ -296,6 +297,7 @@ protected IWBundle iwb;
       if (userTextColor != null && !userTextColor.equals(""))
         loggedOnLink.setFontColor(userTextColor);
       loggedOnLink.setText(user.getName());
+      loggedOnLink.setFontStyle(textStyles);
     }
 
     Text userText = new Text();
@@ -656,6 +658,18 @@ protected IWBundle iwb;
 
   public void setLoggedOnLink(Link link) {
     loggedOnLink = (Link) link.clone();
+  }
+
+  public void setLoggedOnWindow(boolean window) {
+    if ( window ) {
+      loggedOnLink = new Link();
+      loggedOnLink.setWindowToOpen(LoginEditorWindow.class);
+    }
+  }
+
+  public void setLoggedOnPage(IBPage page) {
+    loggedOnLink = new Link();
+    loggedOnLink.setPage(page);
   }
 
   public Object clone() {
