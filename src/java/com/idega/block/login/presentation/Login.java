@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import com.idega.block.login.business.LoginCookieListener;
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
@@ -29,6 +30,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
@@ -41,7 +43,7 @@ import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.user.app.UserApplication;
+import com.idega.presentation.ui.Window;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.util.Converter;
 import com.idega.util.SendMail;
@@ -128,7 +130,7 @@ public class Login extends Block {
 	//private IBPage _pageForInvalidLogin = null;
 	
 	private boolean lockedAsWapLayout = false;
-	private boolean _openUserApplicationOnLogin = false;
+	private String classToOpenOnLogin;
 
 	public Login() {
 		super();
@@ -860,10 +862,13 @@ public class Login extends Block {
 				addScript = true;
 			}
 			
-			UserApplication userApplication = new UserApplication();
-			if (iwc.hasViewPermission(userApplication) && _openUserApplicationOnLogin) {
-				s.addMethod("openUserApplication", userApplication.getCallingScriptString(iwc));
-				addScript = true;
+			if (classToOpenOnLogin != null) {
+				Class classToOpen = Class.forName(classToOpenOnLogin);
+        PresentationObject pObj = (PresentationObject) classToOpen.newInstance();
+				if (iwc.hasViewPermission(pObj) && pObj instanceof Window) {
+					s.addMethod("openUserApplication", Window.getCallingScriptString(classToOpen, iwc));
+					addScript = true;
+				}
 			}
 			
 			if (addScript) {
@@ -1387,9 +1392,9 @@ public class Login extends Block {
 		return this.iwrb;
 	}
 	/**
-	 * @param userApplicationOnLogin The _openUserApplicationOnLogin to set.
+	 * @param classToOpen The class to open on login.  The class must be an instance of Window.
 	 */
-	public void setToOpenUserApplicationOnLogin(boolean userApplicationOnLogin) {
-		_openUserApplicationOnLogin = userApplicationOnLogin;
+	public void setClassToOpenOnLogin(String classToOpen) {
+		classToOpenOnLogin = classToOpen;
 	}
 }
