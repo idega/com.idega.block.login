@@ -66,7 +66,7 @@ public class Login extends Block {
 	private boolean forgot = false;
 	private boolean _window;
 	private int _logOnPage = -1;
-	private int _redirectPage = -1;
+	//private int _redirectPage = -1;
 	private Map groupPageMap;
 	public static String controlParameter;
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.login";
@@ -93,7 +93,7 @@ public class Login extends Block {
 	private int _loginPageID = -1;
 	private final static String FROM_PAGE_PARAMETER = "log_from_page";
 	
-	private IBPage _pageForInvalidLogin = null;
+	//private IBPage _pageForInvalidLogin = null;
 
 	public Login() {
 		super();
@@ -172,7 +172,7 @@ public class Login extends Block {
 		if (_logOnPage > 0) {
 			myForm.setPageToSubmitTo(_logOnPage);
 		}
-		if (_redirectPage > 0) {
+		/*if (_redirectPage > 0) {
 			//System.err.println("adding hidden redirect parameter");
 			myForm.add(new HiddenInput(LoginBusinessBean.LoginRedirectPageParameter, String.valueOf(_redirectPage)));
 		}
@@ -180,7 +180,7 @@ public class Login extends Block {
 		if (_pageForInvalidLogin != null) {
 			//System.err.println("adding hidden redirect parameter");
 			myForm.add(new HiddenInput(LoginBusinessBean.LoginFailedRedirectPageParameter, _pageForInvalidLogin.getPrimaryKey().toString()));
-		}
+		}*/
 		
 		Table loginTable = new Table();
 		loginTable.setAlignment(loginAlignment);
@@ -882,10 +882,10 @@ public class Login extends Block {
 	}
 
 	/** todo: implement */
-	public void setRedirectPage(int page) {
+	/*public void setRedirectPage(int page) {
 		System.err.println("setting redirect page");
 		_redirectPage = page;
-	}
+	}*/
 
 	public Object clone() {
 		Login obj = null;
@@ -994,8 +994,8 @@ public class Login extends Block {
 		_loginPageID = pageID;
 	}
 
-	public void setPageForInvalidLogin(IBPage page) {
+	/*public void setPageForInvalidLogin(IBPage page) {
 		_pageForInvalidLogin = page;
-	}
+	}*/
 
 }
