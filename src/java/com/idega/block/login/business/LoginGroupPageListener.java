@@ -38,14 +38,10 @@ public class LoginGroupPageListener implements IWEventListener {
 				String gid;
 				while(iter.hasNext()){
 					g = (Group) iter.next();
-					try{
 					gid = g.getPrimaryKey().toString();
 					if(G2P.containsKey(gid))
 						return (String) G2P.get(gid);
-					}
-					catch(java.rmi.RemoteException ex){
-					
-					}
+
 				}
 			}
 			else{
