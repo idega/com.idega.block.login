@@ -18,6 +18,7 @@ import com.idega.presentation.Table;
 public class LoginEditorWindow extends IWAdminWindow {
 	
 	String msg = "";
+	boolean change = false;
 	
 	public LoginEditorWindow() {
 		super();
@@ -31,9 +32,15 @@ public class LoginEditorWindow extends IWAdminWindow {
 		msg = message;
 	}
 	
+	public void setToChangeNextTime(){
+		change = true;
+	}
+	
 	public String getURL(IWContext iwc){
 		String url = getWindowURL(getClass(),iwc.getApplicationContext());
 		url += "&msg="+msg;
+		if(change)
+			url+="&chg=true";
 		return url;
 	}
 	
@@ -42,6 +49,8 @@ public class LoginEditorWindow extends IWAdminWindow {
 		LoginEditor BE = new LoginEditor();
 		if(iwc.isParameterSet("msg"))
 			BE.setMessage(iwc.getParameter("msg"));
+		if(iwc.isParameterSet("chg"))
+			BE.setChangeLoginNextTime(true);
 		Table T = new Table(1, 1);
 		T.setAlignment(1, 1, "center");
 		T.add(BE, 1, 1);

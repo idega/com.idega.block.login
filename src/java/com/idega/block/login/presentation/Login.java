@@ -592,6 +592,7 @@ public class Login extends Block
 				Script s = new Script();
 				LoginEditorWindow window = new LoginEditorWindow();
 				window.setMessage(iwrb.getLocalizedString("change_password","You need to change your password"));
+				window.setToChangeNextTime();
 				s.addMethod("wop",window.getCallingScriptString(iwc));
 				myForm.add(s);
 			}

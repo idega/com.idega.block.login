@@ -54,6 +54,7 @@ public class LoginEditor extends PresentationObjectContainer {
 		IndexFontColor;
 	protected int fontSize = 2;
 	protected boolean fontBold = true;
+	private boolean changeNextTime = false;
 	protected String styleAttribute = "font-size: 8pt";
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.login";
 	protected IWResourceBundle iwrb;
@@ -199,6 +200,10 @@ public class LoginEditor extends PresentationObjectContainer {
 		T.add(Text.NON_BREAKING_SPACE, 1, 9);
 		T.add(close, 1, 9);
 		T.add(new HiddenInput(prmUserId, String.valueOf(user.getID())));
+		if(!"".equals(customMsg))
+			T.add(new HiddenInput("msg",customMsg));
+		if(changeNextTime)
+			T.add(new HiddenInput("chg","true"));
 		Form myForm = new Form();
 		myForm.add(T);
 		return myForm;
@@ -215,15 +220,9 @@ public class LoginEditor extends PresentationObjectContainer {
 			if (logTable == null) {
 				try {
 					if (sPasswd.equals(sConfirm)) {
-						LoginDBHandler.createLogin(
-							iUserId,
-							sUserLogin,
-							sPasswd);
+						LoginDBHandler.createLogin(iUserId,sUserLogin,sPasswd);
 						returner = true;
-						errorMsg =
-							iwrb.getLocalizedString(
-								"login_created",
-								"Login created");
+						errorMsg =	iwrb.getLocalizedString(	"login_created","Login created");
 					}
 				}
 				catch (Exception ex) {
@@ -236,13 +235,12 @@ public class LoginEditor extends PresentationObjectContainer {
 			else if (logTable != null) {
 				try {
 					if (sPasswd.equals(sConfirm)) {
-						LoginDBHandler.updateLogin(
-							iUserId,
-							sUserLogin,
-							sPasswd);
+						LoginDBHandler.updateLogin(iUserId,sUserLogin,sPasswd);
+						if(changeNextTime)
+							LoginDBHandler.changeNextTime(logTable,false);
+						
 						returner = true;
-						errorMsg =
-							iwrb.getLocalizedString("updated", "Login updated");
+						errorMsg =	iwrb.getLocalizedString("updated", "Login updated");
 					}
 				}
 				catch (Exception ex) {
@@ -292,5 +290,9 @@ public class LoginEditor extends PresentationObjectContainer {
 	}
 	public void setMessage(String msg) {
 		customMsg = msg;
+	}
+	
+	public void setChangeLoginNextTime(boolean change){
+		this.changeNextTime = change;
 	}
 }
