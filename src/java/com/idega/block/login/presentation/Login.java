@@ -618,10 +618,11 @@ public class Login extends Block {
 
 
 	private Link getRegisterLink() {
-		Link L = new Link(iwrb.getLocalizedString("register.register", "Register"));
-		L.setFontStyle(this.textStyles);
-		L.setWindowToOpen(RegisterWindow.class);
-		return L;
+		Link link = new Link(iwrb.getLocalizedString("register.register", "Register"));
+		link.setFontStyle(this.textStyles);
+		link.setWindowToOpen(RegisterWindow.class);
+		link.setAsImageButton(true);
+		return link;
 	}
 	private Link getForgotLink() {
 		Link L = new Link(iwrb.getLocalizedString("register.forgot", "Forgot password�"));
