@@ -5,7 +5,12 @@
   </properties>
   <body>
   
-    <release version="1.1.1" date="2005-03-10">
+    <release version="1.1.2" date="2005-04-01">
+      <action dev="tryggvil" type="fix" issue="x">
+      	New dependency. Depends now on core 3.0.2
+      </action>              
+    </release>  
+      <release version="1.1.1" date="2005-03-10">
       <action dev="tryggvil" type="fix" issue="x">
         Bugfix of Login2 component to use GenericButton instead of SubmitButton to work inside Workspace environmen.
       </action>              
