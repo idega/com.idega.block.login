@@ -24,9 +24,11 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWException;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
+import com.idega.user.Converter;
 import com.idega.user.business.UserProperties;
 import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
+import com.idega.util.ListUtil;
 /**
  * Title:        LoginBusiness The default login business handler for the Login presentation module
  * Description:
@@ -336,15 +338,16 @@ public class LoginBusiness implements IWEventListener
 	}
 	private boolean logIn(IWContext iwc, LoginTable loginTable, String login) throws Exception
 	{
-		User user =
-			(
-				(com.idega.core.user.data.UserHome) com.idega.data.IDOLookup.getHomeLegacy(
-					User.class)).findByPrimaryKeyLegacy(
-				loginTable.getUserId());
+		com.idega.core.user.data.UserHome uHome = (com.idega.core.user.data.UserHome) com.idega.data.IDOLookup.getHome(User.class);
+		User user = uHome.findByPrimaryKey(loginTable.getUserId());
+		
 		iwc.setSessionAttribute(LoginAttributeParameter, new Hashtable());
 		LoginBusiness.setUser(iwc, user);
 		//List groups = AccessControl.getPermissionGroups(user);
-		List groups = UserBusiness.getUserGroups(user);
+		com.idega.user.business.UserBusiness userbusiness =  (com.idega.user.business.UserBusiness)com.idega.business.IBOLookup.getServiceInstance(iwc,com.idega.user.business.UserBusiness.class);
+		com.idega.user.data.User newUser = com.idega.user.Converter.convertToNewUser(user);
+		List groups = ListUtil.convertCollectionToList(userbusiness.getUserGroups(newUser));
+		//List groups = UserBusiness.getUserGroups(user);
 		if (groups != null)
 		{
 			LoginBusiness.setPermissionGroups(iwc, groups);
@@ -525,27 +528,26 @@ public class LoginBusiness implements IWEventListener
     }
     return returner;
   }
-  
-  public boolean logInByPersonalID(IWContext iwc, String personalID) throws Exception{
-	  boolean returner = false;
-	  try {
-		  com.idega.user.data.User user = getUserBusiness(iwc).getUser(personalID);
-		  LoginTable[] login_table = (LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumn(com.idega.core.accesscontrol.data.LoginTableBMPBean.getColumnNameUserID(),user.getPrimaryKey().toString());
-		  if(login_table != null && login_table.length > 0){
-				  returner = logIn(iwc,login_table[0],login_table[0].getUserLogin());
-				  if(returner)
-					  onLoginSuccessful(iwc);
-		  }
-	  }
-	  catch (EJBException e) {
-		  returner = false;
-	  }
-	  return returner;
-  }
-	
-  protected com.idega.user.business.UserBusiness getUserBusiness(IWApplicationContext iwac) throws RemoteException {
-	  return (com.idega.user.business.UserBusiness) IBOLookup.getServiceInstance(iwac,com.idega.user.business.UserBusiness.class);
-  }
 
+	public boolean logInByPersonalID(IWContext iwc, String personalID) throws Exception{
+		boolean returner = false;
+		try {
+			com.idega.user.data.User user = getUserBusiness(iwc).getUser(personalID);
+			LoginTable[] login_table = (LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumn(com.idega.core.accesscontrol.data.LoginTableBMPBean.getColumnNameUserID(),user.getPrimaryKey().toString());
+			if(login_table != null && login_table.length > 0){
+					returner = logIn(iwc,login_table[0],login_table[0].getUserLogin());
+					if(returner)
+						onLoginSuccessful(iwc);
+			}
+		}
+		catch (EJBException e) {
+			returner = false;
+		}
+		return returner;
+	}
+	
+	protected com.idega.user.business.UserBusiness getUserBusiness(IWApplicationContext iwac) throws RemoteException {
+		return (com.idega.user.business.UserBusiness) IBOLookup.getServiceInstance(iwac,com.idega.user.business.UserBusiness.class);
+	}
 
 }
