@@ -105,7 +105,7 @@ public class LoginCreator {
 
     public static boolean checkLoginExistence(String login){
       try{
-        List L = EntityFinder.findAllByColumn(new LoginTable(),LoginTable.getUserLoginColumnName(),login);
+        List L = EntityFinder.findAllByColumn(((com.idega.core.accesscontrol.data.LoginTableHome)com.idega.data.IDOLookup.getHomeLegacy(LoginTable.class)).createLegacy(),com.idega.core.accesscontrol.data.LoginTableBMPBean.getUserLoginColumnName(),login);
       if(L ==null)
         return false;
       else

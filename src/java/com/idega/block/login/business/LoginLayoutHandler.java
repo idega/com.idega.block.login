@@ -1,5 +1,5 @@
 /*
- * $Id: LoginLayoutHandler.java,v 1.2 2001/12/12 21:05:22 palli Exp $
+ * $Id: LoginLayoutHandler.java,v 1.3 2002/04/06 19:07:32 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
