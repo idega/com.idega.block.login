@@ -15,7 +15,6 @@ import com.idega.business.IWEventListener;
 import com.idega.core.accesscontrol.business.LoggedOnInfo;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.business.NotLoggedOnException;
-import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.data.GenericGroup;
 import com.idega.core.user.business.UserBusiness;
@@ -25,11 +24,9 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWException;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
-import com.idega.user.Converter;
 import com.idega.user.business.UserProperties;
 import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
-import com.idega.util.ListUtil;
 /**
  * Title:        LoginBusiness The default login business handler for the Login presentation module
  * Description:
@@ -45,7 +42,6 @@ public class LoginBusiness implements IWEventListener
 	public static String UserAttributeParameter = "user_login";
 	public static String PermissionGroupParameter = "user_permission_groups";
 	public static String LoginStateParameter = "login_state";
-	public static String LoginStateMsgParameter = "login_state_msg";
 	public static String LoginRedirectPageParameter = "login_redirect_page";
 	private static String LoginAttributeParameter = "login_attributes";
 	private static String UserGroupRepresentativeParameter = "ic_user_representative_group";
@@ -54,7 +50,7 @@ public class LoginBusiness implements IWEventListener
 	private static final String _APPADDRESS_LOGGED_ON_LIST = "ic_loggedon_list";
 	private static final String _LOGGINADDRESS_LOGGED_ON_INFO = "ic_loggedon_info";
 	public static final String USER_PROPERTY_PARAMETER = "user_properties";
-	
+
 	public static final int STATE_NO_STATE = 0;
 	public static final int STATE_LOGGED_ON = 1;
 	public static final int STATE_LOGGED_OUT = 2;
@@ -62,7 +58,7 @@ public class LoginBusiness implements IWEventListener
 	public static final int STATE_WRONG_PASSW=4;
 	public static final int STATE_LOGIN_EXPIRED=5;	
 	public static final int STATE_LOGIN_FAILED = 6;
-	
+
 	public LoginBusiness()
 	{}
 	public static boolean isLoggedOn(IWUserContext iwc)
@@ -85,7 +81,6 @@ public class LoginBusiness implements IWEventListener
 		else
 			return STATE_NO_STATE;
 	}
-	
 	/**
 	 * To get the userame of the current log-in attempt
 	 * @return The username the current user is trying to log in with. Returns null if no log-in attemt is going on.
@@ -109,14 +104,12 @@ public class LoginBusiness implements IWEventListener
 	{
 		try
 		{
-			int didLogin = verifyPasswordAndLogin(iwc, username, password);
-			if (didLogin==STATE_LOGGED_ON)
+			boolean didLogin = verifyPasswordAndLogin(iwc, username, password);
+			if (didLogin)
 			{
-				//internalSetState(iwc, "loggedon");
-				internalSetState(iwc,STATE_LOGGED_ON);
-				return true;
+				internalSetState(iwc, STATE_LOGGED_ON);
 			}
-			return false;
+			return didLogin;
 		}
 		catch (Exception e)
 		{
@@ -131,8 +124,7 @@ public class LoginBusiness implements IWEventListener
 		try
 		{
 			logOut(iwc);
-			//internalSetState(iwc, "loggedoff");
-			internalSetState(iwc,STATE_LOGGED_OUT);
+			internalSetState(iwc, STATE_LOGGED_OUT);
 			return true;
 		}
 		catch (Exception e)
@@ -145,11 +137,10 @@ public class LoginBusiness implements IWEventListener
 	 * Can be overrided in subclasses to alter behaviour
 	 * By default this sets the state to "login failed" and does not log in a user
 	 */
-	protected void onLoginFailed(IWContext iwc,int loginState)
+	protected void onLoginFailed(IWContext iwc)
 	{
 		logOutUser(iwc);
-		//internalSetState(iwc, "loginfailed");
-		internalSetState(iwc,loginState);
+		internalSetState(iwc, STATE_LOGIN_FAILED);
 	}
 	/**
 	 * Invoked when the login was succesful
@@ -158,8 +149,7 @@ public class LoginBusiness implements IWEventListener
 	 */
 	protected void onLoginSuccessful(IWContext iwc)
 	{
-		//internalSetState(iwc, "loggedon");
-		internalSetState(iwc,STATE_LOGGED_ON);
+		internalSetState(iwc, STATE_LOGGED_ON);
 	}
 
 	 public static boolean isLogOnAction(IWContext iwc){
@@ -200,13 +190,13 @@ public class LoginBusiness implements IWEventListener
 
 					if (isLogOnAction(iwc))
 					{
-						int canLogin = STATE_LOGGED_OUT;
+						boolean canLogin = false;
 						String username = getLoginUserName(iwc);
 						String password = getLoginPassword(iwc);
 						if ((username != null) && (password != null))
 						{
 							canLogin = verifyPasswordAndLogin(iwc, username, password);
-							if (canLogin==STATE_LOGGED_ON)
+							if (canLogin)
 							{
 								//isLoggedOn(iwc);
 								//internalSetState(iwc,"loggedon");
@@ -224,14 +214,13 @@ public class LoginBusiness implements IWEventListener
 							{
 								//logOut(iwc);
 								//internalSetState(iwc,"loginfailed");
-								onLoginFailed(iwc,canLogin);
+								onLoginFailed(iwc);
 							}
 						}
 					}
 					else if (isTryAgainAction(iwc))
 					{
-						//internalSetState(iwc, "loggedoff");
-						internalSetState(iwc,STATE_LOGGED_OUT);
+						internalSetState(iwc, STATE_LOGGED_OUT);
 					}
 
 			}
@@ -360,16 +349,15 @@ public class LoginBusiness implements IWEventListener
 	}
 	private boolean logIn(IWContext iwc, LoginTable loginTable, String login) throws Exception
 	{
-		com.idega.core.user.data.UserHome uHome = (com.idega.core.user.data.UserHome) com.idega.data.IDOLookup.getHome(User.class);
-		User user = uHome.findByPrimaryKey(loginTable.getUserId());
-		
+		User user =
+			(
+				(com.idega.core.user.data.UserHome) com.idega.data.IDOLookup.getHomeLegacy(
+					User.class)).findByPrimaryKeyLegacy(
+				loginTable.getUserId());
 		iwc.setSessionAttribute(LoginAttributeParameter, new Hashtable());
 		LoginBusiness.setUser(iwc, user);
 		//List groups = AccessControl.getPermissionGroups(user);
-		com.idega.user.business.UserBusiness userbusiness =  (com.idega.user.business.UserBusiness)com.idega.business.IBOLookup.getServiceInstance(iwc,com.idega.user.business.UserBusiness.class);
-		com.idega.user.data.User newUser = com.idega.user.Converter.convertToNewUser(user);
-		List groups = ListUtil.convertCollectionToList(userbusiness.getUserGroups(newUser));
-		//List groups = UserBusiness.getUserGroups(user);
+		List groups = UserBusiness.getUserGroups(user);
 		if (groups != null)
 		{
 			LoginBusiness.setPermissionGroups(iwc, groups);
@@ -408,30 +396,21 @@ public class LoginBusiness implements IWEventListener
 	
 		return true;
 	}
-	private int verifyPasswordAndLogin(IWContext iwc, String login, String password) throws Exception
+	private boolean verifyPasswordAndLogin(IWContext iwc, String login, String password) throws Exception
 	{
 		boolean returner = false;
-		LoginTable[] login_table =(LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumn(com.idega.core.accesscontrol.data.LoginTableBMPBean.getUserLoginColumnName(),	login);
-		if(login_table == null)
-			return STATE_NO_USER;
-		//if (login_table != null && login_table.length > 0)
-		if(login_table.length>0){
-			LoginTable loginTable = login_table[0];
-			if(isLoginExpired(loginTable))
-				return STATE_LOGIN_EXPIRED;
+		LoginTable[] login_table =
+			(LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumn(
+				com.idega.core.accesscontrol.data.LoginTableBMPBean.getUserLoginColumnName(),
+				login);
+		if (login_table != null && login_table.length > 0)
+		{
 			if (Encrypter.verifyOneWayEncrypted(login_table[0].getUserPassword(), password))
 			{
-				//returner = logIn(iwc, login_table[0], login);
-				if(logIn(iwc, login_table[0], login))
-					return STATE_LOGGED_ON;
+				returner = logIn(iwc, login_table[0], login);
 			}
-			else
-				return STATE_WRONG_PASSW;
 		}
-		else
-			return STATE_NO_USER;
-		
-		return STATE_LOGIN_FAILED;
+		return returner;
 	}
 	public static boolean verifyPassword(User user, String login, String password) throws IOException, SQLException
 	{
@@ -559,31 +538,27 @@ public class LoginBusiness implements IWEventListener
     }
     return returner;
   }
+  
+  public boolean logInByPersonalID(IWContext iwc, String personalID) throws Exception{
+	  boolean returner = false;
+	  try {
+		  com.idega.user.data.User user = getUserBusiness(iwc).getUser(personalID);
+		  LoginTable[] login_table = (LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumn(com.idega.core.accesscontrol.data.LoginTableBMPBean.getColumnNameUserID(),user.getPrimaryKey().toString());
+		  if(login_table != null && login_table.length > 0){
+				  returner = logIn(iwc,login_table[0],login_table[0].getUserLogin());
+				  if(returner)
+					  onLoginSuccessful(iwc);
+		  }
+	  }
+	  catch (EJBException e) {
+		  returner = false;
+	  }
+	  return returner;
+  }
+	
+  protected com.idega.user.business.UserBusiness getUserBusiness(IWApplicationContext iwac) throws RemoteException {
+	  return (com.idega.user.business.UserBusiness) IBOLookup.getServiceInstance(iwac,com.idega.user.business.UserBusiness.class);
+  }
 
-	public boolean logInByPersonalID(IWContext iwc, String personalID) throws Exception{
-		boolean returner = false;
-		try {
-			com.idega.user.data.User user = getUserBusiness(iwc).getUser(personalID);
-			LoginTable[] login_table = (LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumn(com.idega.core.accesscontrol.data.LoginTableBMPBean.getColumnNameUserID(),user.getPrimaryKey().toString());
-			if(login_table != null && login_table.length > 0){
-					returner = logIn(iwc,login_table[0],login_table[0].getUserLogin());
-					if(returner)
-						onLoginSuccessful(iwc);
-			}
-		}
-		catch (EJBException e) {
-			returner = false;
-		}
-		return returner;
-	}
-	
-	public boolean isLoginExpired(LoginTable loginTable){
-		LoginInfo loginInfo = LoginDBHandler.getLoginInfo(loginTable.getID());
-		return loginInfo.isLoginExpired();	
-	}
-	
-	protected com.idega.user.business.UserBusiness getUserBusiness(IWApplicationContext iwac) throws RemoteException {
-		return (com.idega.user.business.UserBusiness) IBOLookup.getServiceInstance(iwac,com.idega.user.business.UserBusiness.class);
-	}
 
 }
