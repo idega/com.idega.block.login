@@ -182,12 +182,14 @@ public class LoginEditor extends PresentationObjectContainer {
 		try {
 			String prop = iwb.getProperty(BUNDEL_PRPERTY_NAME_USERNAME_CONSTANT);
 			allowChangingUsername = !prop.trim().equalsIgnoreCase("true");
-		} catch (Exception e) {
+		}
+		catch (NullPointerException e) {
 			// no property exists, use default.
-			e.printStackTrace();
+			//e.printStackTrace();
+			allowChangingUsername = true;
 		}
 		
-		System.out.println("Creating view for changin password, allowChangingUsername=" + allowChangingUsername);
+		//System.out.println("Creating view for changin password, allowChangingUsername=" + allowChangingUsername);
 		
 		Form myForm = new Form();
 		
