@@ -332,6 +332,7 @@ public class Login extends Block
 		submitTable.setWidth("100%");
 		if (_buttonAsLink) {
 			submitTable.setCellpadding(0);
+			submitTable.setCellspacing(0);
 			int column = 1;
 			Link link = this.getStyleLink(iwrb.getLocalizedString("login_text", "Login"), _linkStyleClass);
 			link.setToFormSubmit(myForm);
@@ -545,6 +546,7 @@ public class Login extends Block
 		}
 		if (_buttonAsLink) {
 			submitTable.setCellpadding(0);
+			submitTable.setCellspacing(0);
 			loginTable.setCellpadding(0);
 			int column = 1;
 			Link link = this.getStyleLink(iwrb.getLocalizedString("logout_text", "Logoff"), _linkStyleClass);
@@ -648,6 +650,7 @@ public class Login extends Block
 		}
 		if (_buttonAsLink) {
 			submitTable.setCellpadding(0);
+			submitTable.setCellspacing(0);
 			loginTable.setCellpadding(0);
 			int column = 1;
 			Link link = this.getStyleLink(iwrb.getLocalizedString("tryagain_text", "Try again"), _linkStyleClass);
