@@ -29,6 +29,7 @@ import com.idega.util.idegaTimestamp;
  * @version 1.1
 
  */
+
 public class LoginBusiness implements IWEventListener
 {
 	public static String UserAttributeParameter = "user_login";
@@ -129,6 +130,23 @@ public class LoginBusiness implements IWEventListener
 	{
 		internalSetState(iwc, "loggedon");
 	}
+	
+	 protected static boolean isLogOnAction(IWContext iwc){
+	  	return "login".equals(getControlActionValue(iwc));
+	  }
+  
+	  protected static boolean isLogOffAction(IWContext iwc){
+	  	return "logoff".equals(getControlActionValue(iwc));
+	  }
+  
+	  protected static boolean isTryAgainAction(IWContext iwc){
+	  	return "tryagain".equals(getControlActionValue(iwc));
+	  }
+  
+	  private static String getControlActionValue(IWContext iwc){
+	  	return iwc.getParameter(LoginBusiness.LoginStateParameter);
+	  }
+
 	/**
 	 * The method invoked when the login presentation module sends a login to this class
 	 */
@@ -139,23 +157,17 @@ public class LoginBusiness implements IWEventListener
 		{
 			if (isLoggedOn(iwc))
 			{
-				String controlParameter = iwc.getParameter(LoginBusiness.LoginStateParameter);
-				if (controlParameter != null)
+				if (isLogOffAction(iwc))
 				{
-					if (controlParameter.equals("logoff"))
-					{
-						//logOut(iwc);
-						//internalSetState(iwc,"loggedoff");
-						logOutUser(iwc);
-					}
+					//logOut(iwc);
+					//internalSetState(iwc,"loggedoff");
+					logOutUser(iwc);
 				}
 			}
 			else
 			{
-				String controlParameter = iwc.getParameter(LoginBusiness.LoginStateParameter);
-				if (controlParameter != null)
-				{
-					if (controlParameter.equals("login"))
+				
+					if (isLogOnAction(iwc))
 					{
 						boolean canLogin = false;
 						String username = getLoginUserName(iwc);
@@ -185,11 +197,11 @@ public class LoginBusiness implements IWEventListener
 							}
 						}
 					}
-					else if (controlParameter.equals("tryagain"))
+					else if (isTryAgainAction(iwc))
 					{
 						internalSetState(iwc, "loggedoff");
 					}
-				}
+				
 			}
 		}
 		catch (Exception ex)
@@ -484,4 +496,5 @@ public class LoginBusiness implements IWEventListener
 		}
 		return loginContext;
 	}
+
 }
