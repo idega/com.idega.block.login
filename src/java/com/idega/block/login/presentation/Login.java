@@ -84,11 +84,14 @@ protected IWBundle iwb;
     iwrb = getResourceBundle(iwc);
 
     if ( loginImage == null )
-      loginImage = iwrb.getImage("login.gif");
+      //loginImage = iwrb.getImage("login.gif");
+      loginImage = iwrb.getLocalizedImageButton("login_text","Login");
     if ( logoutImage == null )
-      logoutImage = iwrb.getImage("logout.gif");
+      //logoutImage = iwrb.getImage("logout.gif");
+      logoutImage = iwrb.getLocalizedImageButton("logout_text","Log out");
     if ( tryAgainImage == null )
-      tryAgainImage = iwrb.getImage("try_again.gif");
+     // tryAgainImage = iwrb.getImage("try_again.gif");
+      tryAgainImage = iwrb.getLocalizedImageButton("tryagain_text","Try again");
 
 		userText = iwrb.getLocalizedString("user","User");
 		passwordText = iwrb.getLocalizedString("password","Password");
