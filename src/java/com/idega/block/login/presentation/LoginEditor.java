@@ -20,25 +20,31 @@ package com.idega.block.login.presentation;
 
 
 
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 
-import com.idega.core.user.data.User;
-
-import com.idega.core.accesscontrol.business.LoginDBHandler;
-
-import com.idega.core.accesscontrol.data.LoginTable;
-
-import com.idega.presentation.text.*;
-
-import com.idega.presentation.*;
-
-import com.idega.idegaweb.IWResourceBundle;
-
-import com.idega.idegaweb.IWBundle;
-
-import com.idega.presentation.ui.*;
+import javax.ejb.FinderException;
 
 import com.idega.block.login.business.LoginBusiness;
+import com.idega.core.accesscontrol.business.LoginDBHandler;
+import com.idega.core.accesscontrol.data.LoginTable;
+import com.idega.core.user.data.User;
+import com.idega.core.user.data.UserHome;
+import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.InterfaceObject;
+import com.idega.presentation.ui.PasswordInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 
 
 
@@ -130,9 +136,23 @@ public class LoginEditor extends PresentationObjectContainer{
 
     String sUserId = iwc.getParameter(prmUserId);
 
-    if(eUser == null)
-
+//    if(eUser == null)
+//      eUser = LoginBusiness.getUser(iwc);
+		/** Gimmi 04.11.2002 */
+    if(sUserId == null) {
       eUser = LoginBusiness.getUser(iwc);
+    }else {
+			try {
+				UserHome uHome = (UserHome) IDOLookup.getHome(User.class);
+				eUser = uHome.findByPrimaryKey(new Integer(sUserId));
+			} catch (RemoteException e) {
+				e.printStackTrace(System.err);
+			} catch (FinderException e) {
+				e.printStackTrace(System.err);
+			}
+    }
+
+
 
     if(eUser!=null){
 
