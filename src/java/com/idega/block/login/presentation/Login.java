@@ -46,8 +46,8 @@ public class Login extends Block {
 	private String userText;
 	private String passwordText;
 	private String color = "";
-	private String userTextColor = "";
-	private String passwordTextColor;
+	private String userTextColor = null;
+	private String passwordTextColor = null;
 	private int userTextSize = -1;
 	private int passwordTextSize = -1;
 	private int inputLength = 10;
@@ -185,7 +185,6 @@ public class Login extends Block {
 		}*/
 		
 		Table loginTable = new Table();
-		loginTable.setAlignment(loginAlignment);
 		loginTable.setBorder(0);
 		if (loginWidth != null)
 			loginTable.setWidth(loginWidth);
@@ -241,11 +240,11 @@ public class Login extends Block {
 				}
 				inputTable.setCellpadding(1);
 				inputTable.setCellspacing(0);
-				inputTable.setAlignment("center");
 				inputTable.add(loginTexti, 1, 1);
 				inputTable.add(login, 1, 2);
 				inputTable.add(passwordTexti, 2, 1);
 				inputTable.add(passw, 2, 2);
+				loginTable.setAlignment(xpos, ypos, "center");
 				loginTable.add(inputTable, xpos, ypos);
 				ypos++;
 				break;
@@ -257,7 +256,6 @@ public class Login extends Block {
 				}
 				inputTable.setCellpadding(1);
 				inputTable.setCellspacing(0);
-				inputTable.setAlignment("center");
 				inputTable.mergeCells(1, 2, 3, 2);
 				inputTable.setHeight(2, "2");
 				inputTable.setAlignment(1, 1, "right");
@@ -266,6 +264,7 @@ public class Login extends Block {
 				inputTable.add(login, 3, 1);
 				inputTable.add(passwordTexti, 1, 3);
 				inputTable.add(passw, 3, 3);
+				loginTable.setAlignment(xpos, ypos, "center");
 				loginTable.add(inputTable, xpos, ypos);
 				ypos++;
 				break;
@@ -274,7 +273,6 @@ public class Login extends Block {
 				inputTable.setBorder(0);
 				inputTable.setCellpadding(0);
 				inputTable.setCellspacing(0);
-				inputTable.setAlignment("center");
 				inputTable.addText("", 1, 3);
 				inputTable.setHeight(3, "5");
 				if (!(color.equals(""))) {
@@ -286,6 +284,7 @@ public class Login extends Block {
 				inputTable.add(login, 1, 2);
 				inputTable.add(passwordTexti, 1, 4);
 				inputTable.add(passw, 1, 5);
+				loginTable.setAlignment(xpos, ypos, "center");
 				loginTable.add(inputTable, xpos, ypos);
 				ypos++;
 				break;
@@ -294,7 +293,6 @@ public class Login extends Block {
 				inputTable.setBorder(0);
 				inputTable.setCellpadding(0);
 				inputTable.setCellspacing(0);
-				inputTable.setAlignment("center");
 				if (!(color.equals(""))) {
 					inputTable.setColor(color);
 				}
@@ -307,6 +305,7 @@ public class Login extends Block {
 				inputTable.add(login, 3, 1);
 				inputTable.add(passwordTexti, 5, 1);
 				inputTable.add(passw, 7, 1);
+				loginTable.setAlignment(xpos, ypos, "center");
 				loginTable.add(inputTable, xpos, ypos);
 				xpos = 2;
 				break;
@@ -493,7 +492,6 @@ public class Login extends Block {
 		loginTable.setBorder(0);
 		if (backgroundImageUrl != null)
 			loginTable.setBackgroundImage(new Image(backgroundImageUrl));
-		loginTable.setAlignment(loginAlignment);
 		if (loginWidth != null)
 			loginTable.setWidth(loginWidth);
 		if (loginHeight != null)
@@ -542,7 +540,7 @@ public class Login extends Block {
 		if (onlyLogoutButton) {
 			submitTable.setWidth(loginWidth);
 			submitTable.setHeight(loginHeight);
-			submitTable.setAlignment(loginAlignment);
+			submitTable.setAlignment(1, 1, loginAlignment);
 		} else {
 			submitTable.setWidth("100%");
 		}
@@ -605,7 +603,6 @@ public class Login extends Block {
 			loginTable.setBorder(0);
 			if (backgroundImageUrl != null)
 				loginTable.setBackgroundImage(new Image(backgroundImageUrl));
-			loginTable.setAlignment(loginAlignment);
 			if (loginWidth != null)
 				loginTable.setWidth(loginWidth);
 			if (loginHeight != null)
@@ -689,7 +686,6 @@ public class Login extends Block {
 		Table loginTable = new Table(1, 2);
 		if (backgroundImageUrl != null)
 			loginTable.setBackgroundImage(new com.idega.presentation.Image(backgroundImageUrl));
-		loginTable.setAlignment("center");
 		if (loginWidth != null)
 			loginTable.setWidth(loginWidth);
 		if (loginHeight != null)
