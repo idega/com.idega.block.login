@@ -1,25 +1,23 @@
-#Mon Oct 27 01:32:58 CET 2003
-=
-case_status_key.FLYT=
-close=Close
+#Fri Oct 31 02:46:23 CET 2003
+close=St\u00E4ng
 confirm=Bekr\u00E4fta
-empty_fields=Empty fields
+empty_fields=Tomma f\u00E4lt
 has_no_login=Har inget login
-help=
+help=Hj\u00E4lp
 help_headline=Webbtillg\u00E5ng
 iw.component.com.idega.block.login.presentation.Login.name=Inloggning
-iw.component.com.idega.block.login.presentation.WelcomeMessage.name=WelcomeMessage
+iw.component.com.idega.block.login.presentation.WelcomeMessage.name=V\u00E4lkomstmeddelande
 login=Login
 login_created=Login skapat
 login_failed=Inloggning misslyckades
-login_no_user=Invalid user
+login_no_user=Ogiltigt anv\u00E4ndarnamn
 login_text=Logga in
-login_wrong=Invalid password
+login_wrong=Ogiltigt l\u00F6senord
 logout_text=Logga ut
-not\ logged\ on=Not logged on
+not\ logged\ on=Inte p\u00E5loggad
 passwd=L\u00F6senord
 password=L\u00F6senord
-save=Save
+save=Spara
 tryagain_text=F\u00F6rs\u00F6k igen
 updated=Login uppdaterat
 user=Anv\u00E4ndarnamn
