@@ -8,6 +8,7 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.ejb.EJBException;
+import javax.servlet.http.HttpSession;
 
 import com.idega.builder.business.BuilderLogic;
 import com.idega.business.IBOLookup;
@@ -73,10 +74,14 @@ public class LoginBusiness implements IWEventListener
 		}
 		return true;
 	}
+	
+	
 	public static void internalSetState(IWContext iwc, int state)
 	{
 		iwc.setSessionAttribute(LoginStateParameter, new Integer(state));
 	}
+	
+	
 	public static int internalGetState(IWContext iwc)
 	{
 		Integer state = (Integer) iwc.getSessionAttribute(LoginStateParameter);
@@ -140,6 +145,33 @@ public class LoginBusiness implements IWEventListener
 			return false;
 		}
 	}
+	
+	/**
+	 * Used for the LoggedOnInfo object to be able to log off users when their session expires.
+	 * @return True if logOut was succesful, false if it failed
+	 */
+	public static boolean logOutUserOnSessionTimeout(HttpSession session, LoggedOnInfo logOnInfo)
+	{
+		try
+		{
+			List ll = getLoggedOnInfoList(session);
+			int indexOfLoggedOfInfo = ll.indexOf(logOnInfo);
+			if (indexOfLoggedOfInfo > -1){
+				LoggedOnInfo _logOnInfo = (LoggedOnInfo) ll.remove(indexOfLoggedOfInfo);
+				LoginDBHandler.recordLogout(_logOnInfo.getLoginRecordId());
+			}
+			else return false;
+			
+			return true;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+		
 	/**
 	 * Invoked when the login failed
 	 * Can be overrided in subclasses to alter behaviour
@@ -291,6 +323,8 @@ public class LoginBusiness implements IWEventListener
 			throw new NotLoggedOnException();
 		}
 	}
+	
+	
 	public static void removeLoginAttribute(String key, IWContext iwc)
 	{
 		if (isLoggedOn(iwc))
@@ -396,12 +430,14 @@ public class LoginBusiness implements IWEventListener
 		int loginRecordId = LoginDBHandler.recordLogin(loginTable.getID(), iwc.getRemoteIpAddress());
 		LoggedOnInfo lInfo = new LoggedOnInfo();
 		lInfo.setLogin(login);
-		lInfo.setSession(iwc.getSession());
+		//lInfo.setSession(iwc.getSession());
 		lInfo.setTimeOfLogon(IWTimestamp.RightNow());
 		lInfo.setUser(user);
 		lInfo.setLoginRecordId(loginRecordId);
 		getLoggedOnInfoList(iwc).add(lInfo);
 		setLoggedOnInfo(lInfo, iwc);
+		
+		iwc.setSessionAttribute(user.getID()+"-LoginInfo",lInfo);
 		
 		UserProperties properties = new UserProperties(iwc.getApplication(),user.getID());
 	  iwc.setSessionAttribute(USER_PROPERTY_PARAMETER,properties);
@@ -471,6 +507,7 @@ public class LoginBusiness implements IWEventListener
 		  iwc.removeSessionAttribute(USER_PROPERTY_PARAMETER);
 		}
 	}
+		
 	/**
 
 	 * returns empty List if no one is logged on
@@ -486,10 +523,26 @@ public class LoginBusiness implements IWEventListener
 		}
 		return loggedOnList;
 	}
+	
+	public static List getLoggedOnInfoList(HttpSession session)
+	{
+		List loggedOnList = (List) session.getServletContext().getAttribute(_APPADDRESS_LOGGED_ON_LIST);
+		if (loggedOnList == null)
+		{
+			loggedOnList = new Vector();
+			session.getServletContext().setAttribute(_APPADDRESS_LOGGED_ON_LIST, loggedOnList);
+		}
+		return loggedOnList;
+	}
+	
+	
+	
 	public static LoggedOnInfo getLoggedOnInfo(IWUserContext iwc) throws NotLoggedOnException
 	{
 		return (LoggedOnInfo) getLoginAttribute(_LOGGINADDRESS_LOGGED_ON_INFO, iwc);
 	}
+	
+	
 	public static void setLoggedOnInfo(LoggedOnInfo lInfo, IWContext iwc) throws NotLoggedOnException
 	{
 		setLoginAttribute(_LOGGINADDRESS_LOGGED_ON_INFO, lInfo, iwc);
