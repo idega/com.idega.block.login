@@ -37,7 +37,7 @@ String userText;
 String passwordText;
 
 String color = "";
-String userTextColor;
+String userTextColor = "";
 String passwordTextColor;
 
 int userTextSize = -1;
