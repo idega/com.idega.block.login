@@ -43,7 +43,7 @@ import com.idega.user.data.Group;
 public class Login extends Block
 {
 	private Link loggedOnLink;
-	private String backgroundImageUrl = "";
+	private String backgroundImageUrl;
 	private String newUserImageUrl = "";
 	private String loginWidth = "";
 	private String loginHeight = "";
@@ -192,7 +192,8 @@ public class Login extends Block
 		}
 		loginTable.setCellpadding(0);
 		loginTable.setCellspacing(0);
-		loginTable.setBackgroundImage(new Image(backgroundImageUrl));
+		if (backgroundImageUrl != null)
+			loginTable.setBackgroundImage(new Image(backgroundImageUrl));
 		int ypos = 1;
 		int xpos = 1;
 		HelpButton helpImage =
@@ -481,7 +482,8 @@ public class Login extends Block
 		userText.addToText(user.getName());
 		Table loginTable = new Table();
 		loginTable.setBorder(0);
-		loginTable.setBackgroundImage(new Image(backgroundImageUrl));
+		if (backgroundImageUrl != null)
+			loginTable.setBackgroundImage(new Image(backgroundImageUrl));
 		loginTable.setAlignment(loginAlignment);
 		if (loginWidth != null)
 			loginTable.setWidth(loginWidth);
@@ -612,7 +614,8 @@ public class Login extends Block
 		mistokst.setFontStyle(textStyles);
 		Table loginTable = new Table();
 		loginTable.setBorder(0);
-		loginTable.setBackgroundImage(new Image(backgroundImageUrl));
+		if (backgroundImageUrl != null)
+			loginTable.setBackgroundImage(new Image(backgroundImageUrl));
 		loginTable.setAlignment(loginAlignment);
 		if (loginWidth != null)
 			loginTable.setWidth(loginWidth);
@@ -711,7 +714,8 @@ public class Login extends Block
 		}
 		textinn.setFontStyle(textStyles);
 		Table loginTable = new Table(1, 2);
-		loginTable.setBackgroundImage(new com.idega.presentation.Image(backgroundImageUrl));
+		if (backgroundImageUrl != null)
+			loginTable.setBackgroundImage(new com.idega.presentation.Image(backgroundImageUrl));
 		loginTable.setAlignment("center");
 		if (loginWidth != null)
 			loginTable.setWidth(loginWidth);
