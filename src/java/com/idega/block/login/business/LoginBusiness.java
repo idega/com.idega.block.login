@@ -34,6 +34,7 @@ import com.idega.core.accesscontrol.business.AccessControl;
 
 import com.idega.core.accesscontrol.business.NotLoggedOnException;
 
+import com.idega.builder.business.BuilderLogic;
 import com.idega.business.IWEventListener;
 
 import com.idega.idegaweb.IWException;
@@ -85,6 +86,8 @@ public class LoginBusiness implements IWEventListener{
   public static String PermissionGroupParameter="user_permission_groups";
 
   public static String LoginStateParameter="login_state";
+  
+  public static String LoginRedirectPageParameter = "login_redirect_page";
 
   private static String LoginAttributeParameter="login_attributes";
 
@@ -186,9 +189,15 @@ public class LoginBusiness implements IWEventListener{
 
                     if (canLogin) {
 
-                      isLoggedOn(iwc);
+                      //isLoggedOn(iwc);
 
                       internalSetState(iwc,"loggedon");
+                      
+                      // addon
+                      if(iwc.isParameterSet(LoginRedirectPageParameter)){
+                      	iwc.setSessionAttribute(BuilderLogic.SESSION_PAGE_KEY,iwc.getParameter(LoginRedirectPageParameter));
+                      }
+                      	
 
                     }
 

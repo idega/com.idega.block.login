@@ -61,7 +61,8 @@ private boolean onlyLogoutButton = false;
 private boolean register = false;
 private boolean forgot = false;
 private boolean _window;
-private IBPage _loggedOnPage;
+private int _logOnPage = -1;
+private int _redirectPage = -1;
 
 
 public static String controlParameter;
@@ -130,9 +131,10 @@ protected IWBundle iwb;
   }
 
   private void startState(){
-    if ( _loggedOnPage != null )
-      myForm.setPageToSubmitTo(_loggedOnPage.getID());
-
+    if ( _logOnPage > 0 ){
+      myForm.setPageToSubmitTo(_logOnPage);
+    }
+   
     Table loginTable = new Table();
       loginTable.setAlignment(loginAlignment);
       loginTable.setBorder(0);
@@ -619,13 +621,16 @@ protected IWBundle iwb;
   }
 
 	private void setDefaultValues() {
-    submitButtonAlignment = "center";
-    LAYOUT = LAYOUT_VERTICAL;
-
-    myForm = new Form();
-      myForm.setEventListener(LoginBusiness.class.getName());
-			myForm.setMethod("post");
-			myForm.maintainAllParameters();
+		submitButtonAlignment = "center";
+		LAYOUT = LAYOUT_VERTICAL;
+	
+		myForm = new Form();
+      	myForm.setEventListener(LoginBusiness.class.getName());
+      	if(_redirectPage > 0){
+      		myForm.add(new HiddenInput(LoginBusiness.LoginRedirectPageParameter,String.valueOf(_redirectPage)));
+      	}
+		myForm.setMethod("post");
+		myForm.maintainAllParameters();
 	}
 
 	public void addHelpButton() {
@@ -733,7 +738,11 @@ protected IWBundle iwb;
   }
 
   public void setLogOnPage(IBPage page) {
-    _loggedOnPage = page;
+    _logOnPage = page.getID();
+  }
+  
+   public void setLogOnPage(int page) {
+    _logOnPage = page;
   }
 
   public void setLoggedOnWindow(boolean window) {
@@ -762,6 +771,11 @@ protected IWBundle iwb;
 
   public void setForgot(boolean forgot){
     this.forgot = forgot;
+  }
+  
+  /** todo: implement */
+  public void setRedirectPage(int page){
+  	_redirectPage = page;
   }
 
   public Object clone() {
