@@ -126,9 +126,7 @@ protected IWBundle iwb;
 			loginTable.setCellspacing(0);
 			loginTable.setBackgroundImage(new Image(backgroundImageUrl));
 
-    HelpButton helpImage = new HelpButton(iwrb.getLocalizedString("help"));
-
-    System.out.println("helpImage: "+this.helpButton);
+    HelpButton helpImage = new HelpButton(iwrb.getLocalizedString("help_headline","Web Access"),iwrb.getLocalizedString("help",""),iwrb.getImage("help_image.gif").getURL());
 
     Text loginTexti = new Text(userText);
       if ( userTextSize != -1 ) {
@@ -242,7 +240,6 @@ protected IWBundle iwb;
         submitTable.setAlignment(2,1,"right");
       }
 			submitTable.setWidth("100%");
-			submitTable.setHeight("100%");
 
       SubmitButton button = new SubmitButton(loginImage,"tengja");
 
