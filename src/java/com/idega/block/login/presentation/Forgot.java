@@ -10,14 +10,16 @@ package com.idega.block.login.presentation;
 
 import java.text.MessageFormat;
 
+import com.idega.block.login.exception.LoginForgotException;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginContext;
 import com.idega.core.accesscontrol.business.LoginCreator;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.data.Email;
-import com.idega.core.user.data.User;
-import com.idega.core.user.data.UserHome;
+import com.idega.user.Converter;
+import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -28,30 +30,36 @@ import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.Window;
 import com.idega.util.SendMail;
 import com.idega.util.text.TextFormat;
 
 
 public class Forgot extends Block{
   private String errorMsg = "";
+  private final static String PRM_USER_LOGIN = "user_login";
+  
+  private boolean _loginInput = false;
+  private boolean _hideMessage = false;
 
   public static String prmUserId = "user_id";
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.login";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 
-  public final int INIT = 100;
-  public final int NORMAL = 0;
-  public final int USER_NAME_EXISTS = 1;
-  public final int ILLEGAL_USERNAME = 2;
-  public final int ILLEGAL_EMAIL = 3;
-  public final int NO_NAME = 5;
-  public final int NO_EMAIL = 6;
-  public final int NO_USERNAME = 7;
-  public final int NO_SERVER = 8;
-  public final int NO_LETTER = 9;
-  public final int ERROR = 10;
-  public final int SENT = 11;
+  public static final int INIT = 100;
+  public static final int NORMAL = 0;
+  public static final int USER_NAME_EXISTS = 1;
+  public static final int ILLEGAL_USERNAME = 2;
+  public static final int ILLEGAL_EMAIL = 3;
+  public static final int NO_NAME = 5;
+  public static final int NO_EMAIL = 6;
+  public static final int NO_USERNAME = 7;
+  public static final int NO_SERVER = 8;
+  public static final int NO_LETTER = 9;
+  public static final int ERROR = 10;
+  public static final int SENT = 11;
+  public static final int NO_LOGIN = 12;
   private String portalname = "";
   private TextFormat form;
 
@@ -69,15 +77,37 @@ public class Forgot extends Block{
     if(code == NORMAL)
       add(getSent(iwc));
     else
-      add(getForm(iwc,code));
+      add(getInitialState(iwc,code));
+  }
+  
+
+  private PresentationObject getInitialState(IWContext iwc,int code){
+
+  	return getForm(iwc,code);
   }
 
   private int processForm(IWContext iwc){
     String userEmail = iwc.getParameter("reg_user_email");
+	String userLogin = iwc.getParameter(PRM_USER_LOGIN);
     int code = NORMAL;
-    if(userEmail!=null){
-      code = lookupUser(userEmail);
-    }
+    try {
+		if(userEmail!=null){
+		  User usr = lookupUserByEmail(userEmail);
+		  sendEmail(iwc,usr,userEmail);
+		} else if(userLogin != null){
+		  System.out.println("login.presentation.Forgot.java - login mode");
+			User usr = lookupUserByLogin(userLogin);
+			Email email = getUserEmail(usr);
+			if(email != null){
+				sendEmail(iwc,usr,email.getEmailAddress());
+			} else {
+				code = NO_EMAIL;
+			}
+			
+		}
+	} catch (LoginForgotException e) {
+		code = e.getCode();
+	}
     return code;
   }
 
@@ -88,27 +118,63 @@ public class Forgot extends Block{
   }
 
   private PresentationObject getForm(IWContext iwc,int code){
-    Table T = new Table(2,6);
-    String manual = iwrb.getLocalizedString("forgotten.manual","Enter your username and a new password will be sent to your registered email address");
-    String textUserEmail = iwrb.getLocalizedString("forgotten.user_email","Email");
-    TextInput inputUserEmail = new TextInput("reg_user_email");
-
-    if(iwc.isParameterSet("reg_user_email")){
-      inputUserEmail.setContent(iwc.getParameter("reg_user_email"));
+	String message = getMessage(code);
+	int rows = 6;
+	int rowIndex = 1;
+	if(_hideMessage){
+		rows-=2;  
+	}
+	if(message == null){
+		rows--; 
+	}
+	
+    Table T = new Table(2,rows);
+    T.setBorder(1);
+    
+    if(!_hideMessage){
+		String manual = iwrb.getLocalizedString("forgotten.manual","Enter your username and a new password will be sent to your registered email address");
+		T.mergeCells(1,rowIndex,2,rowIndex);
+		T.add(form.format(manual),1,rowIndex);
+		rowIndex+=2;
     }
-    T.mergeCells(1,1,2,1);
-    T.add(form.format(manual),1,1);
-
-    T.add(form.format(textUserEmail),1,3);
-    T.add(inputUserEmail,2,3);
-    String message = getMessage(code);
-    if(message!=null)
-      T.add(form.format(message,"#ff0000"),1,5);
+	
+	if(_loginInput){
+		TextInput inputUserLogin = new TextInput(PRM_USER_LOGIN);
+		String textUserLogin = iwrb.getLocalizedString("forgotten.user_login","Login");
+		T.add(form.format(textUserLogin),1,rowIndex);
+		T.add(inputUserLogin,2,rowIndex);
+		rowIndex++;
+	} else {
+		TextInput inputUserEmail = new TextInput("reg_user_email");
+		String textUserEmail = iwrb.getLocalizedString("forgotten.user_email","Email");
+		if(iwc.isParameterSet("reg_user_email")){
+			inputUserEmail.setContent(iwc.getParameter("reg_user_email"));
+		}
+		T.add(form.format(textUserEmail),1,rowIndex);
+		T.add(inputUserEmail,2,rowIndex);
+		rowIndex++;
+	}
+	
+	
+	
+    
+    
+	
+    if(message!=null){
+		rowIndex++;
+		T.add(form.format(message,"#ff0000"),1,rowIndex);
+    }
+      
     //System.err.println(code+" : "+message);
     SubmitButton ok = new SubmitButton(iwrb.getLocalizedImageButton("send","Send"),"send");
     CloseButton close = new CloseButton(iwrb.getLocalizedImageButton("close","Close"));
-    T.add(ok,2,6);
-    T.add(close,2,6);
+    
+	rowIndex++;
+    T.add(ok,2,rowIndex);
+    if(this.getParentPage() instanceof Window){
+		T.add(close,2,rowIndex);
+    }
+    
     Form myForm = new Form();
     myForm.add(T);
     return myForm;
@@ -122,65 +188,97 @@ public class Forgot extends Block{
     return T;
   }
 
-  public int lookupUser(String emailAddress){
+  public User lookupUserByEmail(String emailAddress) throws LoginForgotException{
     System.err.println("Beginning lookup");
-    int internal = NORMAL;
     if( emailAddress.length() == 0 )
-      return NO_EMAIL;
+      throw new LoginForgotException(NO_EMAIL);
     /*
     LoginTable login =  LoginDBHandler.getUserLoginByUserName(userName);
     if(login == null)
       return NO_USERNAME;
     */
-    String sender = iwb.getProperty("forgotten.email_sender","admin@idega.is");
-    String server = iwb.getProperty("forgotten.email_server","mail.idega.is");
-    String subject = iwb.getProperty("forgotten.email_subject","Forgotten password");
-    if(sender==null || server == null || subject == null)
-      return NO_SERVER;
+    
     //QuestionHome qhome = (QuestionHome)IDOLookup.getHome(Question.class);
-    User u = null;
+    User usr = null;
     try{
       UserHome uhome = (UserHome) com.idega.data.IDOLookup.getHome(User.class);
-      u = uhome.findUserFromEmail(emailAddress);
-      LoginTable login = LoginDBHandler.getUserLogin(((Integer)u.getPrimaryKey()).intValue());
+      usr = uhome.findUserFromEmail(emailAddress);
+      LoginTable login = LoginDBHandler.getUserLogin(((Integer)usr.getPrimaryKey()).intValue());
       if(login== null)
-        return NO_USERNAME;
+        throw new LoginForgotException(NO_USERNAME);
     }
     catch(Exception ex){
       ex.printStackTrace();
-      return NO_NAME;
+      throw new LoginForgotException(NO_NAME);
     }
 
-    LoginContext context = null;
-    if(u!=null){
-      try{
-         context = LoginBusinessBean.changeUserPassword(u,LoginCreator.createPasswd(8));
-      }
-      catch(Exception ex){
-        ex.printStackTrace();
-        return ILLEGAL_USERNAME;
-      }
+    return usr;
+  }  
+  
+	public User lookupUserByLogin(String loginName) throws LoginForgotException{
+		System.err.println("Beginning lookup");
+		if( loginName.length() == 0 )
+			throw new LoginForgotException(NO_LOGIN);
+		/*
+		LoginTable login =  LoginDBHandler.getUserLoginByUserName(userName);
+		if(login == null)
+			return NO_USERNAME;
+		*/
+	
+		//QuestionHome qhome = (QuestionHome)IDOLookup.getHome(Question.class);
+		User usr = null;
+		try{
+			LoginTable[] login =  (LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumn(com.idega.core.accesscontrol.data.LoginTableBMPBean.getUserLoginColumnName(), loginName);
+			if(login== null || login.length < 0){
+				throw new LoginForgotException(NO_LOGIN);
+			}
+			
+			usr = Converter.convertToNewUser(login[0].getUser());
+			
+		}
+		catch(Exception ex){
+			ex.printStackTrace();
+			throw new LoginForgotException(NO_NAME);
+		}
+	
+		return usr;
+	}
+  
+  private void sendEmail(IWContext iwc, User usr, String emailAddress) throws LoginForgotException{
+	String sender = iwb.getProperty("forgotten.email_sender","admin@idega.is");
+	String server = iwb.getProperty("forgotten.email_server","mail.idega.is");
+	String subject = iwb.getProperty("forgotten.email_subject","Forgotten password");
+	if(sender==null || server == null || subject == null)
+		throw new LoginForgotException(NO_SERVER);
 
-      System.err.println(u.getName()+" has forgotten password");
-      String letter = iwrb.getLocalizedString("forgotten.email_body","Username : {0} \nPassword: {1} ");
-      if(letter == null)
-        return NO_LETTER;
+	LoginContext context = null;
+	 if(usr!=null){
+		 try{
+				context = LoginBusinessBean.changeUserPassword(usr,LoginCreator.createPasswd(8));
+		 }
+		 catch(Exception ex){
+			 ex.printStackTrace();
+			 throw new LoginForgotException(ILLEGAL_USERNAME);
+		 }
 
-      if(letter !=null && context !=null){
-        Object[] objs = {context.getUserName(),context.getPassword()};
-        String body = MessageFormat.format(letter,objs);
+		 System.err.println(usr.getName()+" has forgotten password");
+		 String letter = iwrb.getLocalizedString("forgotten.email_body","Username : {0} \nPassword: {1} ");
+		 if(letter == null)
+		 	throw new LoginForgotException(NO_LETTER);
+
+		 if(letter !=null && context !=null){
+			 Object[] objs = {context.getUserName(),context.getPassword()};
+			 String body = MessageFormat.format(letter,objs);
 
 
-        try{
-          SendMail.send(sender,emailAddress,"","",server,subject,body.toString());
-        }
-        catch(javax.mail.MessagingException ex){
-          ex.printStackTrace();
-        }
-        return NORMAL;
-      }
-    }
-    return internal;
+			 try{
+				 SendMail.send(sender,emailAddress,"","",server,subject,body.toString());
+			 }
+			 catch(javax.mail.MessagingException ex){
+				 ex.printStackTrace();
+			 }
+		 }
+	 }
   }
 
   public Email getUserEmail(User user){
@@ -218,5 +316,14 @@ public class Forgot extends Block{
     iwb = getBundle(iwc);
     iwrb = getResourceBundle(iwc);
     control(iwc);
+  }
+  
+  
+  public void setToUseLoginInput(boolean value){
+	 _loginInput = value;
+  }
+  
+  public void setToHideMessage(boolean value){
+		_hideMessage = value;
   }
 }
