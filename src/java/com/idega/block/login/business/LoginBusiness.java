@@ -24,6 +24,7 @@ import com.idega.util.idegaTimestamp;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
+import java.util.StringTokenizer;
 
 /**
  * Title:        LoginBusiness
@@ -292,6 +293,44 @@ public class LoginBusiness implements IWEventListener{
 
   public static void setLoggedOnInfo(LoggedOnInfo lInfo, IWContext iwc)throws NotLoggedOnException{
     setLoginAttribute(_LOGGINADDRESS_LOGGED_ON_INFO,lInfo,iwc);
+  }
+
+  public static LoginContext createNewUser(String fullName,String email,String preferredUserName,String preferredPassword ){
+    UserBusiness ub = new UserBusiness();
+    StringTokenizer tok = new StringTokenizer(fullName);
+    String first = "";
+    String middle = "";
+    String last = "";
+    if(tok.hasMoreTokens())
+      first = tok.nextToken();
+    if(tok.hasMoreTokens())
+      middle = tok.nextToken();
+    if(tok.hasMoreTokens())
+      last = tok.nextToken();
+    else
+      last = middle;
+
+    LoginContext loginContext = null;
+    try{
+      User user = ub.insertUser(first,middle,last,"",null,null,null,null);
+      String login = preferredUserName;
+      String pass = preferredPassword;
+      if(user !=null){
+        if(email !=null && email.length() >0)
+          ub.addNewUserEmail(user.getID(),email);
+        if(login!=null)
+          login = LoginCreator.createLogin(user.getName());
+        if(pass!=null)
+          pass = LoginCreator.createPasswd(8);
+
+
+        LoginDBHandler.createLogin(user.getID(),login,pass);
+        loginContext = new LoginContext(user,login,pass);
+      }
+    }
+    catch(Exception ex){}
+
+    return loginContext;
   }
 
 }
