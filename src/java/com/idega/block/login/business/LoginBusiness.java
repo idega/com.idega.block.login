@@ -195,7 +195,8 @@ public class LoginBusiness implements IWEventListener{
                       
                       // addon
                       if(iwc.isParameterSet(LoginRedirectPageParameter)){
-                      	iwc.setSessionAttribute(BuilderLogic.SESSION_PAGE_KEY,iwc.getParameter(LoginRedirectPageParameter));
+                      	//System.err.println("redirect parameter is set");
+                      	BuilderLogic.getInstance().setCurrentPriorityPageID(iwc,iwc.getParameter(LoginRedirectPageParameter));
                       }
                       	
 

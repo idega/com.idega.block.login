@@ -7,6 +7,7 @@ package com.idega.block.login.presentation;
 
 import com.idega.core.user.data.User;
 import com.idega.builder.data.IBPage;
+import com.idega.user.data.Group;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
@@ -63,6 +64,8 @@ private boolean forgot = false;
 private boolean _window;
 private int _logOnPage = -1;
 private int _redirectPage = -1;
+
+private Map groupPageMap;
 
 
 public static String controlParameter;
@@ -134,6 +137,10 @@ protected IWBundle iwb;
     if ( _logOnPage > 0 ){
       myForm.setPageToSubmitTo(_logOnPage);
     }
+	if(_redirectPage > 0){
+  		//System.err.println("adding hidden redirect parameter");
+  		myForm.add(new HiddenInput(LoginBusiness.LoginRedirectPageParameter,String.valueOf(_redirectPage)));
+  	}
    
     Table loginTable = new Table();
       loginTable.setAlignment(loginAlignment);
@@ -626,9 +633,7 @@ protected IWBundle iwb;
 	
 		myForm = new Form();
       	myForm.setEventListener(LoginBusiness.class.getName());
-      	if(_redirectPage > 0){
-      		myForm.add(new HiddenInput(LoginBusiness.LoginRedirectPageParameter,String.valueOf(_redirectPage)));
-      	}
+      
 		myForm.setMethod("post");
 		myForm.maintainAllParameters();
 	}
@@ -775,8 +780,24 @@ protected IWBundle iwb;
   
   /** todo: implement */
   public void setRedirectPage(int page){
+  	System.err.println("setting redirect page");
   	_redirectPage = page;
   }
+  
+  public void setGroupForwardPage(Group group,IBPage page){
+  	try{
+	getGroupPageMap().put(group.getPrimaryKey().toString(),page.getPrimaryKey().toString());
+  	}catch(Exception ex){
+  	
+  	}
+  }
+  
+  private Map getGroupPageMap(){
+	  if(groupPageMap==null){
+	    groupPageMap=new HashMap();
+	  }
+	  return groupPageMap;
+	}
 
   public Object clone() {
     Login obj = null;
@@ -798,6 +819,7 @@ protected IWBundle iwb;
       if (this.loggedOnLink != null) {
 	obj.loggedOnLink=(Link)this.loggedOnLink.clone();
       }
+     
     }
     catch(Exception ex) {
       ex.printStackTrace(System.err);
