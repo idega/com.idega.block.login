@@ -816,14 +816,15 @@ public class Login extends Block {
 	public void setSubmitButtonAlignment(String alignment) {
 		submitButtonAlignment = alignment;
 	}
+	public void setLoginButtonImageURL(String loginImageURL) {
+		setLoginButton(new Image(loginImageURL));
+	}
 	public void setLoginButton(Image loginImage) {
 		this.loginImage = loginImage;
 	}
-
 	public void setLogoutButtonImageURL(String logoutImageURL) {
 		setLogoutButton(new Image(logoutImageURL));
 	}
-	
 	public void setLogoutButton(Image logoutImage) {
 		this.logoutImage = logoutImage;
 	}
