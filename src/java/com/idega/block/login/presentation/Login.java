@@ -134,7 +134,11 @@ public class Login extends Block {
 				;
 				if (hintRight) {
 					String sentTo = resetPasswordAndsendMessage(iwc);
-					hintMessage = sentTo == null ? iwrb.getLocalizedString("login_hint_error", "Error validating hint answer") : iwrb.getLocalizedString("login_hint_correct", "Correct answer, instructions have been sent to: " + sentTo);
+					if(sentTo==null) {
+						hintMessage = iwrb.getLocalizedString("login_hint_error", "Error validating hint answer");
+					} else {
+						hintMessage = iwrb.getLocalizedString("login_hint_correct", "Correct answer, instructions have been sent to: ") + sentTo;
+					}
 				}
 				else {
 					hintMessage = iwrb.getLocalizedString("login_hint_incorrect", "Answer incorrect");
