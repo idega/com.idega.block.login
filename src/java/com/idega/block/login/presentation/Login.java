@@ -152,7 +152,7 @@ public class Login extends Block {
 
 		myForm.setEventListener(loginHandlerClass);
 		if (allowCookieLogin) {
-			iwc.getApplication().addApplicationEventListener(LoginCookieListener.class);
+			iwc.getIWMainApplication().addApplicationEventListener(LoginCookieListener.class);
 		}
 		if (this.sendToHTTPS) {
 			myForm.setToSendToHTTPS();

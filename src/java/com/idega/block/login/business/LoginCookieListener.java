@@ -60,7 +60,7 @@ public class LoginCookieListener implements IWPageEventListener{
   }
 
   public String getCypherKey(IWApplicationContext iwc) {
-    IWBundle iwb = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+    IWBundle iwb = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     CypherText cyph = new CypherText();
 
     String cypherKey = iwb.getProperty("cypherKey");

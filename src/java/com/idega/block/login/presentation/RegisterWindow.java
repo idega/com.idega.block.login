@@ -32,7 +32,7 @@ public class RegisterWindow extends IWAdminWindow {
 	public void main(IWContext iwc) throws Exception {
 		String bClass = null;
 		try {
-			bClass = iwc.getApplication().getBundle(Login.IW_BUNDLE_IDENTIFIER).getProperty(BUNDLE_KEY_REGISTER_CLASS);
+			bClass = iwc.getIWMainApplication().getBundle(Login.IW_BUNDLE_IDENTIFIER).getProperty(BUNDLE_KEY_REGISTER_CLASS);
 		} catch(Exception e) {
 			// just user default Register class
 		}
