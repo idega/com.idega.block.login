@@ -313,9 +313,8 @@ public class Login extends Block
 		if (_buttonAsLink) {
 			submitTable.setCellpadding(0);
 			int column = 1;
-			Link link = new Link(iwrb.getLocalizedString("login_text", "Login"));
+			Link link = this.getStyleLink(iwrb.getLocalizedString("login_text", "Login"), _linkStyleClass);
 			link.setToFormSubmit(myForm);
-			link.setStyleClass(_linkStyleClass);
 			if (_iconImage != null) {
 				submitTable.add(_iconImage,column++,1);
 				submitTable.setWidth(column++,1,String.valueOf(_spaceBetween));
@@ -528,9 +527,8 @@ public class Login extends Block
 			submitTable.setCellpadding(0);
 			loginTable.setCellpadding(0);
 			int column = 1;
-			Link link = new Link(iwrb.getLocalizedString("logout_text", "Logout"));
+			Link link = this.getStyleLink(iwrb.getLocalizedString("logout_text", "Logoff"), _linkStyleClass);
 			link.setToFormSubmit(myForm);
-			link.setStyleClass(_linkStyleClass);
 			if (_iconImage != null) {
 				submitTable.add(_iconImage,column++,1);
 				submitTable.setWidth(column++,1,String.valueOf(_spaceBetween));
@@ -632,9 +630,8 @@ public class Login extends Block
 			submitTable.setCellpadding(0);
 			loginTable.setCellpadding(0);
 			int column = 1;
-			Link link = new Link(iwrb.getLocalizedString("logout_text", "Logout"));
+			Link link = this.getStyleLink(iwrb.getLocalizedString("tryagain_text", "Try again"), _linkStyleClass);
 			link.setToFormSubmit(myForm);
-			link.setStyleClass(_linkStyleClass);
 			if (_iconImage != null) {
 				submitTable.add(_iconImage,column++,1);
 				submitTable.setWidth(column++,1,String.valueOf(_spaceBetween));
