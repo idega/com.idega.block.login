@@ -154,8 +154,13 @@ public class LoginBusiness implements IWEventListener{
   }
 
 
-  public static User getUser(ModuleInfo modinfo){
-    return (User)modinfo.getSessionAttribute(UserAttributeParameter);
+  public static User getUser(ModuleInfo modinfo) throws NotLoggedOnException {
+    Object obj = modinfo.getSessionAttribute(UserAttributeParameter);
+    if (obj != null){
+      return (User)obj;
+    }else{
+      throw new NotLoggedOnException();
+    }
   }
 
   public static PermissionGroup[] getPermissionGroups(ModuleInfo modinfo){
