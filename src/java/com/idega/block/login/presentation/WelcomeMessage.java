@@ -17,7 +17,7 @@ import com.idega.util.IWTimestamp;
  */
 public class WelcomeMessage extends Text {
 
-	protected static final String IW_BUNDLE_IDENTIFIER="com.idega.block.navigation";
+	protected static final String IW_BUNDLE_IDENTIFIER="com.idega.block.login";
 	private static final String WELCOME_KEY_MORNING = "welcome_message.morning";
 	private static final String WELCOME_KEY_AFTERNOON = "welcome_message.afternoon";
 	private static final String WELCOME_KEY_EVENING = "welcome_message.evening";
