@@ -80,6 +80,7 @@ public class Login extends Block
 	protected IWBundle iwb;
 	private String loginHandlerClass = LoginBusiness.class.getName();
 	protected boolean sendToHTTPS=false;
+	protected boolean sendUserToHomePage=false;
   private boolean allowCookieLogin = false;
 
 	public Login()
@@ -398,7 +399,7 @@ public class Login extends Block
 			myForm.setPageToSubmitTo(loggedOffPageId);
 		User user = (User) getUser(iwc);
 
-		if ( LoginBusiness.isLogOnAction(iwc) ) {
+		if ( sendUserToHomePage && LoginBusiness.isLogOnAction(iwc) ) {
 			com.idega.user.data.User newUser = Converter.convertToNewUser(user);
 			com.idega.user.data.Group newGroup = newUser.getPrimaryGroup();
 			if ( newUser.getHomePageID() != -1 )
@@ -931,6 +932,14 @@ public class Login extends Block
 			myForm.setToSendToHTTPS(doSendToHTTPS);
 		}
 		sendToHTTPS=doSendToHTTPS;
+	}
+
+
+	/**
+	 * Set if the form should send the user to his home page after login.
+	 **/
+	public void setToSendUserToHomePage(boolean doSendToHomePage){
+		sendUserToHomePage=doSendToHomePage;
 	}
 
 }
