@@ -1,5 +1,5 @@
 /*
- * $Id: LoginLayoutHandler.java,v 1.6 2003/06/05 17:56:03 gummi Exp $
+ * $Id: LoginLayoutHandler.java,v 1.7 2004/06/28 11:18:35 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,7 +12,7 @@ package com.idega.block.login.business;
 import java.util.List;
 
 import com.idega.block.login.presentation.Login;
-import com.idega.builder.handler.PropertyHandler;
+import com.idega.core.builder.data.ICPropertyHandler;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;
@@ -21,7 +21,7 @@ import com.idega.presentation.ui.DropdownMenu;
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
  */
-public class LoginLayoutHandler implements PropertyHandler {
+public class LoginLayoutHandler implements ICPropertyHandler {
   /**
    *
    */

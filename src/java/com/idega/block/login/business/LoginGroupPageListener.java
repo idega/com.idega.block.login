@@ -1,12 +1,15 @@
 package com.idega.block.login.business;
 
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.idega.builder.business.BuilderLogic;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
+import com.idega.core.builder.business.BuilderService;
 import com.idega.event.IWPageEventListener;
 import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
@@ -20,14 +23,20 @@ public class LoginGroupPageListener implements IWPageEventListener {
 	
 	private static String prmGroupToPageMap = "login_group_to_page_map";
 	
-	public boolean actionPerformed(IWContext iwc)throws IWException{
+	public boolean actionPerformed(IWContext iwc) throws IWException {
 		/** todo: */
 		if ( iwc.isLoggedOn() && LoginBusinessBean.isLogOnAction(iwc) ){
 			System.err.println("trying to get page for usergroup");
 			String page = checkUserGroups(iwc);
 			if(page!=null){
 				System.err.println("setting group page");
-				BuilderLogic.getInstance().setCurrentPriorityPageID(iwc,page);
+				try {
+					((BuilderService)IBOLookup.getServiceInstance(iwc ,BuilderService.class)).setPriorityPageId(iwc, page);
+				} catch (IBOLookupException e) {
+					throw new IWException("[LoginGroupPageListener] BuilderService could not be found");
+				} catch (RemoteException e) {
+					throw new IWException("[loginGroupPageListener] BuilderService could not be invoked");
+				}
 			}
 		}
 		return false;
