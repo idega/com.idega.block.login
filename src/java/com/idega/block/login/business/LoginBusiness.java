@@ -537,7 +537,7 @@ public class LoginBusiness implements IWEventListener
 		try {
 			Method method = finder.getMethodsWithNameAndNoParameters(HttpSession.class,"getServletContext");
 			try {
-				context = (ServletContext) method.invoke(null,null);
+				context = (ServletContext) method.invoke(session,null);
 			}
 			catch (IllegalArgumentException e1) {
 				e1.printStackTrace();
