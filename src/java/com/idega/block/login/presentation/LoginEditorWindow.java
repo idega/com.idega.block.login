@@ -10,8 +10,8 @@ package com.idega.block.login.presentation;
  */
 
 import com.idega.idegaweb.presentation.IWAdminWindow;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.Table;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
 
 public class LoginEditorWindow extends IWAdminWindow{
 
@@ -21,7 +21,7 @@ public class LoginEditorWindow extends IWAdminWindow{
     setHeight(300 );
   }
 
-  public void main(ModuleInfo modinfo) throws Exception{
+  public void main(IWContext iwc) throws Exception{
     LoginEditor BE = new LoginEditor();
     Table T = new Table(1,1);
     T.setAlignment(1,1,"center");

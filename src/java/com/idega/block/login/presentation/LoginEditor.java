@@ -13,15 +13,15 @@ import java.sql.SQLException;
 import com.idega.core.user.data.User;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import com.idega.block.login.business.LoginBusiness;
 
 
-public class LoginEditor extends ModuleObjectContainer{
+public class LoginEditor extends PresentationObjectContainer{
 
   private User eUser = null;
   private String sUnionId = null;
@@ -62,15 +62,15 @@ public class LoginEditor extends ModuleObjectContainer{
     }
   }
 
-  protected void control(ModuleInfo modinfo){
-    String sUserId = modinfo.getParameter(prmUserId);
+  protected void control(IWContext iwc){
+    String sUserId = iwc.getParameter(prmUserId);
     if(eUser == null)
-      eUser = LoginBusiness.getUser(modinfo);
+      eUser = LoginBusiness.getUser(iwc);
     if(eUser!=null){
       String userlogin = null;
       boolean check = false;
-      if(modinfo.getParameter("ok")!=null || modinfo.getParameter("ok.x")!=null ){
-        check = doAddTo(modinfo,eUser.getID());
+      if(iwc.getParameter("ok")!=null || iwc.getParameter("ok.x")!=null ){
+        check = doAddTo(iwc,eUser.getID());
       }
       userlogin = getUsrLogin(eUser.getID());
 
@@ -89,7 +89,7 @@ public class LoginEditor extends ModuleObjectContainer{
     return t;
   }
 
-  protected ModuleObject makeLinkTable(int menuNr){
+  protected PresentationObject makeLinkTable(int menuNr){
     return new Text("");
   }
 
@@ -101,10 +101,10 @@ public class LoginEditor extends ModuleObjectContainer{
       return iwrb.getLocalizedString("has_no_login","Has no login");
   }
 
-  private boolean doAddTo(ModuleInfo modinfo,int iUserId){
-    String sLogin = modinfo.getParameter("ml.usrlgn");
-    String sPasswd = modinfo.getParameter("ml.psw1");
-    String sConfirm = modinfo.getParameter("ml.psw2");
+  private boolean doAddTo(IWContext iwc,int iUserId){
+    String sLogin = iwc.getParameter("ml.usrlgn");
+    String sPasswd = iwc.getParameter("ml.psw1");
+    String sConfirm = iwc.getParameter("ml.psw2");
     boolean register = false;
     if(sLogin != null && sPasswd != null && sConfirm != null){
       if(sLogin.length() > 0  && sPasswd.length() > 0 && sConfirm.length() > 0){
@@ -123,7 +123,7 @@ public class LoginEditor extends ModuleObjectContainer{
     return register;
   }
 
-  private ModuleObject doView(User user,String sUserLogin){
+  private PresentationObject doView(User user,String sUserLogin){
     Table T = new Table();
     T.add(formatText(user.getName()),1,2);
 
@@ -219,10 +219,10 @@ public class LoginEditor extends ModuleObjectContainer{
     O.setAttribute("style",this.styleAttribute);
   }
 
-  public void main(ModuleInfo modinfo){
-    iwrb = getResourceBundle(modinfo);
-    if(LoginBusiness.isLoggedOn(modinfo))
-      control(modinfo);
+  public void main(IWContext iwc){
+    iwrb = getResourceBundle(iwc);
+    if(LoginBusiness.isLoggedOn(iwc))
+      control(iwc);
     else
       add(iwrb.getLocalizedString("not logged on","Not logged on"));
   }

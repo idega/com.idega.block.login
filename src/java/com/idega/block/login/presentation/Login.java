@@ -6,9 +6,9 @@
 package com.idega.block.login.presentation;
 
 import com.idega.core.user.data.User;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import java.util.*;
 import com.idega.block.login.business.*;
 import com.idega.core.accesscontrol.business.AccessControl;
@@ -25,7 +25,7 @@ import com.idega.idegaweb.IWMainApplication;
  * @version 1.1
  */
 
-public class Login extends JModuleObject{
+public class Login extends Block{
 
 private String backgroundImageUrl = "";
 private String newUserImageUrl = "";
@@ -72,9 +72,9 @@ protected IWBundle iwb;
 		setDefaultValues();
 	}
 
-  public void main(ModuleInfo modinfo)throws Exception{
-    iwb = getBundle(modinfo);
-    iwrb = getResourceBundle(modinfo);
+  public void main(IWContext iwc)throws Exception{
+    iwb = getBundle(iwc);
+    iwrb = getResourceBundle(iwc);
 
     if ( loginImage == null )
       loginImage = iwrb.getImage("login.gif");
@@ -86,10 +86,10 @@ protected IWBundle iwb;
 		userText = iwrb.getLocalizedString("user","User");
 		passwordText = iwrb.getLocalizedString("password","Password");
 
-    String state = internalGetState(modinfo);
+    String state = internalGetState(iwc);
     if(state!=null){
       if(state.equals("loggedon")){
-        isLoggedOn(modinfo);
+        isLoggedOn(iwc);
       }
       else if(state.equals("loggedoff")){
         startState();
@@ -108,12 +108,12 @@ protected IWBundle iwb;
     add(myForm);
   }
 
-  public static boolean isAdmin(ModuleInfo modinfo)throws Exception{
-    return AccessControl.isAdmin(modinfo);
+  public static boolean isAdmin(IWContext iwc)throws Exception{
+    return AccessControl.isAdmin(iwc);
 	}
 
-	public static User getUser(ModuleInfo modinfo){
-		return LoginBusiness.getUser(modinfo);
+	public static User getUser(IWContext iwc){
+		return LoginBusiness.getUser(iwc);
 	}
 
 	private void startState(){
@@ -261,8 +261,8 @@ protected IWBundle iwb;
 	}
 
 
-	private void isLoggedOn(ModuleInfo modinfo) throws Exception{
-		User user = (User) getUser(modinfo);
+	private void isLoggedOn(IWContext iwc) throws Exception{
+		User user = (User) getUser(iwc);
 
 		Text userText = new Text();
 			if ( userTextSize > -1 ) {
@@ -401,7 +401,7 @@ protected IWBundle iwb;
       }
 
 		Table loginTable = new Table(1,2);
-			loginTable.setBackgroundImage(new com.idega.jmodule.object.Image(backgroundImageUrl));
+			loginTable.setBackgroundImage(new com.idega.presentation.Image(backgroundImageUrl));
 			loginTable.setAlignment("center");
 			loginTable.setWidth(loginWidth);
 			loginTable.setHeight(loginHeight);
@@ -443,8 +443,8 @@ protected IWBundle iwb;
 		myForm.add(loginTable);
 	}
 
-  public String internalGetState(ModuleInfo modinfo){
-      return LoginBusiness.internalGetState(modinfo);
+  public String internalGetState(IWContext iwc){
+      return LoginBusiness.internalGetState(iwc);
   }
 
   public String getBundleIdentifier(){
