@@ -138,7 +138,7 @@ public class LoginBusiness implements IWEventListener{
 
 
 
-  public void actionPerformed(IWContext iwc)throws IWException{
+  public boolean actionPerformed(IWContext iwc)throws IWException{
 
         //System.out.println("LoginBusiness.actionPerformed");
 
@@ -239,7 +239,7 @@ public class LoginBusiness implements IWEventListener{
       }
 
 
-
+    return true;
   }
 
 /*
