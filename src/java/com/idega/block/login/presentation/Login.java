@@ -3,14 +3,22 @@
 *Copyright 2000-2001 idega.is All Rights Reserved.
 */
 package com.idega.block.login.presentation;
+import java.rmi.RemoteException;
+import java.text.MessageFormat;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
+import javax.ejb.FinderException;
+
 import com.idega.block.login.business.LoginCookieListener;
+import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.core.builder.data.ICPage;
+import com.idega.core.contact.data.Email;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -23,11 +31,16 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.AbstractGroupBMPBean;
 import com.idega.user.util.Converter;
+import com.idega.util.SendMail;
+import com.idega.util.StringHandler;
 /**
  * Title:        Login - The standard login block in idegaWeb
  * Description:
@@ -68,7 +81,7 @@ public class Login extends Block {
 	//private int _redirectPage = -1;
 	private Map groupPageMap;
 	public static String controlParameter;
-	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.login";
+	public final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.login";
 	public static final int LAYOUT_VERTICAL = 1;
 	public static final int LAYOUT_HORIZONTAL = 2;
 	public static final int LAYOUT_STACKED = 3;
@@ -92,13 +105,40 @@ public class Login extends Block {
 	private int _loginPageID = -1;
 	private final static String FROM_PAGE_PARAMETER = "log_from_page";
 	
+	private static final String LOGIN_PARAMETER_NAME = "login";
+	private static final String HINT_ANSWER_PARAMETER_NAME = "hint_answer";
+	
+	private final static String BUNDLE_PROPERTY_DISPLAY_REGISTER_LINK = "new_user_link_on_login_page";
+	private final static String BUNDLE_PROPERTY_HINT_BEFORE_DISABLING = "hint_before_login_disabled";
+	
 	//private IBPage _pageForInvalidLogin = null;
 
 	public Login() {
 		super();
 		setDefaultValues();
 	}
+	
 	public void main(IWContext iwc) throws Exception {
+		iwb = getBundle(iwc);
+		iwrb = getResourceBundle(iwc);
+		
+		String hintAnswer = iwc.getParameter(HINT_ANSWER_PARAMETER_NAME);
+		String hintMessage = null;
+		if(hintAnswer!=null && hintAnswer.length()>0) {
+			System.out.println("verifying hint answer");
+			try {
+				boolean hintRight = testHint(iwc, hintAnswer);;
+				if(hintRight) {
+					String sentTo = resetPasswordAndsendMessage(iwc);
+					hintMessage = sentTo==null?iwrb.getLocalizedString("login_hint_error", "Villa kom upp vid ad sannreyna svar"):
+											   iwrb.getLocalizedString("login_hint_correct", "Rett svar, leidbeiningar hafa verid sendar i posti a eftirfarandi postfong: " + sentTo);
+				} else {
+					hintMessage = iwrb.getLocalizedString("login_hint_incorrect", "Rangt svar");
+				}
+			} catch(Exception e) {
+				hintMessage = iwrb.getLocalizedString("login_hint_error", "Villa kom upp vid ad sannreyna svar");
+			}
+		}
 		if (this._buttonAsLink) {
 			if (getParentPage() != null) {
 				Script script = null;
@@ -120,8 +160,6 @@ public class Login extends Block {
 		if (this.sendToHTTPS) {
 			myForm.setToSendToHTTPS();
 		}
-		iwb = getBundle(iwc);
-		iwrb = getResourceBundle(iwc);
 		if (loginImage == null) //loginImage = iwrb.getImage("login.gif");
 			loginImage = iwrb.getLocalizedImageButton("login_text", "Login");
 		if (logoutImage == null) //logoutImage = iwrb.getImage("logout.gif");
@@ -154,13 +192,154 @@ public class Login extends Block {
 			case LoginBusinessBean.STATE_LOGIN_DISABLED :
 				loginFailed(iwc, iwrb.getLocalizedString("login_disabled", "Login disabled"));
 				break;
+			case LoginBusinessBean.STATE_LOGIN_FAILED_DISABLED_NEXT_TIME :
+				loginFailed(iwc, iwrb.getLocalizedString("login_wrong_disabled_next_time", "Invalid password, access closed next time login fails"));
+				if(hintMessage==null) {
+					handleHint(iwc);
+				}
+				break;
 			default :
 				startState(iwc);
 				break;
 		}
 
 		add(myForm);
+		if(hintMessage!=null) {
+			add(hintMessage);
+		}
 	}
+	
+	private String resetPasswordAndsendMessage(IWContext iwc) {
+		String login = iwc.getParameter(LOGIN_PARAMETER_NAME);
+		User user = null;
+		try {
+			user = getUserBusiness(iwc).getUser(login);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		if(user==null) {
+			System.out.println("no user found to change password and send notification to");
+			return null;
+		}
+		
+		// temp password, sent to user so he can log in and change his password.
+		String tmpPassword = StringHandler.getRandomStringNonAmbiguous(8);
+		System.out.println("created temp password \"" + tmpPassword + "\"");
+		
+		String server = iwb.getProperty("email_server");
+		if(server == null) {
+			System.out.println("email server bundle property not set, no password email sent to user " + user.getName());
+			return null;
+		}
+		
+		String letter =
+						iwrb.getLocalizedString(
+						"login.password_email_body",
+						"Thessi postur er sendur thvi tu hefur gleymt lykilordi thinu a Felix og gafst rett svar vid visbendingaspurningunni thinni.\n" +
+						"Thu tharft ad velja ther nytt lykilord. " +
+						"Til ad geta farid inn a Felix og breytt lykilordi thinu hefur verid buid til nytt timabundid lykilord fyrir thig. " +
+						"\nLykilord thitt a Felix er nuna \"{0}\"\n");
+
+		StringBuffer buf = null;
+		
+		if (letter != null) {
+			try {
+				Collection emailCol = ((com.idega.user.data.User)user).getEmails();
+				if(emailCol!=null && !emailCol.isEmpty()) {
+					Iterator emailIter = emailCol.iterator();
+					
+					LoginBusinessBean.resetPassword(login, tmpPassword, true);
+					
+					buf = new StringBuffer();
+					boolean firstAddress = true;
+					
+					while(emailIter.hasNext()) {
+						String address = ((Email) emailIter.next()).getEmailAddress();
+						
+						if(firstAddress) {
+							firstAddress = false;
+						} else {
+							buf.append(";");
+						}
+						buf.append(address);
+						
+						Object[] objs = {tmpPassword};
+						String body = MessageFormat.format(letter,objs);
+						
+						System.out.println("Sending password to " + address);
+						
+						SendMail.send(
+							iwrb.getLocalizedString("register.email_sender", "<Felix-felagakerfi>felix@isi.is"),
+							address,
+							"",
+							"",
+							server,
+							iwrb.getLocalizedString("login.password_email_subject", "Gleymt lykilord a Felix"),
+							body);
+					}
+				}
+			} catch (Exception e) {
+				System.out.println("Couldn't send email password notification to user " + user.getDisplayName());
+				e.printStackTrace();
+				return null;
+			}
+		} else {
+			System.out.println("No password letter found, nothing sent to user " + user.getDisplayName());
+			return null;
+		}
+		
+		return buf==null?null:buf.toString();
+	}
+	
+	private boolean testHint(IWContext iwc, String answer) throws Exception {
+		User user = null;
+		boolean ok = false;
+		user = getUserBusiness(iwc).getUser(iwc.getParameter(LOGIN_PARAMETER_NAME));
+		ok = answer.trim().equals(user.getMetaData("HINT_ANSWER").trim());
+		return ok;
+	}
+	
+	private void handleHint(IWContext iwc) {
+		String showHint = iwb.getProperty(BUNDLE_PROPERTY_HINT_BEFORE_DISABLING);
+		if(showHint!=null && showHint.equalsIgnoreCase("true")) {
+			String userName = iwc.getParameter(LOGIN_PARAMETER_NAME);
+			if(userName!=null && userName.length()>0) {
+				try {
+					User user = getUserBusiness(iwc).getUser(userName);
+					
+					String helpText = iwrb.getLocalizedString("login_hint_helptext", "Thu valdir ad gefa upp visbendingaspurningu vid skraningu, gefdu upp rett svar og thu faerd lykilord i posti");
+					String question = user.getMetaData("HINT_QUESTION");
+					if(question!=null && question.length()>0) {
+						TextInput input = new TextInput(HINT_ANSWER_PARAMETER_NAME);
+						SubmitButton button = new SubmitButton(iwrb.getLocalizedString("hint_submit", "Svara"));
+						
+						HiddenInput hInput = new HiddenInput(LOGIN_PARAMETER_NAME, userName);
+						
+						Table qTable = new Table(2, 3);
+						qTable.mergeCells(1, 1, 2, 1);
+						qTable.add(helpText, 1, 1);
+						qTable.add(question, 1, 2);
+						qTable.add(input, 2, 2);
+						qTable.add(button, 2, 3);
+						
+						Form form = new Form();
+						form.add(qTable);
+						form.add(hInput);
+						System.out.println("Adding hint form to response");
+						add(form);
+					} else {
+						System.out.println("No hint info found for user " + userName);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} else {
+				System.out.println("Couldn't ask hint question, no login name found");
+			}
+		}
+	}
+	
 	/*
 	  public static boolean isAdmin(IWContext iwc)throws Exception{
 	    return iwc.isAdmin();
@@ -221,7 +400,7 @@ public class Login extends Block {
 		}
 		passwordTexti.setFontStyle(textStyles);
 		Table inputTable;
-		TextInput login = new TextInput("login");
+		TextInput login = new TextInput(LOGIN_PARAMETER_NAME);
 		login.setMarkupAttribute("style", styleAttribute);
 		login.setSize(inputLength);
 		if (_enterSubmit)
@@ -372,6 +551,9 @@ public class Login extends Block {
 			} else {
 				submitTable.add(button, 2, 1);
 			}
+			String newUserLinkOnLoginPage = iwb.getProperty(BUNDLE_PROPERTY_DISPLAY_REGISTER_LINK);
+			register = newUserLinkOnLoginPage != null && newUserLinkOnLoginPage.equalsIgnoreCase("true");
+			
 			if (register || forgot || allowCookieLogin) {
 				Link registerLink = getRegisterLink();
 				Link forgotLink = getForgotLink();
@@ -435,7 +617,7 @@ public class Login extends Block {
 			}
 			loginTable.add(submitTable, xpos, ypos);
 		}
-
+		
 		submitTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, "login"));
 		myForm.add(loginTable);
 	}
@@ -443,13 +625,13 @@ public class Login extends Block {
 
 
 	private Link getRegisterLink() {
-		Link L = new Link(iwrb.getLocalizedString("register.register", "Nýskráning"));
+		Link L = new Link(iwrb.getLocalizedString("register.register", "Nï¿½skrï¿½ning"));
 		L.setFontStyle(this.textStyles);
 		L.setWindowToOpen(RegisterWindow.class);
 		return L;
 	}
 	private Link getForgotLink() {
-		Link L = new Link(iwrb.getLocalizedString("register.forgot", "Gleymt lykilorð"));
+		Link L = new Link(iwrb.getLocalizedString("register.forgot", "Gleymt lykilorï¿½"));
 		L.setFontStyle(this.textStyles);
 		L.setWindowToOpen(ForgotWindow.class);
 		return L;
@@ -1000,5 +1182,9 @@ public class Login extends Block {
 	/*public void setPageForInvalidLogin(IBPage page) {
 		_pageForInvalidLogin = page;
 	}*/
+	
+	private UserBusiness getUserBusiness(IWContext iwc) throws RemoteException{
+		return (UserBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(),UserBusiness.class);
+	}
 
 }
