@@ -347,15 +347,15 @@ protected IWBundle iwb;
   private Link getForgotLink(){
     Link L = new Link(iwrb.getLocalizedString("register.forgot","Gleymt lykilorð"));
     L.setFontStyle(this.textStyles);
-    L.setWindowToOpen(RegisterWindow.class);
+    L.setWindowToOpen(ForgotWindow.class);
     return L;
   }
 
 
-	private void isLoggedOn(IWContext iwc) throws Exception{
-	  if ( this.loggedOffPageId != -1 )
-	    myForm.setPageToSubmitTo(loggedOffPageId);
-		User user = (User) getUser(iwc);
+  private void isLoggedOn(IWContext iwc) throws Exception{
+    if ( this.loggedOffPageId != -1 )
+      myForm.setPageToSubmitTo(loggedOffPageId);
+          User user = (User) getUser(iwc);
 
     if (loggedOnLink != null) {
       if (userTextSize > -1)

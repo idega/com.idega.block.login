@@ -513,7 +513,6 @@ public class LoginBusiness implements IWEventListener{
     LoginTable[] login_table = (LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumn(com.idega.core.accesscontrol.data.LoginTableBMPBean.getUserIDColumnName(),Integer.toString(user.getID()),com.idega.core.accesscontrol.data.LoginTableBMPBean.getUserLoginColumnName(),login);
 
 
-
     if(login_table != null && login_table.length > 0){
 
       if ( Encrypter.verifyOneWayEncrypted(login_table[0].getUserPassword(), password)) {
@@ -596,6 +595,13 @@ public class LoginBusiness implements IWEventListener{
 
     setLoginAttribute(_LOGGINADDRESS_LOGGED_ON_INFO,lInfo,iwc);
 
+  }
+
+  public static LoginContext changeUserPassword(User user,String password)throws Exception{
+    LoginTable login = LoginDBHandler.getUserLogin(user.getID());
+    LoginDBHandler.changePassword(login,password);
+    LoginContext loginContext = new LoginContext(user,login.getUserLogin(),password );
+    return loginContext;
   }
 
 
