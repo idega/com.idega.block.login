@@ -7,10 +7,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.idega.block.login.business.LoginCookieListener;
-import com.idega.builder.data.IBPage;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginInfo;
+import com.idega.core.builder.data.ICPage;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -27,7 +27,7 @@ import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.user.Converter;
+import com.idega.user.util.Converter;
 /**
  * Title:        Login - The standard login block in idegaWeb
  * Description:
@@ -847,7 +847,7 @@ public class Login extends Block {
 	public void setLoggedOnLink(Link link) {
 		loggedOnLink = (Link)link.clone();
 	}
-	public void setLogOnPage(IBPage page) {
+	public void setLogOnPage(ICPage page) {
 		_logOnPage = page.getID();
 	}
 	public void setLogOnPage(int page) {
@@ -859,14 +859,14 @@ public class Login extends Block {
 			loggedOnLink.setWindowToOpen(LoginEditorWindow.class);
 		}
 	}
-	public void setLoggedOnPage(IBPage page) {
+	public void setLoggedOnPage(ICPage page) {
 		loggedOnLink = new Link();
 		loggedOnLink.setPage(page);
 	}
 	public void setLoggedOffPage(int ibPageId) {
 		loggedOffPageId = ibPageId;
 	}
-	public void setLoggedOffPage(IBPage page) {
+	public void setLoggedOffPage(ICPage page) {
 		loggedOffPageId = page.getID();
 	}
 	public void setRegister(boolean register) {

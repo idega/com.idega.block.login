@@ -16,10 +16,10 @@ import com.idega.core.accesscontrol.business.LoginContext;
 import com.idega.core.accesscontrol.business.LoginCreator;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
-import com.idega.core.data.Email;
-import com.idega.user.Converter;
+import com.idega.core.contact.data.Email;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
+import com.idega.user.util.Converter;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -284,14 +284,14 @@ public class Forgot extends Block{
   public Email getUserEmail(User user){
     java.util.Collection emails = null;
     try{
-    com.idega.core.data.EmailHome emailhome = (com.idega.core.data.EmailHome)com.idega.data.IDOLookup.getHome(com.idega.core.data.Email.class);
+    com.idega.core.contact.data.EmailHome emailhome = (com.idega.core.contact.data.EmailHome)com.idega.data.IDOLookup.getHome(com.idega.core.contact.data.Email.class);
     emails = emailhome.findEmailsForUser(((Integer)user.getPrimaryKey()).intValue());
     }
     catch(Exception ex){
       ex.printStackTrace();
     }
     if(emails !=null && emails.size() > 0)
-      return (com.idega.core.data.Email) emails.iterator().next();
+      return (com.idega.core.contact.data.Email) emails.iterator().next();
     return null;
   }
 
