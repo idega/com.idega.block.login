@@ -53,6 +53,7 @@ private Image loginImage;
 private Image logoutImage;
 private Image tryAgainImage;
 private boolean helpButton = false;
+private boolean onlyLogoutButton = false;
 
 public static String controlParameter;
 
@@ -318,7 +319,12 @@ protected IWBundle iwb;
     loginTable.add(inputTable,1,1);
     loginTable.add(submitTable,1,2);
 
-		myForm.add(loginTable);
+		if ( onlyLogoutButton ) {
+      myForm.add(submitTable);
+		}
+    else {
+      myForm.add(loginTable);
+    }
 	}
 
 	private void loginFailed() {
@@ -539,6 +545,10 @@ protected IWBundle iwb;
 
   public void setTryAgainButton(Image tryAgainImage) {
     this.tryAgainImage=tryAgainImage;
+  }
+
+  public void setViewOnlyLogoutButton(boolean logout) {
+    onlyLogoutButton = logout;
   }
 
 
