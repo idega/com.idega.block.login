@@ -5,6 +5,7 @@
 package com.idega.block.login.presentation;
 
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.core.accesscontrol.data.LoginInfoHome;
 import com.idega.core.accesscontrol.data.LoginTable;
+import com.idega.core.accesscontrol.data.LoginTableHome;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.contact.data.Email;
 import com.idega.core.user.data.User;
@@ -315,6 +317,22 @@ public class Login extends Block {
 		return ok;
 	}
 
+	private User getUserFromLogin(String login) {
+		User user = null;
+		LoginTable[] login_table = null;
+		try {
+			login_table = (LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumn(com.idega.core.accesscontrol.data.LoginTableBMPBean.getUserLoginColumnName(), login);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (login_table!=null && login_table.length > 0) {
+			LoginTable loginTable = login_table[0];
+			user = loginTable.getUser();
+		}
+		return user;
+	}
+	
 	private void handleHint(IWContext iwc) {
 		if (showHint) {
 			String userName = iwc.getParameter(LOGIN_PARAMETER_NAME);
@@ -322,8 +340,12 @@ public class Login extends Block {
 				userName = (String) iwc.getSessionAttribute(LoginBusinessBean.UserAttributeParameter);
 			}
 			if (userName != null && userName.length() > 0) {
-				try {
-					User user = getUserBusiness(iwc).getUser(userName);
+				try {			
+					
+					User user = getUserFromLogin(userName);//getUserBusiness(iwc).getUser(userName);
+					if(user==null) {
+						user = getUserBusiness(iwc).getUser(userName);
+					}
 
 					String helpText = iwrb.getLocalizedString("login_hint_helptext", "You gave a hint question when you registered, provide the answer you gave at registration");
 					String question = user.getMetaData("HINT_QUESTION");
