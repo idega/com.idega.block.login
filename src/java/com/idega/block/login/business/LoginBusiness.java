@@ -449,7 +449,6 @@ public class LoginBusiness implements IWEventListener
 	}
 	private int verifyPasswordAndLogin(IWContext iwc, String login, String password) throws Exception
 	{
-		boolean returner = false;
 		LoginTable[] login_table =(LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumn(com.idega.core.accesscontrol.data.LoginTableBMPBean.getUserLoginColumnName(),	login);
 		if(login_table == null)
 			return STATE_NO_USER;

@@ -23,7 +23,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HelpButton;
+//import com.idega.presentation.ui.HelpButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.PasswordInput;
@@ -195,11 +195,11 @@ public class Login extends Block
 			loginTable.setBackgroundImage(new Image(backgroundImageUrl));
 		int ypos = 1;
 		int xpos = 1;
-		HelpButton helpImage =
+		/*HelpButton helpImage =
 			new HelpButton(
 				iwrb.getLocalizedString("help_headline", "Web Access"),
 				iwrb.getLocalizedString("help", ""),
-				iwrb.getImage("help_image.gif").getURL());
+				iwrb.getImage("help_image.gif").getURL());*/
 		Text loginTexti = new Text(userText);
 		if (userTextSize != -1)
 		{

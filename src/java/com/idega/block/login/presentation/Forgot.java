@@ -73,9 +73,7 @@ public class Forgot extends Block{
   }
 
   private int processForm(IWContext iwc){
-    String realName = iwc.getParameter("reg_userrealname");
     String userEmail = iwc.getParameter("reg_user_email");
-    String userName = iwc.getParameter("reg_username") ;
     int code = NORMAL;
     if(userEmail!=null){
       code = lookupUser(userEmail);

@@ -29,7 +29,7 @@ public class LoginCreator {
       StringTokenizer st = new StringTokenizer(name);
       int TYPE = 0;
       int tokenCount = st.countTokens();
-      int firstSize = 0,secondSize= 0,thirdSize=0;
+      int firstSize = 0;
       int thirdIndex = 0;
       String first = null,second=null,third=null;
       if(st.hasMoreTokens()){

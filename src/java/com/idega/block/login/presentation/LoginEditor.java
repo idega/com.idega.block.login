@@ -116,10 +116,9 @@ public class LoginEditor extends PresentationObjectContainer {
 		}
 		if (eUser != null) {
 			String userlogin = null;
-			boolean check = false;
 			if (iwc.getParameter("ok") != null
 				|| iwc.getParameter("ok.x") != null) {
-				check = doAddTo(iwc, eUser.getID());
+				doAddTo(iwc, eUser.getID());
 			}
 			userlogin = getUsrLogin(eUser.getID());
 			//add((iwrb.getLocalizedString("login","Login")));
