@@ -66,7 +66,7 @@ public class Login extends Block {
 	
 	private static final String IB_PAGE_PARAMETER = ICBuilderConstants.IB_PAGE_PARAMETER;
 
-
+	private boolean showOnlyInputs = false;
 	private Link loggedOnLink;
 	private String backgroundImageUrl;
 	private String newUserImageUrl = "";
@@ -565,127 +565,129 @@ public class Login extends Block {
 				//inputTable.add(this.getLoginLinkForPopup(loginTexti));
 				break;
 		}
-		Table submitTable = new Table();
-		//if ( helpButton ) {
-		//  submitTable = new Table(2,1);
-		//}
-		submitTable.setBorder(0);
-		if (!(color.equals(""))) {
-			submitTable.setColor(color);
-		}
-		submitTable.setRowVerticalAlignment(1, "middle");
-		if (!helpButton) {
-			submitTable.setAlignment(1, 1, submitButtonAlignment);
-		}
-		else {
-			submitTable.setAlignment(2, 1, "right");
-		}
-		submitTable.setWidth("100%");
-		if (_buttonAsLink) {
-			submitTable.setCellpadding(0);
-			submitTable.setCellspacing(0);
-			int column = 1;
-			Link link = this.getStyleLink(iwrb.getLocalizedString("login_text", "Login"), _linkStyleClass);
-			switch (LAYOUT) {
-				case LAYOUT_FORWARD_LINK:
-					if (_loginPageID != -1) {
-						//PopUp Link parameters
-						link.setPage(_loginPageID);
-						link.setParameter(FROM_PAGE_PARAMETER, String.valueOf(iwc.getCurrentIBPageID()));
-						link.setHttps(sendToHTTPS);
-					}
-					else {
-						try {
-							throw new Exception(this.getClassName() + ": No login page is set");
-						}
-						catch (Exception e) {
-							System.err.println(e.getMessage());
-							e.printStackTrace();
-						}
-					}
-					break;
-				default:
-					link.setToFormSubmit(getMainForm());
+		
+		if (!showOnlyInputs) {
+			Table submitTable = new Table();
+			//if ( helpButton ) {
+			//  submitTable = new Table(2,1);
+			//}
+			submitTable.setBorder(0);
+			if (!(color.equals(""))) {
+				submitTable.setColor(color);
 			}
-			if (_iconImage != null) {
-				submitTable.add(_iconImage, column++, 1);
-				submitTable.setWidth(column++, 1, String.valueOf(_spaceBetween));
-			}
-			submitTable.add(link, column, 1);
-			loginTable.setWidth(xpos++, ypos, String.valueOf(_spaceBetween * 2));
-			loginTable.add(submitTable, xpos, ypos);
-		}
-		else {
-			SubmitButton button = new SubmitButton(loginImage, "tengja");
-			button.setContent(iwrb.getLocalizedString("login_text", "login"));
+			submitTable.setRowVerticalAlignment(1, "middle");
 			if (!helpButton) {
-				submitTable.add(button, 1, 1);
+				submitTable.setAlignment(1, 1, submitButtonAlignment);
 			}
 			else {
-				submitTable.add(button, 2, 1);
+				submitTable.setAlignment(2, 1, "right");
 			}
-
-			if (register || forgot || allowCookieLogin) {
-				Link registerLink = getRegisterLink();
-				Link forgotLink = getForgotLink();
-				int row = 2;
-				int col = 1;
+			submitTable.setWidth("100%");
+			if (_buttonAsLink) {
+				submitTable.setCellpadding(0);
+				submitTable.setCellspacing(0);
+				int column = 1;
+				Link link = this.getStyleLink(iwrb.getLocalizedString("login_text", "Login"), _linkStyleClass);
 				switch (LAYOUT) {
-					case LAYOUT_HORIZONTAL:
-					case LAYOUT_VERTICAL:
-						row = 2;
-						if (register) submitTable.add(registerLink, 1, row);
-						if (forgot) submitTable.add(forgotLink, 2, row);
-						if (allowCookieLogin) {
-							CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
-							Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
-							cookieText.setFontStyle(this.textStyles);
-							row++;
-							submitTable.mergeCells(1, row, 2, row);
-							submitTable.add(cookieCheck, 1, row);
-							submitTable.add(cookieText, 1, row);
+					case LAYOUT_FORWARD_LINK:
+						if (_loginPageID != -1) {
+							//PopUp Link parameters
+							link.setPage(_loginPageID);
+							link.setParameter(FROM_PAGE_PARAMETER, String.valueOf(iwc.getCurrentIBPageID()));
+							link.setHttps(sendToHTTPS);
+						}
+						else {
+							try {
+								throw new Exception(this.getClassName() + ": No login page is set");
+							}
+							catch (Exception e) {
+								System.err.println(e.getMessage());
+								e.printStackTrace();
+							}
 						}
 						break;
-					case LAYOUT_STACKED:
-						row = 2;
-						if (register) {
-							submitTable.mergeCells(1, row, 2, row);
-							submitTable.add(registerLink, 1, row);
-							row++;
-						}
-						if (forgot) {
-							submitTable.mergeCells(1, row, 2, row);
-							submitTable.add(forgotLink, 1, row);
-							row++;
-						}
-						if (allowCookieLogin) {
-							CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
-							Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
-							cookieText.setFontStyle(this.textStyles);
-							submitTable.mergeCells(1, row, 2, row);
-							submitTable.add(cookieCheck, 1, row);
-							submitTable.add(cookieText, 1, row);
-							row++;
-						}
-						break;
-					case SINGLE_LINE:
-						col = 3;
-						if (register) submitTable.add(registerLink, col++, 1);
-						if (forgot) submitTable.add(forgotLink, col++, 1);
-						if (allowCookieLogin) {
-							CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
-							Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
-							cookieText.setFontStyle(this.textStyles);
-							submitTable.add(cookieCheck, col, 1);
-							submitTable.add(cookieText, col++, 1);
-						}
-						break;
+					default:
+						link.setToFormSubmit(getMainForm());
 				}
+				if (_iconImage != null) {
+					submitTable.add(_iconImage, column++, 1);
+					submitTable.setWidth(column++, 1, String.valueOf(_spaceBetween));
+				}
+				submitTable.add(link, column, 1);
+				loginTable.setWidth(xpos++, ypos, String.valueOf(_spaceBetween * 2));
+				loginTable.add(submitTable, xpos, ypos);
 			}
-			loginTable.add(submitTable, xpos, ypos);
+			else {
+				SubmitButton button = new SubmitButton(loginImage, "tengja");
+				button.setContent(iwrb.getLocalizedString("login_text", "login"));
+				if (!helpButton) {
+					submitTable.add(button, 1, 1);
+				}
+				else {
+					submitTable.add(button, 2, 1);
+				}
+	
+				if (register || forgot || allowCookieLogin) {
+					Link registerLink = getRegisterLink();
+					Link forgotLink = getForgotLink();
+					int row = 2;
+					int col = 1;
+					switch (LAYOUT) {
+						case LAYOUT_HORIZONTAL:
+						case LAYOUT_VERTICAL:
+							row = 2;
+							if (register) submitTable.add(registerLink, 1, row);
+							if (forgot) submitTable.add(forgotLink, 2, row);
+							if (allowCookieLogin) {
+								CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
+								Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
+								cookieText.setFontStyle(this.textStyles);
+								row++;
+								submitTable.mergeCells(1, row, 2, row);
+								submitTable.add(cookieCheck, 1, row);
+								submitTable.add(cookieText, 1, row);
+							}
+							break;
+						case LAYOUT_STACKED:
+							row = 2;
+							if (register) {
+								submitTable.mergeCells(1, row, 2, row);
+								submitTable.add(registerLink, 1, row);
+								row++;
+							}
+							if (forgot) {
+								submitTable.mergeCells(1, row, 2, row);
+								submitTable.add(forgotLink, 1, row);
+								row++;
+							}
+							if (allowCookieLogin) {
+								CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
+								Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
+								cookieText.setFontStyle(this.textStyles);
+								submitTable.mergeCells(1, row, 2, row);
+								submitTable.add(cookieCheck, 1, row);
+								submitTable.add(cookieText, 1, row);
+								row++;
+							}
+							break;
+						case SINGLE_LINE:
+							col = 3;
+							if (register) submitTable.add(registerLink, col++, 1);
+							if (forgot) submitTable.add(forgotLink, col++, 1);
+							if (allowCookieLogin) {
+								CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
+								Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
+								cookieText.setFontStyle(this.textStyles);
+								submitTable.add(cookieCheck, col, 1);
+								submitTable.add(cookieText, col++, 1);
+							}
+							break;
+					}
+				}
+				loginTable.add(submitTable, xpos, ypos);
+			}
 		}
-
-		submitTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, ACTION_LOG_IN));
+		loginTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, ACTION_LOG_IN));
 		getMainForm().add(loginTable);
 	}
 	
@@ -1382,6 +1384,7 @@ public class Login extends Block {
 	protected Form getMainForm() {
 		if (myForm == null) {
 			myForm = new Form();
+			myForm.setID("loginForm");
 		}
 		return myForm;
 	}
@@ -1413,5 +1416,11 @@ public class Login extends Block {
 	
 	public void setToForwardOnLogin(ICPage page) {
 		loggedOnPage = page;
+	}
+	/**
+	 * @param showOnlyInputs The showOnlyInputs to set.
+	 */
+	public void setShowOnlyInputs(boolean showOnlyInputs) {
+		this.showOnlyInputs = showOnlyInputs;
 	}
 }
