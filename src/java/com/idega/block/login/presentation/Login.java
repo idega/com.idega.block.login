@@ -656,10 +656,10 @@ public class Login extends Block {
 				
 				SubmitButton button;
 				if(useImageButton && loginImage != null){
-					button = new SubmitButton(loginImage, "login");
+					button = new SubmitButton(loginImage, "login_button");
 				}
 				else{
-					button = new SubmitButton("login", iwrb.getLocalizedString("login_text", "Login"));
+					button = new SubmitButton("login_button", iwrb.getLocalizedString("login_text", "Login"));
 				}
 				int pos = !helpButton?xpos:xpos+1;
 				if (useImageButton && loginImage == null) {
@@ -765,7 +765,7 @@ public class Login extends Block {
 		Label loginTexti = new Label(userText,login);
 		Label passwordTexti = new Label(passwordText,passw);
 		
-		SubmitButton button = new SubmitButton("login", iwrb.getLocalizedString("login_text", "Login"));
+		SubmitButton button = new SubmitButton("login_button", iwrb.getLocalizedString("login_text", "Login"));
 
 		int row = 1;
 		myTable.add(loginTexti,1,row++);
@@ -921,10 +921,10 @@ public class Login extends Block {
 		else {
 			SubmitButton button;
 			if(useImageButton && logoutImage != null){
-				button = new SubmitButton(logoutImage, "logout");
+				button = new SubmitButton(logoutImage, "logout_button");
 			}
 			else {
-				button = new SubmitButton("logout", iwrb.getLocalizedString("logout_text", "Log out"));
+				button = new SubmitButton("logout_button", iwrb.getLocalizedString("logout_text", "Log out"));
 			}
 			if (useImageButton && logoutImage == null) {
 			    submitTable.add(new StyledButton(button));
