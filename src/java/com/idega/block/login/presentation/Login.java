@@ -150,6 +150,7 @@ public class Login extends Block {
 			}
 			catch (Exception e) {
 				hintMessage = iwrb.getLocalizedString("login_hint_error", "Error validating hint answer");
+				e.printStackTrace();
 			}
 		}
 		if (this._buttonAsLink) {
