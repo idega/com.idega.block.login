@@ -25,15 +25,15 @@ public class LoginCookieListener implements IWEventListener{
 
   public boolean actionPerformed(IWContext iwc)throws IWException{
     Cookie userIDCookie = iwc.getCookie(userIDCookieName);
-    System.err.println("actionPerformed in LoginCookieListener");
+    //System.err.println("actionPerformed in LoginCookieListener");
     if( LoginBusiness.isLogOffAction(iwc) &&  userIDCookie!=null){
       userIDCookie.setMaxAge(0);
       iwc.addCookies(userIDCookie);
     }
     else if(!iwc.isLoggedOn()){
-      System.err.println("no user is logged on");
+      //System.err.println("no user is logged on");
       if(userIDCookie!=null){
-        System.err.println("found the cookie");
+        //System.err.println("found the cookie");
         String cypheredLoginName = userIDCookie.getValue();
         String loginName = deCypherUserLogin(iwc,cypheredLoginName);
         try{
@@ -43,11 +43,12 @@ public class LoginCookieListener implements IWEventListener{
           throw new IWException("Cookie login failed : "+ex.getMessage());
         }
       }
-      else{System.err.println("no cookie found");}
+      else{//System.err.println("no cookie found");
+      }
     }
     else if(iwc.isParameterSet(prmUserAllowsLogin) && LoginBusiness.isLoggedOn(iwc)){
       if(userIDCookie==null){
-        System.err.println("adding cookie");
+        //System.err.println("adding cookie");
         String login = LoginBusiness.getLoggedOnInfo(iwc).getLogin();
         userIDCookie = new Cookie(userIDCookieName,cypherUserLogin(iwc,login));
         userIDCookie.setMaxAge(60*60*24*30);
@@ -73,7 +74,7 @@ public class LoginCookieListener implements IWEventListener{
   protected String cypherUserLogin(IWApplicationContext iwc,String userLogin){
     String key = getCypherKey(iwc);
     String cypheredId = new CypherText().doCyper(userLogin,key);
-    System.err.println("Cyphered "+userLogin +"to "+cypheredId);
+    //System.err.println("Cyphered "+userLogin +"to "+cypheredId);
     return cypheredId;
   }
 

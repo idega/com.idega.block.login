@@ -503,6 +503,8 @@ public class LoginBusiness implements IWEventListener
     LoginTable[] login_table = (LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumn(com.idega.core.accesscontrol.data.LoginTableBMPBean.getUserLoginColumnName(),login);
     if(login_table != null && login_table.length > 0){
         returner = logIn(iwc,login_table[0],login);
+        if(returner)
+          onLoginSuccessful(iwc);
     }
     return returner;
   }
