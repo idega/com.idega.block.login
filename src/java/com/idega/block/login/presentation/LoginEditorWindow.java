@@ -11,18 +11,23 @@ package com.idega.block.login.presentation;
 
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.jmodule.object.ModuleInfo;
-
-
+import com.idega.jmodule.object.Table;
 
 public class LoginEditorWindow extends IWAdminWindow{
 
   public LoginEditorWindow() {
     super();
+    setWidth(200 );
+    setHeight(300 );
   }
 
   public void main(ModuleInfo modinfo) throws Exception{
     LoginEditor BE = new LoginEditor();
-    add(BE);
+    Table T = new Table(1,1);
+    T.setAlignment(1,1,"center");
+    T.add(BE,1,1);
+    add(T);
     setTitle("Login Editor");
+    //addTitle("Login Editor");
   }
 }

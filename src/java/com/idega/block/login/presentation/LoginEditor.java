@@ -25,13 +25,12 @@ public class LoginEditor extends ModuleObjectContainer{
 
   private User eUser = null;
   private String sUnionId = null;
-  private String OkImageUrl = "/pics/formtakks/ok.gif";
-  private String CloseImageUrl = "/pics/formtakks/close.gif";
+
   private String errorMsg = "";
   public static String prmUserId = "user_id";
   protected String MiddleColor,LightColor,DarkColor,WhiteColor,TextFontColor,HeaderFontColor,IndexFontColor;
   protected int fontSize = 2;
-  protected boolean fontBold = false;
+  protected boolean fontBold = true;
   protected String styleAttribute = "font-size: 8pt";
 
 
@@ -75,7 +74,7 @@ public class LoginEditor extends ModuleObjectContainer{
       }
       userlogin = getUsrLogin(eUser.getID());
 
-      add((iwrb.getLocalizedString("login","Login")));
+      //add((iwrb.getLocalizedString("login","Login")));
       add(doView(eUser,userlogin));
     }
     else{
@@ -126,7 +125,7 @@ public class LoginEditor extends ModuleObjectContainer{
 
   private ModuleObject doView(User user,String sUserLogin){
     Table T = new Table();
-    T.add(formatText(user.getName()),1,1);
+    T.add(formatText(user.getName()),1,2);
 
     TextInput tUsrLgn = new TextInput("ml.usrlgn",sUserLogin);
     this.setStyle(tUsrLgn);
@@ -135,15 +134,15 @@ public class LoginEditor extends ModuleObjectContainer{
     PasswordInput psw2 = new PasswordInput("ml.psw2");
     this.setStyle(psw2);
 
-    T.add(formatText(iwrb.getLocalizedString("login","Login")),1,3);
+    T.add(formatText(iwrb.getLocalizedString("login","Login")+":"),1,3);
     T.add(tUsrLgn,1,4);
-    T.add(formatText(iwrb.getLocalizedString("passwd","Passwd")),1,5);
+    T.add(formatText(iwrb.getLocalizedString("passwd","Passwd")+":"),1,5);
     T.add(psw1,1,6);
-    T.add(formatText(iwrb.getLocalizedString("confirm","Confirm")),1,7);
+    T.add(formatText(iwrb.getLocalizedString("confirm","Confirm")+":"),1,7);
     T.add(psw2,1,8);
 
-    SubmitButton ok    = new SubmitButton(new Image(OkImageUrl),"ok");
-    CloseButton close    = new CloseButton(new Image(CloseImageUrl));
+    SubmitButton ok = new SubmitButton(iwrb.getImage("ok.gif"),"ok");
+    CloseButton close = new CloseButton(iwrb.getImage("close.gif"));
     T.add(ok,1,9);
     T.add(close,1,9);
     T.add(new HiddenInput(prmUserId,String.valueOf(user.getID())));
@@ -222,6 +221,9 @@ public class LoginEditor extends ModuleObjectContainer{
 
   public void main(ModuleInfo modinfo){
     iwrb = getResourceBundle(modinfo);
-    control(modinfo);
+    if(LoginBusiness.isLoggedOn(modinfo))
+      control(modinfo);
+    else
+      add(iwrb.getLocalizedString("not logged on","Not logged on"));
   }
 }
