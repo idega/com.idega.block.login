@@ -9,6 +9,8 @@ import java.util.Map;
 import com.idega.block.login.business.LoginBusiness;
 import com.idega.block.login.business.LoginCookieListener;
 import com.idega.builder.data.IBPage;
+import com.idega.core.accesscontrol.business.LoginDBHandler;
+import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -27,6 +29,7 @@ import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.Window;
 import com.idega.user.Converter;
 import com.idega.user.data.Group;
 /**
@@ -129,30 +132,31 @@ public class Login extends Block
 			tryAgainImage = iwrb.getLocalizedImageButton("tryagain_text", "Try again");
 		userText = iwrb.getLocalizedString("user", "User");
 		passwordText = iwrb.getLocalizedString("password", "Password");
-		String state = internalGetState(iwc);
-		if (state != null)
-		{
-			if (state.equals("loggedon"))
-			{
+		int state = internalGetState(iwc);
+		switch (state) {
+			case LoginBusiness.STATE_LOGGED_ON :
 				isLoggedOn(iwc);
-			}
-			else if (state.equals("loggedoff"))
-			{
+			break;
+			case LoginBusiness.STATE_LOGGED_OUT :
 				startState();
-			}
-			else if (state.equals("loginfailed"))
-			{
-				loginFailed();
-			}
-			else
-			{
+			break;
+			case LoginBusiness.STATE_LOGIN_FAILED :
+				loginFailed(iwrb.getLocalizedString("login_failed","Login failed"));
+			break;
+			case LoginBusiness.STATE_NO_USER :
+				loginFailed(iwrb.getLocalizedString("login_no_user","Invalid user"));
+			break;
+			case LoginBusiness.STATE_WRONG_PASSW :
+				loginFailed(iwrb.getLocalizedString("login_wrong","Invalid password"));
+			break;
+			case LoginBusiness.STATE_LOGIN_EXPIRED :
+				loginFailed(iwrb.getLocalizedString("login_expired","Login expired"));
+			break;
+			default :
 				startState();
-			}
+			break;
 		}
-		else
-		{
-			startState();
-		}
+		
 		add(myForm);
 	}
 	/*
@@ -441,10 +445,11 @@ public class Login extends Block
 	}
 	private void isLoggedOn(IWContext iwc) throws Exception
 	{
+		
 		if (this.loggedOffPageId != -1)
 			myForm.setPageToSubmitTo(loggedOffPageId);
 		User user = (User) getUser(iwc);
-
+		
 		if ( sendUserToHomePage && LoginBusiness.isLogOnAction(iwc) ) {
 			com.idega.user.data.User newUser = Converter.convertToNewUser(user);
 			com.idega.user.data.Group newGroup = newUser.getPrimaryGroup();
@@ -581,10 +586,20 @@ public class Login extends Block
 		{
 			myForm.add(loginTable);
 		}
+		if(LoginBusiness.isLogOnAction(iwc)){
+			LoginInfo loginInfo = LoginDBHandler.getLoginInfo((LoginDBHandler.findUserLogin(user.getID())).getID());
+			if(loginInfo.getAllowedToChange() && loginInfo.getChangeNextTime()){
+				Script s = new Script();
+				LoginEditorWindow window = new LoginEditorWindow();
+				window.setMessage(iwrb.getLocalizedString("change_password","You need to change your password"));
+				s.addMethod("wop",window.getCallingScriptString(iwc));
+				myForm.add(s);
+			}
+		}
 	}
-	private void loginFailed()
+	private void loginFailed(String message)
 	{
-		Text mistokst = new Text(iwrb.getLocalizedString("login_failed", "Login failed"));
+		Text mistokst = new Text(message);
 		if (userTextSize != -1)
 		{
 			mistokst.setFontSize(userTextSize);
@@ -749,7 +764,7 @@ public class Login extends Block
 		}
 		myForm.add(loginTable);
 	}
-	public String internalGetState(IWContext iwc)
+	public int internalGetState(IWContext iwc)
 	{
 		return LoginBusiness.internalGetState(iwc);
 	}
