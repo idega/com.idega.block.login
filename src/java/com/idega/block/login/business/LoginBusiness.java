@@ -6,6 +6,7 @@ import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.core.accesscontrol.data.PermissionGroup;
 import com.idega.core.accesscontrol.business.LoggedOnInfo;
+import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.data.GenericGroup;
 import com.idega.core.user.data.UserGroupRepresentative;
 import com.idega.core.user.data.User;
@@ -70,45 +71,37 @@ public class LoginBusiness implements IWEventListener{
         try{
 
             if(isLoggedOn(iwc)){
-                  String controlParameter = iwc.getParameter(LoginBusiness.LoginStateParameter);
-                  if (controlParameter != null) {
-
-                        if(controlParameter.equals("logoff")){
-                            logOut(iwc);
-                            internalSetState(iwc,"loggedoff");
-
-                        }
-
+                String controlParameter = iwc.getParameter(LoginBusiness.LoginStateParameter);
+                if (controlParameter != null) {
+                  if(controlParameter.equals("logoff")){
+                      logOut(iwc);
+                      internalSetState(iwc,"loggedoff");
                   }
-
-
+                }
             }
             else{
                   String controlParameter = iwc.getParameter(LoginBusiness.LoginStateParameter);
 
-                  if (controlParameter != null) {
-                      if(controlParameter.equals("login")){
+              if (controlParameter != null) {
+                if(controlParameter.equals("login")){
 
-                                boolean canLogin = false;
-				if ((iwc.getParameter("login") != null) && (iwc.getParameter("password") != null)) {
-                                        canLogin = verifyPasswordAndLogin(iwc, iwc.getParameter("login"),iwc.getParameter("password"));
-					if (canLogin) {
-                                          isLoggedOn(iwc);
-                                          internalSetState(iwc,"loggedon");
-					}
-					else {
-                                          logOut(iwc);
-                                          internalSetState(iwc,"loginfailed");
-					}
-				}
-			}
-                        else if(controlParameter.equals("tryagain")){
-
-                            internalSetState(iwc,"loggedoff");
-
-                        }
-
-		}
+                  boolean canLogin = false;
+                  if ((iwc.getParameter("login") != null) && (iwc.getParameter("password") != null)) {
+                    canLogin = verifyPasswordAndLogin(iwc, iwc.getParameter("login"),iwc.getParameter("password"));
+                    if (canLogin) {
+                      isLoggedOn(iwc);
+                      internalSetState(iwc,"loggedon");
+                    }
+                    else {
+                      logOut(iwc);
+                      internalSetState(iwc,"loginfailed");
+                    }
+                  }
+                }
+                else if(controlParameter.equals("tryagain")){
+                  internalSetState(iwc,"loggedoff");
+                }
+              }
             }
 
       }
@@ -209,8 +202,8 @@ public class LoginBusiness implements IWEventListener{
     LoginBusiness.setLoginAttribute(PrimaryGroupParameter,value,iwc);
   }
 
-  private boolean logIn(IWContext iwc, int userId, String login) throws Exception{
-    User user = new User(userId);
+  private boolean logIn(IWContext iwc, LoginTable loginTable, String login) throws Exception{
+    User user = new User(loginTable.getUserId());
     iwc.setSessionAttribute(LoginAttributeParameter,new Hashtable());
 
     LoginBusiness.setUser(iwc,user);
@@ -228,11 +221,14 @@ public class LoginBusiness implements IWEventListener{
       LoginBusiness.setPrimaryGroup(iwc,primaryGroup);
     }
 
+    int loginRecordId = LoginDBHandler.recordLogin(loginTable.getID(),iwc.getRemoteIpAddress());
+
     LoggedOnInfo lInfo = new LoggedOnInfo();
     lInfo.setLogin(login);
     lInfo.setSession(iwc.getSession());
     lInfo.setTimeOfLogon(idegaTimestamp.RightNow());
     lInfo.setUser(user);
+    lInfo.setLoginRecordId(loginRecordId);
 
     getLoggedOnInfoList(iwc).add(lInfo);
     setLoggedOnInfo(lInfo,iwc);
@@ -246,10 +242,9 @@ public class LoginBusiness implements IWEventListener{
 
     if(login_table != null && login_table.length > 0){
       if ( Encrypter.verifyOneWayEncrypted(login_table[0].getUserPassword(), password)) {
-        returner = logIn(iwc,login_table[0].getUserId(),login);
+        returner = logIn(iwc,login_table[0],login);
       }
     }
-
     return returner;
   }
 
@@ -266,11 +261,13 @@ public class LoginBusiness implements IWEventListener{
     return returner;
   }
 
-
-
   private void logOut(IWContext iwc) throws Exception{
     if (iwc.getSessionAttribute(LoginAttributeParameter) != null) {
-      this.getLoggedOnInfoList(iwc).remove(this.getLoggedOnInfo(iwc));
+
+     // this.getLoggedOnInfoList(iwc).remove(this.getLoggedOnInfo(iwc));
+      List ll =  this.getLoggedOnInfoList(iwc);
+      LoggedOnInfo _logOnInfo = (LoggedOnInfo)ll.remove(ll.indexOf(getLoggedOnInfo(iwc)));
+      LoginDBHandler.recordLogout(_logOnInfo.getLoginRecordId());
       iwc.removeSessionAttribute(LoginAttributeParameter);
     }
   }
