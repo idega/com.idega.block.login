@@ -1,8 +1,3 @@
-//idega 2000 - Tryggvi Larusson - Grimur Jonsson
-/*
-*Copyright 2000 idega.is All Rights Reserved.
-*/
-
 package com.idega.block.login.business;
 
 
@@ -10,6 +5,7 @@ import com.idega.presentation.*;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.core.accesscontrol.data.PermissionGroup;
+import com.idega.core.accesscontrol.business.LoggedOnInfo;
 import com.idega.core.data.GenericGroup;
 import com.idega.core.user.data.UserGroupRepresentative;
 import com.idega.core.user.data.User;
@@ -21,15 +17,18 @@ import com.idega.core.accesscontrol.business.NotLoggedOnException;
 import com.idega.business.IWEventListener;
 import com.idega.idegaweb.IWException;
 import com.idega.util.Encrypter;
+import com.idega.util.idegaTimestamp;
+
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Title:        LoginBusiness
  * Description:
  * Copyright:    Copyright (c) 2000-2001 idega.is All Rights Reserved
  * Company:      idega
-  *@author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>,<a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
+  *@author <a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>,<a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.1
  */
 
@@ -43,6 +42,8 @@ public class LoginBusiness implements IWEventListener{
   private static String UserGroupRepresentativeParameter = "ic_user_representative_group";
   private static String PrimaryGroupsParameter = "ic_user_primarygroups";
   private static String PrimaryGroupParameter = "ic_user_primarygroup";
+  private static final String _APPADDRESS_LOGGED_ON_LIST = "ic_loggedon_list";
+  private static final String _LOGGINADDRESS_LOGGED_ON_INFO = "ic_loggedon_info";
 
   public LoginBusiness() {
   }
@@ -227,6 +228,14 @@ public class LoginBusiness implements IWEventListener{
       LoginBusiness.setPrimaryGroup(iwc,primaryGroup);
     }
 
+    LoggedOnInfo lInfo = new LoggedOnInfo();
+    lInfo.setSession(iwc.getSession());
+    lInfo.setTimeOfLoggon(idegaTimestamp.RightNow());
+    lInfo.setUser(user);
+
+    getLoggedOnInfoList(iwc).add(lInfo);
+    setLoggedOnInfo(lInfo,iwc);
+
     return true;
   }
 
@@ -261,6 +270,27 @@ public class LoginBusiness implements IWEventListener{
     if (iwc.getSessionAttribute(LoginAttributeParameter) != null) {
       iwc.removeSessionAttribute(LoginAttributeParameter);
     }
+    this.getLoggedOnInfoList(iwc).remove(iwc.getSession());
+  }
+
+  /**
+   * returns empty List if no one is logged on
+   */
+  public static List getLoggedOnInfoList(IWContext iwc){
+    List loggedOnList = (List)iwc.getApplicationAttribute(_APPADDRESS_LOGGED_ON_LIST);
+    if(loggedOnList == null){
+      loggedOnList = new Vector();
+      iwc.setApplicationAttribute(_APPADDRESS_LOGGED_ON_LIST,loggedOnList);
+    }
+    return loggedOnList;
+  }
+
+  public static LoggedOnInfo getLoggedOnInfo(IWContext iwc)throws NotLoggedOnException{
+    return (LoggedOnInfo)getLoginAttribute(_LOGGINADDRESS_LOGGED_ON_INFO,iwc);
+  }
+
+  public static void setLoggedOnInfo(LoggedOnInfo lInfo, IWContext iwc)throws NotLoggedOnException{
+    setLoginAttribute(_LOGGINADDRESS_LOGGED_ON_INFO,lInfo,iwc);
   }
 
 }
