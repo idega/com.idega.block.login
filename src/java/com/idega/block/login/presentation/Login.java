@@ -360,7 +360,13 @@ public class Login extends Block {
 		if (showHint) {
 			String userName = iwc.getParameter(LOGIN_PARAMETER_NAME);
 			if (userName == null) {
-				userName = (String) iwc.getSessionAttribute(LoginBusinessBean.UserAttributeParameter);
+				try {
+                    userName = LoginBusinessBean.getLoginSession(iwc).getUserLoginName(); 
+                        //(String) iwc.getSessionAttribute(LoginBusinessBean.UserAttributeParameter);
+                } catch (RemoteException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
 			}
 			if (userName != null && userName.length() > 0) {
 				try {			
