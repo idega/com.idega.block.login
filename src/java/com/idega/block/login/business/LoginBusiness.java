@@ -7,6 +7,7 @@ import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.core.accesscontrol.data.PermissionGroup;
 import com.idega.core.accesscontrol.business.LoggedOnInfo;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
+import com.idega.core.user.business.UserBusiness;
 import com.idega.core.data.GenericGroup;
 import com.idega.core.user.data.UserGroupRepresentative;
 import com.idega.core.user.data.User;
@@ -208,7 +209,8 @@ public class LoginBusiness implements IWEventListener{
 
     LoginBusiness.setUser(iwc,user);
 
-    List groups = AccessControl.getPermissionGroups(user);
+    //List groups = AccessControl.getPermissionGroups(user);
+    List groups = UserBusiness.getUserGroups(user);
     if(groups!=null){
       LoginBusiness.setPermissionGroups(iwc,groups);
     }
