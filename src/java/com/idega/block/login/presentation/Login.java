@@ -370,7 +370,7 @@ public class Login extends Block
 			com.idega.user.data.Group newGroup = newUser.getPrimaryGroup();
 			if ( newUser.getHomePageID() != -1 )
 				iwc.forwardToIBPage(this.getParentPage(), newUser.getHomePage());
-			if ( newGroup.getHomePageID() != -1 )
+			if (newGroup != null && newGroup.getHomePageID() != -1 )
 				iwc.forwardToIBPage(this.getParentPage(), newGroup.getHomePage());
 		}
 		
