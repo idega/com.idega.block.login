@@ -209,7 +209,7 @@ public class LoginBusiness implements IWEventListener{
     LoginBusiness.setLoginAttribute(PrimaryGroupParameter,value,iwc);
   }
 
-  private boolean logIn(IWContext iwc, int userId) throws Exception{
+  private boolean logIn(IWContext iwc, int userId, String login) throws Exception{
     User user = new User(userId);
     iwc.setSessionAttribute(LoginAttributeParameter,new Hashtable());
 
@@ -229,8 +229,9 @@ public class LoginBusiness implements IWEventListener{
     }
 
     LoggedOnInfo lInfo = new LoggedOnInfo();
+    lInfo.setLogin(login);
     lInfo.setSession(iwc.getSession());
-    lInfo.setTimeOfLoggon(idegaTimestamp.RightNow());
+    lInfo.setTimeOfLogon(idegaTimestamp.RightNow());
     lInfo.setUser(user);
 
     getLoggedOnInfoList(iwc).add(lInfo);
@@ -245,7 +246,7 @@ public class LoginBusiness implements IWEventListener{
 
     if(login_table != null && login_table.length > 0){
       if ( Encrypter.verifyOneWayEncrypted(login_table[0].getUserPassword(), password)) {
-        returner = logIn(iwc,login_table[0].getUserId());
+        returner = logIn(iwc,login_table[0].getUserId(),login);
       }
     }
 
@@ -267,10 +268,10 @@ public class LoginBusiness implements IWEventListener{
 
 
   private void logOut(IWContext iwc) throws Exception{
+    this.getLoggedOnInfoList(iwc).remove(this.getLoggedOnInfo(iwc));
     if (iwc.getSessionAttribute(LoginAttributeParameter) != null) {
       iwc.removeSessionAttribute(LoginAttributeParameter);
     }
-    this.getLoggedOnInfoList(iwc).remove(iwc.getSession());
   }
 
   /**
