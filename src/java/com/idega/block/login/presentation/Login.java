@@ -281,7 +281,7 @@ private int LAYOUT = -1;
 			if (!(color.equals(""))) {
 				submitTable.setColor(color);
 			}
-			submitTable.setAlignment(1,1,submitButtonAlignment);
+			submitTable.setAlignment(1,1,"center");
 			submitTable.setVerticalAlignment(1,1,"middle");
 			submitTable.setWidth("100%");
 
@@ -344,7 +344,7 @@ private int LAYOUT = -1;
 			if (!(color.equals(""))) {
 				submitTable.setColor(color);
 			}
-			submitTable.setAlignment(1,1,submitButtonAlignment);
+			submitTable.setAlignment(1,1,"center");
 			submitTable.setVerticalAlignment(1,1,"middle");
 			submitTable.setWidth("100%");
 
@@ -406,7 +406,7 @@ private int LAYOUT = -1;
 				submitTable.setColor(color);
 			}
 			submitTable.setBorder(0);
-			submitTable.setAlignment(1,1,submitButtonAlignment);
+			submitTable.setAlignment(1,1,"center");
 			submitTable.setVerticalAlignment(1,1,"middle");
 			submitTable.setWidth("100%");
 
