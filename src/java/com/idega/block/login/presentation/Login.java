@@ -15,6 +15,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
+import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -86,6 +87,7 @@ public class Login extends Block
 	private int _spaceBetween = 4;
 
 	private boolean _buttonAsLink = false;
+	private boolean _enterSubmit = false;
 	private final String _linkStyleClass = "Link";
 	private Image _iconImage;
 
@@ -96,6 +98,20 @@ public class Login extends Block
 	}
 	public void main(IWContext iwc) throws Exception
 	{
+		if (this._buttonAsLink) {
+			if (getParentPage() != null) {
+				Script script = null;
+				if (getParentPage().getAssociatedScript() != null)
+					script = getParentPage().getAssociatedScript();
+				else {
+					script = new Script();
+					getParentPage().setAssociatedScript(script);
+				}
+				script.addFunction("enterSubmit", "function enterSubmit(input) {  if (window.event && window.event.keyCode == 13) input.form.submit(); else return true; }");
+				_enterSubmit = true;
+			}
+		}
+		
 		myForm.setEventListener(loginHandlerClass);
     if(allowCookieLogin){
       iwc.getApplication().addApplicationEventListener(LoginCookieListener.class);
@@ -204,9 +220,13 @@ public class Login extends Block
 		TextInput login = new TextInput("login");
 		login.setAttribute("style", styleAttribute);
 		login.setSize(inputLength);
+		if (_enterSubmit)
+			login.setOnKeyPress("return enterSubmit(this)");
 		PasswordInput passw = new PasswordInput("password");
 		passw.setAttribute("style", styleAttribute);
 		passw.setSize(inputLength);
+		if (_enterSubmit)
+			passw.setOnKeyPress("return enterSubmit(this)");
 		switch (LAYOUT)
 		{
 			case LAYOUT_HORIZONTAL :
