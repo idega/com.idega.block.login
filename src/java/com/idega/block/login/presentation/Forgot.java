@@ -8,26 +8,27 @@ package com.idega.block.login.presentation;
  * @version 1.0
  */
 
-import java.sql.SQLException;
-import com.idega.core.user.data.User;
-import com.idega.core.user.data.*;
-import com.idega.core.data.Email;
-import com.idega.core.user.business.UserBusiness;
-import com.idega.core.accesscontrol.business.LoginDBHandler;
-import com.idega.core.accesscontrol.data.LoginTable;
-import com.idega.presentation.text.*;
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.PresentationObject;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.IWBundle;
-import com.idega.presentation.ui.*;
+import java.text.MessageFormat;
+
 import com.idega.block.login.business.LoginBusiness;
 import com.idega.block.login.business.LoginContext;
 import com.idega.block.login.business.LoginCreator;
+import com.idega.core.accesscontrol.business.LoginDBHandler;
+import com.idega.core.accesscontrol.data.LoginTable;
+import com.idega.core.data.Email;
+import com.idega.core.user.data.User;
+import com.idega.core.user.data.UserHome;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 import com.idega.util.SendMail;
-import java.text.MessageFormat;
 import com.idega.util.text.TextFormat;
 
 
@@ -59,7 +60,7 @@ public class Forgot extends Block{
   }
 
   protected void control(IWContext iwc){
-    debugParameters(iwc);
+    //debugParameters(iwc);
     portalname = iwc.getServerName();
     form = TextFormat.getInstance();
     int code = INIT;

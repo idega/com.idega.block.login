@@ -11,7 +11,6 @@ package com.idega.block.login.presentation;
 
 import java.rmi.RemoteException;
 
-import com.idega.block.login.business.LoginBusiness;
 import com.idega.block.login.business.LoginContext;
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
@@ -27,11 +26,11 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.SendMail;
 import com.idega.util.text.Name;
-import com.idega.user.business.UserBusiness;
-import com.idega.user.data.User;
 
 public class Register extends Block {
 

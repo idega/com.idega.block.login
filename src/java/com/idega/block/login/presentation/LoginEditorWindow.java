@@ -9,8 +9,6 @@ package com.idega.block.login.presentation;
  * @version 1.0
  */
 
-import java.net.URL;
-
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
