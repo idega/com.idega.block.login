@@ -177,7 +177,7 @@ public class LoginEditor extends PresentationObjectContainer {
 	private PresentationObject doView(User user, String sUserLogin) {
 		Table T = new Table();
 		Text msgText = formatText(customMsg);
-		msgText.setFontColor(IWColor.getHexColorString(Color.BLUE));
+		msgText.setFontColor(IWColor.getHexColorString(Color.blue));
 		T.add(msgText,1,1);
 		T.add(formatText(user.getName()), 1, 2);
 		TextInput tUsrLgn = new TextInput("ml.usrlgn", sUserLogin);
