@@ -51,7 +51,7 @@ public class WelcomeMessage extends Text {
 				}
 				if(displayDate) {
 					IWTimestamp s = IWTimestamp.RightNow();
-					String date = s.getDateString("EEEEEEEEEEEE dd.MM.yyyy",iwc.getCurrentLocale()); 
+					String date = s.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.FULL);
 					if(displayWelcomeMessage) {
 					  welcomeString = welcomeString + Text.BREAK + date;
 					}
