@@ -11,8 +11,8 @@ package com.idega.block.login.presentation;
 
 import java.rmi.RemoteException;
 
-import com.idega.block.login.business.LoginContext;
 import com.idega.business.IBOLookup;
+import com.idega.core.accesscontrol.business.LoginContext;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;

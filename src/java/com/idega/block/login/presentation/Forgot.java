@@ -10,9 +10,9 @@ package com.idega.block.login.presentation;
 
 import java.text.MessageFormat;
 
-import com.idega.block.login.business.LoginContext;
-import com.idega.block.login.business.LoginCreator;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
+import com.idega.core.accesscontrol.business.LoginContext;
+import com.idega.core.accesscontrol.business.LoginCreator;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.data.Email;
