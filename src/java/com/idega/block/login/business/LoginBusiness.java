@@ -10,7 +10,10 @@ import com.idega.jmodule.object.*;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.core.accesscontrol.data.PermissionGroup;
+import com.idega.core.data.GenericGroup;
+import com.idega.core.user.data.UserGroupRepresentative;
 import com.idega.core.user.data.User;
+import com.idega.core.business.UserGroupBusiness;
 import java.sql.*;
 import java.io.*;
 import com.idega.core.accesscontrol.business.AccessControl;
@@ -19,6 +22,7 @@ import com.idega.business.IWEventListener;
 import com.idega.idegaweb.IWException;
 import com.idega.util.Encrypter;
 import java.util.Hashtable;
+import java.util.List;
 
 /**
  * Title:        LoginBusiness
@@ -34,16 +38,18 @@ public class LoginBusiness implements IWEventListener{
 
   public static String UserAttributeParameter="user_login";
   public static String PermissionGroupParameter="user_permission_groups";
-  public static String UserAccessAttributeParameter="user_access";
   public static String LoginStateParameter="login_state";
   private static String LoginAttributeParameter="login_attributes";
+  private static String UserGroupRepresentativeParameter = "ic_user_representive_group";
+  private static String PrimaryGroupsParameter = "ic_user_primarygroups";
+  private static String PrimaryGroupParameter = "ic_user_primarygroup";
 
   public LoginBusiness() {
   }
 
 
   public static boolean isLoggedOn(ModuleInfo modinfo){
-      if(modinfo.getSessionAttribute(UserAttributeParameter)==null){
+      if(modinfo.getSessionAttribute(LoginAttributeParameter)==null){
         return false;
       }
       return true;
@@ -118,11 +124,6 @@ public class LoginBusiness implements IWEventListener{
   public static void setLoginAttribute(String key, Object value, ModuleInfo modinfo) throws NotLoggedOnException{
     if (isLoggedOn(modinfo)){
       Object obj = modinfo.getSessionAttribute(LoginAttributeParameter);
-      if(obj == null){
-        Hashtable tb = new Hashtable();
-        modinfo.setSessionAttribute(LoginAttributeParameter,tb);
-        obj = tb;
-      }
       ((Hashtable)obj).put(key,value);
     }else{
       throw new NotLoggedOnException();
@@ -155,7 +156,13 @@ public class LoginBusiness implements IWEventListener{
 
 
   public static User getUser(ModuleInfo modinfo) /* throws NotLoggedOnException */ {
-    return (User)modinfo.getSessionAttribute(UserAttributeParameter);
+    try {
+      return (User)LoginBusiness.getLoginAttribute(UserAttributeParameter,modinfo);
+    }
+    catch (NotLoggedOnException ex) {
+      return null;
+    }
+
     /*Object obj = modinfo.getSessionAttribute(UserAttributeParameter);
     if (obj != null){
       return (User)obj;
@@ -165,81 +172,75 @@ public class LoginBusiness implements IWEventListener{
     */
   }
 
-  public static PermissionGroup[] getPermissionGroups(ModuleInfo modinfo){
-    return (PermissionGroup[])modinfo.getSessionAttribute(PermissionGroupParameter);
+  public static List getPermissionGroups(ModuleInfo modinfo)throws NotLoggedOnException {
+    return (List)LoginBusiness.getLoginAttribute(PermissionGroupParameter,modinfo);
+  }
+
+  public static UserGroupRepresentative getUserRepresentiveGroup(ModuleInfo modinfo)throws NotLoggedOnException {
+    return (UserGroupRepresentative)LoginBusiness.getLoginAttribute(UserGroupRepresentativeParameter,modinfo);
+  }
+
+  public static GenericGroup getPrimaryGroup(ModuleInfo modinfo)throws NotLoggedOnException {
+    return (GenericGroup)LoginBusiness.getLoginAttribute(PrimaryGroupParameter,modinfo);
+  }
+
+
+  protected static void setUser(ModuleInfo modinfo, User user){
+    LoginBusiness.setLoginAttribute(UserAttributeParameter,user,modinfo);
+  }
+
+  protected static void setPermissionGroups(ModuleInfo modinfo, List value){
+    LoginBusiness.setLoginAttribute(PermissionGroupParameter,value,modinfo);
+  }
+
+  protected static void setUserRepresentiveGroup(ModuleInfo modinfo, UserGroupRepresentative value){
+    LoginBusiness.setLoginAttribute(UserGroupRepresentativeParameter,value,modinfo);
+  }
+
+  protected static void setPrimaryGroup(ModuleInfo modinfo, GenericGroup value){
+    LoginBusiness.setLoginAttribute(PrimaryGroupParameter,value,modinfo);
+  }
+
+  private boolean logIn(ModuleInfo modinfo, int userId) throws SQLException{
+    User user = new User(userId);
+    modinfo.setSessionAttribute(LoginAttributeParameter,new Hashtable());
+
+    LoginBusiness.setUser(modinfo,user);
+
+    List groups = AccessControl.getPermissionGroups(user);
+    if(groups!=null){
+      LoginBusiness.setPermissionGroups(modinfo,groups);
+    }
+
+    LoginBusiness.setUserRepresentiveGroup(modinfo,new UserGroupRepresentative(user.getGroupID()));
+
+    if(user.getPrimaryGroupID() != -1){
+      GenericGroup primaryGroup = new GenericGroup(user.getPrimaryGroupID());
+      LoginBusiness.setPrimaryGroup(modinfo,primaryGroup);
+    }
+
+    return true;
   }
 
   private boolean verifyPassword(ModuleInfo modinfo,String login, String password) throws IOException,SQLException{
-          boolean returner = false;
-          LoginTable[] login_table = (LoginTable[]) (new LoginTable()).findAllByColumn(LoginTable.getUserLoginColumnName(),login);
+    boolean returner = false;
+    LoginTable[] login_table = (LoginTable[]) (LoginTable.getStaticInstance()).findAllByColumn(LoginTable.getUserLoginColumnName(),login);
 
-          for (int i = 0 ; i < login_table.length ; i++ ) {
-            if ( Encrypter.verifyOneWayEncrypted(login_table[i].getUserPassword(), password)) {
-              User user = new User(login_table[i].getUserId());
-              modinfo.getSession().setAttribute(UserAttributeParameter, user);
-              PermissionGroup[] groups = AccessControl.getPermissionGroups(user);
-              if(groups!=null){
-                modinfo.setSessionAttribute(PermissionGroupParameter,groups);
-              }
-              returner = true;
-            }
-          }
-          if (isAdmin(modinfo)) {
-                  modinfo.setSessionAttribute(UserAccessAttributeParameter,"admin");
-          }
-          return returner;
+    if(login_table != null && login_table.length > 0){
+      if ( Encrypter.verifyOneWayEncrypted(login_table[0].getUserPassword(), password)) {
+        returner = logIn(modinfo,login_table[0].getUserId());
+      }
+    }
+
+    return returner;
   }
 
 
 
-    private void logOut(ModuleInfo modinfo) throws Exception{
-            modinfo.removeSessionAttribute(UserAttributeParameter);
-            modinfo.removeSessionAttribute(PermissionGroupParameter);
-
-            if (modinfo.getSessionAttribute(UserAccessAttributeParameter) != null) {
-                    modinfo.removeSessionAttribute(UserAccessAttributeParameter);
-            }
-            if (modinfo.getSessionAttribute(LoginAttributeParameter) != null) {
-                    modinfo.removeSessionAttribute(LoginAttributeParameter);
-            }
+  private void logOut(ModuleInfo modinfo) throws Exception{
+    if (modinfo.getSessionAttribute(LoginAttributeParameter) != null) {
+      modinfo.removeSessionAttribute(LoginAttributeParameter);
     }
+  }
 
-
-
-/*
-    public static boolean registerUserLogin(int user_id,String user_login,String user_pass_one,String user_pass_two) throws SQLException {
-        boolean returner = false;
-
-        if (user_pass_one.equals(user_pass_two)) {
-            LoginTable[] logTable = (LoginTable[]) (new LoginTable()).findAllByColumn(LoginTable.getUserLoginColumnName(),user_login);
-            if (logTable.length == 0) {
-                LoginTable logT = new LoginTable();
-                  logT.setUserId(user_id);
-                  logT.setUserLogin(user_login);
-                  logT.setUserPassword(user_pass_one);
-                logT.insert();
-                returner = true;
-            }
-            else if (logTable.length == 1) {
-                if (logTable[0].getUserId()  == user_id ) {
-                    logTable[0].setUserId(user_id);
-                    logTable[0].setUserLogin(user_login);
-                    logTable[0].setUserPassword(user_pass_one);
-                  logTable[0].update();
-                  returner = true;
-                }
-            }
-            else {
-                returner = false;
-            }
-        }
-
-        if (returner) {
-
-        }
-
-        return returner;
-    }
-
-*/
 }
