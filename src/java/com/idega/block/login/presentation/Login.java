@@ -60,6 +60,9 @@ private boolean helpButton = false;
 private boolean onlyLogoutButton = false;
 private boolean register = false;
 private boolean forgot = false;
+private boolean _window;
+private IBPage _loggedOnPage;
+
 
 public static String controlParameter;
 
@@ -99,16 +102,16 @@ protected IWBundle iwb;
     String state = internalGetState(iwc);
     if(state!=null){
       if(state.equals("loggedon")){
-        isLoggedOn(iwc);
+	isLoggedOn(iwc);
       }
       else if(state.equals("loggedoff")){
-        startState();
+	startState();
       }
       else if(state.equals("loginfailed")){
-        loginFailed();
+	loginFailed();
       }
       else{
-        startState();
+	startState();
       }
     }
     else{
@@ -127,6 +130,9 @@ protected IWBundle iwb;
   }
 
   private void startState(){
+    if ( _loggedOnPage != null )
+      myForm.setPageToSubmitTo(_loggedOnPage.getID());
+
     Table loginTable = new Table();
       loginTable.setAlignment(loginAlignment);
       loginTable.setBorder(0);
@@ -135,7 +141,7 @@ protected IWBundle iwb;
       if ( loginHeight != null )
 			loginTable.setHeight(loginHeight);
       if (!(color.equals(""))) {
-        loginTable.setColor(color);
+	loginTable.setColor(color);
       }
       loginTable.setCellpadding(0);
       loginTable.setCellspacing(0);
@@ -147,18 +153,18 @@ protected IWBundle iwb;
 
     Text loginTexti = new Text(userText);
       if ( userTextSize != -1 ) {
-        loginTexti.setFontSize(userTextSize);
+	loginTexti.setFontSize(userTextSize);
       }
       if ( userTextColor != null ) {
-        loginTexti.setFontColor(userTextColor);
+	loginTexti.setFontColor(userTextColor);
       }
       loginTexti.setFontStyle(textStyles);
     Text passwordTexti = new Text(passwordText);
       if ( passwordTextSize != -1 ) {
-        passwordTexti.setFontSize(passwordTextSize);
+	passwordTexti.setFontSize(passwordTextSize);
       }
       if ( passwordTextColor != null ) {
-        passwordTexti.setFontColor(passwordTextColor);
+	passwordTexti.setFontColor(passwordTextColor);
       }
       passwordTexti.setFontStyle(textStyles);
 
@@ -174,90 +180,90 @@ protected IWBundle iwb;
 
     switch (LAYOUT) {
       case LAYOUT_HORIZONTAL:
-        inputTable = new Table(2,2);
-          inputTable.setBorder(0);
-          if (!(color.equals(""))) {
-          inputTable.setColor(color);
-          }
-          inputTable.setCellpadding(1);
-          inputTable.setCellspacing(0);
-          inputTable.setAlignment("center");
+	inputTable = new Table(2,2);
+	  inputTable.setBorder(0);
+	  if (!(color.equals(""))) {
+	  inputTable.setColor(color);
+	  }
+	  inputTable.setCellpadding(1);
+	  inputTable.setCellspacing(0);
+	  inputTable.setAlignment("center");
 
-        inputTable.add(loginTexti,1,1);
-        inputTable.add(login,1,2);
-        inputTable.add(passwordTexti,2,1);
-        inputTable.add(passw,2,2);
+	inputTable.add(loginTexti,1,1);
+	inputTable.add(login,1,2);
+	inputTable.add(passwordTexti,2,1);
+	inputTable.add(passw,2,2);
 
-        loginTable.add(inputTable,xpos,ypos);
-        ypos++;
-        break;
+	loginTable.add(inputTable,xpos,ypos);
+	ypos++;
+	break;
 
       case LAYOUT_VERTICAL:
-        inputTable = new Table(3,3);
-          inputTable.setBorder(0);
-          if (!(color.equals(""))) {
-          inputTable.setColor(color);
-          }
-          inputTable.setCellpadding(1);
-          inputTable.setCellspacing(0);
-          inputTable.setAlignment("center");
-          inputTable.mergeCells(1,2,3,2);
-          inputTable.setHeight(2,"2");
-          inputTable.setAlignment(1,1,"right");
-          inputTable.setAlignment(1,3,"right");
+	inputTable = new Table(3,3);
+	  inputTable.setBorder(0);
+	  if (!(color.equals(""))) {
+	  inputTable.setColor(color);
+	  }
+	  inputTable.setCellpadding(1);
+	  inputTable.setCellspacing(0);
+	  inputTable.setAlignment("center");
+	  inputTable.mergeCells(1,2,3,2);
+	  inputTable.setHeight(2,"2");
+	  inputTable.setAlignment(1,1,"right");
+	  inputTable.setAlignment(1,3,"right");
 
-        inputTable.add(loginTexti,1,1);
-        inputTable.add(login,3,1);
-        inputTable.add(passwordTexti,1,3);
-        inputTable.add(passw,3,3);
+	inputTable.add(loginTexti,1,1);
+	inputTable.add(login,3,1);
+	inputTable.add(passwordTexti,1,3);
+	inputTable.add(passw,3,3);
 
-        loginTable.add(inputTable,xpos,ypos);
-        ypos++;
-        break;
+	loginTable.add(inputTable,xpos,ypos);
+	ypos++;
+	break;
 
       case LAYOUT_STACKED:
-        inputTable = new Table(1,5);
-          inputTable.setBorder(0);
-          inputTable.setCellpadding(0);
-          inputTable.setCellspacing(0);
-          inputTable.setAlignment("center");
-          inputTable.addText("",1,3);
-          inputTable.setHeight(3,"5");
-          if (!(color.equals(""))) {
-            inputTable.setColor(color);
-          }
-          inputTable.setAlignment(1,1,"left");
-          inputTable.setAlignment(1,4,"left");
+	inputTable = new Table(1,5);
+	  inputTable.setBorder(0);
+	  inputTable.setCellpadding(0);
+	  inputTable.setCellspacing(0);
+	  inputTable.setAlignment("center");
+	  inputTable.addText("",1,3);
+	  inputTable.setHeight(3,"5");
+	  if (!(color.equals(""))) {
+	    inputTable.setColor(color);
+	  }
+	  inputTable.setAlignment(1,1,"left");
+	  inputTable.setAlignment(1,4,"left");
 
-        inputTable.add(loginTexti,1,1);
-        inputTable.add(login,1,2);
-        inputTable.add(passwordTexti,1,4);
-        inputTable.add(passw,1,5);
+	inputTable.add(loginTexti,1,1);
+	inputTable.add(login,1,2);
+	inputTable.add(passwordTexti,1,4);
+	inputTable.add(passw,1,5);
 
-        loginTable.add(inputTable,xpos,ypos);
-        ypos++;
-        break;
+	loginTable.add(inputTable,xpos,ypos);
+	ypos++;
+	break;
 
       case SINGLE_LINE:
-        inputTable = new Table(4,1);
-          inputTable.setBorder(0);
-          inputTable.setCellpadding(3);
-          inputTable.setCellspacing(0);
-          inputTable.setAlignment("center");
-          if (!(color.equals(""))) {
-            inputTable.setColor(color);
-          }
-          inputTable.setAlignment(1,1,"right");
-          inputTable.setAlignment(3,1,"right");
+	inputTable = new Table(4,1);
+	  inputTable.setBorder(0);
+	  inputTable.setCellpadding(3);
+	  inputTable.setCellspacing(0);
+	  inputTable.setAlignment("center");
+	  if (!(color.equals(""))) {
+	    inputTable.setColor(color);
+	  }
+	  inputTable.setAlignment(1,1,"right");
+	  inputTable.setAlignment(3,1,"right");
 
-        inputTable.add(loginTexti,1,1);
-        inputTable.add(login,2,1);
-        inputTable.add(passwordTexti,3,1);
-        inputTable.add(passw,4,1);
+	inputTable.add(loginTexti,1,1);
+	inputTable.add(login,2,1);
+	inputTable.add(passwordTexti,3,1);
+	inputTable.add(passw,4,1);
 
-        loginTable.add(inputTable,xpos,ypos);
-        xpos = 2;
-        break;
+	loginTable.add(inputTable,xpos,ypos);
+	xpos = 2;
+	break;
 		}
 
 		Table submitTable = new Table();
@@ -266,59 +272,59 @@ protected IWBundle iwb;
       //}
 			submitTable.setBorder(0);
 			if (!(color.equals(""))) {
-  			submitTable.setColor(color);
+			submitTable.setColor(color);
 			}
 			submitTable.setRowVerticalAlignment(1,"middle");
 			if ( !helpButton ) {
-        submitTable.setAlignment(1,1,submitButtonAlignment);
+	submitTable.setAlignment(1,1,submitButtonAlignment);
 			}
       else {
-        submitTable.setAlignment(2,1,"right");
+	submitTable.setAlignment(2,1,"right");
       }
 			submitTable.setWidth("100%");
       SubmitButton button = new SubmitButton(loginImage,"tengja");
 
       if ( !helpButton ) {
-        submitTable.add(button,1,1);
+	submitTable.add(button,1,1);
       }
       else {
-        submitTable.add(button,2,1);
+	submitTable.add(button,2,1);
       }
 
       if(register || forgot ){
-        Link registerLink = getRegisterLink();
-        Link forgotLink = getForgotLink();
-        int row = 2;
-        int col = 1;
-        switch (LAYOUT) {
-          case LAYOUT_HORIZONTAL :
-          case LAYOUT_VERTICAL :
-            row = 2;
-            if(register)
-              submitTable.add(registerLink,1,row);
-            if(forgot)
-              submitTable.add(forgotLink,2,row);
-          break;
-          case LAYOUT_STACKED:
-            row = 2;
-            if(register){
-              submitTable.mergeCells(1,row,2,row);
-              submitTable.add(registerLink,1,row);
-              row++;
-            }
-            if(forgot){
-              submitTable.mergeCells(1,row,2,row);
-              submitTable.add(forgotLink,1,row);
-            }
-          break;
-          case SINGLE_LINE:
-            col = 3;
-            if(register)
-              submitTable.add(registerLink,col++,1);
-            if(forgot)
-              submitTable.add(forgotLink,col,1);
-          break;
-        }
+	Link registerLink = getRegisterLink();
+	Link forgotLink = getForgotLink();
+	int row = 2;
+	int col = 1;
+	switch (LAYOUT) {
+	  case LAYOUT_HORIZONTAL :
+	  case LAYOUT_VERTICAL :
+	    row = 2;
+	    if(register)
+	      submitTable.add(registerLink,1,row);
+	    if(forgot)
+	      submitTable.add(forgotLink,2,row);
+	  break;
+	  case LAYOUT_STACKED:
+	    row = 2;
+	    if(register){
+	      submitTable.mergeCells(1,row,2,row);
+	      submitTable.add(registerLink,1,row);
+	      row++;
+	    }
+	    if(forgot){
+	      submitTable.mergeCells(1,row,2,row);
+	      submitTable.add(forgotLink,1,row);
+	    }
+	  break;
+	  case SINGLE_LINE:
+	    col = 3;
+	    if(register)
+	      submitTable.add(registerLink,col++,1);
+	    if(forgot)
+	      submitTable.add(forgotLink,col,1);
+	  break;
+	}
 
 
 
@@ -347,13 +353,15 @@ protected IWBundle iwb;
 
 
 	private void isLoggedOn(IWContext iwc) throws Exception{
+	  if ( this.loggedOffPageId != -1 )
+	    myForm.setPageToSubmitTo(loggedOffPageId);
 		User user = (User) getUser(iwc);
 
     if (loggedOnLink != null) {
       if (userTextSize > -1)
-        loggedOnLink.setFontSize(userTextSize);
+	loggedOnLink.setFontSize(userTextSize);
       if (userTextColor != null && !userTextColor.equals(""))
-        loggedOnLink.setFontColor(userTextColor);
+	loggedOnLink.setFontColor(userTextColor);
       loggedOnLink.setText(user.getName());
       loggedOnLink.setFontStyle(textStyles);
     }
@@ -379,7 +387,7 @@ protected IWBundle iwb;
 			loginTable.setCellpadding(0);
 			loginTable.setCellspacing(0);
 			if (!(color.equals(""))) {
-        loginTable.setColor(color);
+	loginTable.setColor(color);
 			}
 
     if ( this.LAYOUT != this.SINGLE_LINE ) {
@@ -402,16 +410,16 @@ protected IWBundle iwb;
 			inputTable.setCellpadding(0);
 			inputTable.setCellspacing(0);
       if ( LAYOUT != SINGLE_LINE ) {
-        inputTable.setAlignment(1,1,"center");
-        inputTable.setVerticalAlignment(1,1,"middle");
-        inputTable.setWidth("100%");
+	inputTable.setAlignment(1,1,"center");
+	inputTable.setVerticalAlignment(1,1,"middle");
+	inputTable.setWidth("100%");
       }
 
       if (loggedOnLink != null) {
-        inputTable.add(loggedOnLink);
+	inputTable.add(loggedOnLink);
       }
       else {
-        inputTable.add(userText);
+	inputTable.add(userText);
       }
 
 		Table submitTable = new Table(1,1);
@@ -420,22 +428,22 @@ protected IWBundle iwb;
 				submitTable.setColor(color);
 			}
       if ( LAYOUT != SINGLE_LINE ) {
-        submitTable.setAlignment(1,1,"center");
-        submitTable.setVerticalAlignment(1,1,"middle");
+	submitTable.setAlignment(1,1,"center");
+	submitTable.setVerticalAlignment(1,1,"middle");
       }
       if ( onlyLogoutButton ) {
-        submitTable.setWidth(loginWidth);
-        submitTable.setHeight(loginHeight);
-        submitTable.setAlignment(loginAlignment);
+	submitTable.setWidth(loginWidth);
+	submitTable.setHeight(loginHeight);
+	submitTable.setAlignment(loginAlignment);
       }
       else {
-        submitTable.setWidth("100%");
+	submitTable.setWidth("100%");
       }
 
       submitTable.add(new SubmitButton(logoutImage,"utskraning"));
       submitTable.add(new Parameter(LoginBusiness.LoginStateParameter,"logoff"));
       if(loggedOffPageId > 0)
-        submitTable.add(new Parameter(getIBPageParameterName(),String.valueOf(loggedOffPageId)));
+	submitTable.add(new Parameter(getIBPageParameterName(),String.valueOf(loggedOffPageId)));
 
     if ( LAYOUT != SINGLE_LINE ) {
       loginTable.add(inputTable,1,1);
@@ -475,7 +483,7 @@ protected IWBundle iwb;
 			loginTable.setCellpadding(0);
 			loginTable.setCellspacing(0);
 			if (!(color.equals(""))) {
-        loginTable.setColor(color);
+	loginTable.setColor(color);
 			}
 
     if ( this.LAYOUT != this.SINGLE_LINE ) {
@@ -498,12 +506,12 @@ protected IWBundle iwb;
 			inputTable.setCellpadding(0);
 			inputTable.setCellspacing(0);
       if ( LAYOUT != SINGLE_LINE ) {
-        inputTable.setAlignment(1,1,"center");
-        inputTable.setVerticalAlignment(1,1,"middle");
-        inputTable.setWidth("100%");
+	inputTable.setAlignment(1,1,"center");
+	inputTable.setVerticalAlignment(1,1,"middle");
+	inputTable.setWidth("100%");
       }
 
-  		inputTable.add(mistokst,1,1);
+		inputTable.add(mistokst,1,1);
 
 		Table submitTable = new Table(1,1);
 			submitTable.setBorder(0);
@@ -511,8 +519,8 @@ protected IWBundle iwb;
 				submitTable.setColor(color);
 			}
       if ( LAYOUT != SINGLE_LINE ) {
-        submitTable.setAlignment(1,1,"center");
-        submitTable.setVerticalAlignment(1,1,"middle");
+	submitTable.setAlignment(1,1,"center");
+	submitTable.setVerticalAlignment(1,1,"middle");
 			  submitTable.setWidth("100%");
       }
 
@@ -536,10 +544,10 @@ protected IWBundle iwb;
 			textinn.setFontSize(1);
 			textinn.setBold();
       if (what.equals("empty")) {
-        textinn.addToText(iwrb.getLocalizedString("write_ssn","Type social-security number in user input"));
+	textinn.addToText(iwrb.getLocalizedString("write_ssn","Type social-security number in user input"));
       }
       else if (what.equals("toBig")) {
-        textinn.addToText(iwrb.getLocalizedString("without_hyphen","Social-security number must be written without a hyphen"));
+	textinn.addToText(iwrb.getLocalizedString("without_hyphen","Social-security number must be written without a hyphen"));
       }
       textinn.setFontStyle(textStyles);
 
@@ -566,12 +574,12 @@ protected IWBundle iwb;
 			inputTable.setCellpadding(0);
 			inputTable.setCellspacing(0);
       if ( LAYOUT != SINGLE_LINE ) {
-        inputTable.setAlignment(1,1,"center");
-        inputTable.setVerticalAlignment(1,1,"middle");
-        inputTable.setWidth("100%");
+	inputTable.setAlignment(1,1,"center");
+	inputTable.setVerticalAlignment(1,1,"middle");
+	inputTable.setWidth("100%");
       }
 
-  		inputTable.add(textinn,1,1);
+		inputTable.add(textinn,1,1);
 
 		Table submitTable = new Table(1,1);
 			if (!(color.equals(""))) {
@@ -579,9 +587,9 @@ protected IWBundle iwb;
 			}
 			submitTable.setBorder(0);
       if ( LAYOUT != SINGLE_LINE ) {
-        submitTable.setAlignment(1,1,"center");
-        submitTable.setVerticalAlignment(1,1,"middle");
-        submitTable.setWidth("100%");
+	submitTable.setAlignment(1,1,"center");
+	submitTable.setVerticalAlignment(1,1,"middle");
+	submitTable.setWidth("100%");
       }
 
     submitTable.add(new SubmitButton(tryAgainImage),1,1);
@@ -724,6 +732,10 @@ protected IWBundle iwb;
     loggedOnLink = (Link) link.clone();
   }
 
+  public void setLogOnPage(IBPage page) {
+    _loggedOnPage = page;
+  }
+
   public void setLoggedOnWindow(boolean window) {
     if ( window ) {
       loggedOnLink = new Link();
@@ -758,19 +770,19 @@ protected IWBundle iwb;
       obj = (Login)super.clone();
 
      if (this.myForm != null) {
-        obj.myForm=(Form)this.myForm.clone();
+	obj.myForm=(Form)this.myForm.clone();
       }
       if (this.loginImage != null) {
-        obj.loginImage=(Image)this.loginImage.clone();
+	obj.loginImage=(Image)this.loginImage.clone();
       }
       if (this.logoutImage != null) {
-        obj.logoutImage=(Image)this.logoutImage.clone();
+	obj.logoutImage=(Image)this.logoutImage.clone();
       }
       if (this.tryAgainImage != null) {
-        obj.tryAgainImage=(Image)this.tryAgainImage.clone();
+	obj.tryAgainImage=(Image)this.tryAgainImage.clone();
       }
       if (this.loggedOnLink != null) {
-        obj.loggedOnLink=(Link)this.loggedOnLink.clone();
+	obj.loggedOnLink=(Link)this.loggedOnLink.clone();
       }
     }
     catch(Exception ex) {
