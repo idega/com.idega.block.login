@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
 import com.idega.block.login.business.LoginCookieListener;
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
@@ -19,7 +18,7 @@ import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.core.accesscontrol.data.LoginInfoHome;
 import com.idega.core.accesscontrol.data.LoginTable;
-import com.idega.core.builder.data.ICBuilderConstants;
+import com.idega.core.builder.business.ICBuilderConstants;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.contact.data.Email;
 import com.idega.core.user.data.User;
@@ -40,7 +39,6 @@ import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.repository.data.ImplementorRepository;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.util.Converter;
 import com.idega.util.SendMail;
@@ -60,7 +58,7 @@ public class Login extends Block {
 	protected static final String ACTION_LOG_IN = "login";
 	protected static final String ACTION_LOG_OFF = "logoff";
 	
-	private static final String IB_PAGE_PARAMETER = ((ICBuilderConstants) ImplementorRepository.getInstance().getImplementorOrNull(ICBuilderConstants.class, Login.class)).getPageParameter();
+	private static final String IB_PAGE_PARAMETER = ICBuilderConstants.IB_PAGE_PARAMETER;
 
 
 	private Link loggedOnLink;
