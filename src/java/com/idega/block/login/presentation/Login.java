@@ -244,10 +244,10 @@ protected IWBundle iwb;
 		User user = (User) getUser(modinfo);
 
 		Text userText = new Text();
-			if ( userTextSize != -1 ) {
+			if ( userTextSize > -1 ) {
 				userText.setFontSize(userTextSize);
 			}
-			if (!(userTextColor.equals(""))) {
+			if (userTextColor != null && !(userTextColor.equals(""))) {
 				userText.setFontColor(userTextColor);
 			}
 
