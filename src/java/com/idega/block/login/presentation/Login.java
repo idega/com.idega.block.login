@@ -7,14 +7,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.idega.block.login.business.LoginCookieListener;
-import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.data.IBPage;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -25,14 +23,12 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
-//import com.idega.presentation.ui.HelpButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.Converter;
-import com.idega.user.data.Group;
 /**
  * Title:        Login - The standard login block in idegaWeb
  * Description:
@@ -339,6 +335,7 @@ public class Login extends Block {
 						//PopUp Link parameters
 						link.setPage(_popupPageID);
 						link.setParameter(FROM_PAGE_PARAMETER,String.valueOf(iwc.getCurrentIBPageID()));
+						link.setHttps(sendToHTTPS);
 						
 					} else {
 						try {
@@ -450,8 +447,10 @@ public class Login extends Block {
 	}
 	private void isLoggedOn(IWContext iwc) throws Exception {
 
-		if (this.loggedOffPageId != -1)
+		if (this.loggedOffPageId != -1){
 			myForm.setPageToSubmitTo(loggedOffPageId);
+		}
+		
 		User user = (User)getUser(iwc);
 
 		if (sendUserToHomePage && LoginBusinessBean.isLogOnAction(iwc)) {
@@ -494,7 +493,7 @@ public class Login extends Block {
 		if (!(color.equals(""))) {
 			loginTable.setColor(color);
 		}
-		if (this.LAYOUT != this.SINGLE_LINE) {
+		if (this.LAYOUT != Login.SINGLE_LINE) {
 			loginTable.setHeight(1, "50%");
 			loginTable.setHeight(2, "50%");
 			loginTable.setVerticalAlignment(1, 1, "bottom");
@@ -602,7 +601,7 @@ public class Login extends Block {
 		if (!(color.equals(""))) {
 			loginTable.setColor(color);
 		}
-		if (this.LAYOUT != this.SINGLE_LINE) {
+		if (this.LAYOUT != Login.SINGLE_LINE) {
 			loginTable.setHeight(1, "50%");
 			loginTable.setHeight(2, "50%");
 			loginTable.setVerticalAlignment(1, 1, "bottom");
@@ -770,7 +769,7 @@ public class Login extends Block {
 		LAYOUT = LAYOUT_HORIZONTAL;
 	}
 	public void setStacked() {
-		LAYOUT = this.LAYOUT_STACKED;
+		LAYOUT = Login.LAYOUT_STACKED;
 	}
 	public void setStyle(String styleAttribute) {
 		setInputStyle(styleAttribute);
@@ -873,18 +872,7 @@ public class Login extends Block {
 		System.err.println("setting redirect page");
 		_redirectPage = page;
 	}
-	public void setGroupForwardPage(Group group, IBPage page) {
-		try {
-			getGroupPageMap().put(group.getPrimaryKey().toString(), page.getPrimaryKey().toString());
-		} catch (Exception ex) {
-		}
-	}
-	private Map getGroupPageMap() {
-		if (groupPageMap == null) {
-			groupPageMap = new HashMap();
-		}
-		return groupPageMap;
-	}
+
 	public Object clone() {
 		Login obj = null;
 		try {
