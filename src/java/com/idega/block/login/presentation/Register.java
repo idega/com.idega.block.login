@@ -10,6 +10,7 @@ package com.idega.block.login.presentation;
  */
 
 import java.rmi.RemoteException;
+import java.text.MessageFormat;
 
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginContext;
@@ -212,7 +213,7 @@ public class Register extends Block {
 			String letter =
 				iwrb.getLocalizedString(
 					"register.email_body",
-					"Username : ? \nPassword: ?");
+					"Username : {1} \nPassword: {2}");
 
 			if (letter == null)
 				return NO_LETTER;
@@ -226,19 +227,8 @@ public class Register extends Block {
 				return NO_USERNAME;
 
 			if (letter != null) {
-
-				int pos = letter.indexOf("?");
-
-				StringBuffer body =
-					new StringBuffer(letter.substring(0, pos - 1));
-
-				body.append(user.getUserName());
-
-				pos = letter.indexOf("?", pos);
-
-				body.append(letter.substring(pos + 1));
-
-				body.append(user.getPassword());
+				Object[] objs = {user.getUserName(),user.getPassword()};
+				String body = MessageFormat.format(letter,objs);
 
 				// body.append();
 
