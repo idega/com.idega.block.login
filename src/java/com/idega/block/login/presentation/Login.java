@@ -216,7 +216,7 @@ public class Login extends Block {
 				}
 				break;
 			default:
-				if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(iwc.getLanguage())) {
+				if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(iwc.getMarkupLanguage())) {
 					startStateWML(iwc);
 				} else {
 					startState(iwc);
