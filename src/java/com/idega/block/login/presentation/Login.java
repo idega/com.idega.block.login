@@ -541,4 +541,31 @@ protected IWBundle iwb;
     this.tryAgainImage=tryAgainImage;
   }
 
+
+  public Object clone() {
+    Login obj = null;
+    try {
+      obj = (Login)super.clone();
+
+      if (this.outerTable != null) {
+        obj.outerTable=(Table)this.outerTable.clone();
+      }
+      if (this.myForm != null) {
+        obj.myForm=(Form)this.myForm.clone();
+      }
+      if (this.loginImage != null) {
+        obj.loginImage=(Image)this.loginImage.clone();
+      }
+      if (this.logoutImage != null) {
+        obj.logoutImage=(Image)this.logoutImage.clone();
+      }
+      if (this.tryAgainImage != null) {
+        obj.tryAgainImage=(Image)this.tryAgainImage.clone();
+      }
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+    return obj;
+  }
 }
