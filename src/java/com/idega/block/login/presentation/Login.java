@@ -92,6 +92,8 @@ public class Login extends Block {
 	protected boolean sendUserToHomePage = false;
 	private boolean allowCookieLogin = false;
 
+	private boolean showHint = false;
+	
 	private int _spaceBetween = 4;
 
 	private boolean _buttonAsLink = false;
@@ -104,9 +106,6 @@ public class Login extends Block {
 	
 	private static final String LOGIN_PARAMETER_NAME = "login";
 	private static final String HINT_ANSWER_PARAMETER_NAME = "hint_answer";
-	
-	private final static String BUNDLE_PROPERTY_DISPLAY_REGISTER_LINK = "new_user_link_on_login_page";
-	private final static String BUNDLE_PROPERTY_HINT_BEFORE_DISABLING = "hint_before_login_disabled";
 	
 	//private IBPage _pageForInvalidLogin = null;
 
@@ -122,18 +121,17 @@ public class Login extends Block {
 		String hintAnswer = iwc.getParameter(HINT_ANSWER_PARAMETER_NAME);
 		String hintMessage = null;
 		if(hintAnswer!=null && hintAnswer.length()>0) {
-			System.out.println("verifying hint answer");
 			try {
 				boolean hintRight = testHint(iwc, hintAnswer);;
 				if(hintRight) {
 					String sentTo = resetPasswordAndsendMessage(iwc);
-					hintMessage = sentTo==null?iwrb.getLocalizedString("login_hint_error", "Villa kom upp vid ad sannreyna svar"):
-											   iwrb.getLocalizedString("login_hint_correct", "Rett svar, leidbeiningar hafa verid sendar i posti a eftirfarandi postfong: " + sentTo);
+					hintMessage = sentTo==null?iwrb.getLocalizedString("login_hint_error", "Error validating hint answer"):
+											   iwrb.getLocalizedString("login_hint_correct", "Correct answer, instructions have been sent to: " + sentTo);
 				} else {
-					hintMessage = iwrb.getLocalizedString("login_hint_incorrect", "Rangt svar");
+					hintMessage = iwrb.getLocalizedString("login_hint_incorrect", "Answer incorrect");
 				}
 			} catch(Exception e) {
-				hintMessage = iwrb.getLocalizedString("login_hint_error", "Villa kom upp vid ad sannreyna svar");
+				hintMessage = iwrb.getLocalizedString("login_hint_error", "Error validating hint answer");
 			}
 		}
 		if (this._buttonAsLink) {
@@ -233,10 +231,10 @@ public class Login extends Block {
 		String letter =
 						iwrb.getLocalizedString(
 						"login.password_email_body",
-						"Thessi postur er sendur thvi tu hefur gleymt lykilordi thinu a Felix og gafst rett svar vid visbendingaspurningunni thinni.\n" +
-						"Thu tharft ad velja ther nytt lykilord. " +
-						"Til ad geta farid inn a Felix og breytt lykilordi thinu hefur verid buid til nytt timabundid lykilord fyrir thig. " +
-						"\nLykilord thitt a Felix er nuna \"{0}\"\n");
+						"You are receiving this mail because you forgot your password on Felix and answered your hint question correctly.\n" +
+						"You need to select a new password. " +
+						"You have been given a new and temporary password on Felix so that you can log in and set a new password.\n " +
+						"Your new and temporary password is \"{0}\"\n");
 
 		StringBuffer buf = null;
 		
@@ -272,7 +270,7 @@ public class Login extends Block {
 							"",
 							"",
 							server,
-							iwrb.getLocalizedString("login.password_email_subject", "Gleymt lykilord a Felix"),
+							iwrb.getLocalizedString("login.password_email_subject", "Forgotten password on Felix"),
 							body);
 					}
 				}
@@ -298,18 +296,17 @@ public class Login extends Block {
 	}
 	
 	private void handleHint(IWContext iwc) {
-		String showHint = iwb.getProperty(BUNDLE_PROPERTY_HINT_BEFORE_DISABLING);
-		if(showHint!=null && showHint.equalsIgnoreCase("true")) {
+		if(showHint) {
 			String userName = iwc.getParameter(LOGIN_PARAMETER_NAME);
 			if(userName!=null && userName.length()>0) {
 				try {
 					User user = getUserBusiness(iwc).getUser(userName);
 					
-					String helpText = iwrb.getLocalizedString("login_hint_helptext", "Thu valdir ad gefa upp visbendingaspurningu vid skraningu, gefdu upp rett svar og thu faerd lykilord i posti");
+					String helpText = iwrb.getLocalizedString("login_hint_helptext", "You gave a hint question when you registered, provide the answer you gave at registration");
 					String question = user.getMetaData("HINT_QUESTION");
 					if(question!=null && question.length()>0) {
 						TextInput input = new TextInput(HINT_ANSWER_PARAMETER_NAME);
-						SubmitButton button = new SubmitButton(iwrb.getLocalizedString("hint_submit", "Svara"));
+						SubmitButton button = new SubmitButton(iwrb.getLocalizedString("hint_submit", "Answer"));
 						
 						HiddenInput hInput = new HiddenInput(LOGIN_PARAMETER_NAME, userName);
 						
@@ -548,8 +545,7 @@ public class Login extends Block {
 			} else {
 				submitTable.add(button, 2, 1);
 			}
-			String newUserLinkOnLoginPage = iwb.getProperty(BUNDLE_PROPERTY_DISPLAY_REGISTER_LINK);
-			register = newUserLinkOnLoginPage != null && newUserLinkOnLoginPage.equalsIgnoreCase("true");
+			
 			
 			if (register || forgot || allowCookieLogin) {
 				Link registerLink = getRegisterLink();
@@ -622,13 +618,13 @@ public class Login extends Block {
 
 
 	private Link getRegisterLink() {
-		Link L = new Link(iwrb.getLocalizedString("register.register", "N�skr�ning"));
+		Link L = new Link(iwrb.getLocalizedString("register.register", "Register"));
 		L.setFontStyle(this.textStyles);
 		L.setWindowToOpen(RegisterWindow.class);
 		return L;
 	}
 	private Link getForgotLink() {
-		Link L = new Link(iwrb.getLocalizedString("register.forgot", "Gleymt lykilor�"));
+		Link L = new Link(iwrb.getLocalizedString("register.forgot", "Forgot password�"));
 		L.setFontStyle(this.textStyles);
 		L.setWindowToOpen(ForgotWindow.class);
 		return L;
@@ -1028,6 +1024,12 @@ public class Login extends Block {
 	}
 	public void setLoggedOnLink(Link link) {
 		loggedOnLink = (Link)link.clone();
+	}
+	public void setRegisterLink(boolean value) {
+		register = value;
+	}
+	public void setShowHint(boolean value) {
+		showHint = value;
 	}
 	public void setLogOnPage(ICPage page) {
 		_logOnPage = page.getID();
