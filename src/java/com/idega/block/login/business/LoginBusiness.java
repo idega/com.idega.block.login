@@ -17,7 +17,6 @@ public class LoginBusiness extends LoginBusinessBean
 	public LoginBusiness()
 	{
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 }
