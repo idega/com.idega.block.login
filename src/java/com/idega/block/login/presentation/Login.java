@@ -27,27 +27,27 @@ import com.idega.idegaweb.IWMainApplication;
 
 public class Login extends JModuleObject{
 
-String backgroundImageUrl = "";
-String newUserImageUrl = "";
+private String backgroundImageUrl = "";
+private String newUserImageUrl = "";
 
-String loginWidth = "";
-String loginHeight = "";
+private String loginWidth = "";
+private String loginHeight = "";
+private String loginAlignment = "center";
 
-String userText;
-String passwordText;
+private String userText;
+private String passwordText;
 
-String color = "";
-String userTextColor = "";
-String passwordTextColor;
+private String color = "";
+private String userTextColor = "";
+private String passwordTextColor;
 
-int userTextSize = -1;
-int passwordTextSize = -1;
-int inputLength = 10;
+private int userTextSize = -1;
+private int passwordTextSize = -1;
+private int inputLength = 10;
 
-String styleAttribute = "font-size: 10pt";
-String submitButtonAlignment;
+private String styleAttribute = "font-size: 10pt";
+private String submitButtonAlignment;
 
-private Table outerTable;
 private Form myForm;
 private Image loginImage;
 private Image logoutImage;
@@ -105,8 +105,7 @@ protected IWBundle iwb;
       startState();
     }
 
-    outerTable.add(myForm);
-    add(outerTable);
+    add(myForm);
   }
 
   public static boolean isAdmin(ModuleInfo modinfo)throws Exception{
@@ -119,7 +118,7 @@ protected IWBundle iwb;
 
 	private void startState(){
 		Table loginTable = new Table(1,2);
-			//loginTable.setAlignment("center");
+			loginTable.setAlignment(loginAlignment);
 			loginTable.setBorder(0);
 			loginTable.setWidth(loginWidth);
 			loginTable.setHeight(loginHeight);
@@ -278,7 +277,7 @@ protected IWBundle iwb;
 		Table loginTable = new Table(1,2);
 			loginTable.setBorder(0);
 			loginTable.setBackgroundImage(new Image(backgroundImageUrl));
-			//loginTable.setAlignment("center");
+			loginTable.setAlignment(loginAlignment);
 			loginTable.setWidth(loginWidth);
 			loginTable.setHeight(loginHeight);
       loginTable.setHeight(1,"50%");
@@ -311,7 +310,14 @@ protected IWBundle iwb;
 			}
 			submitTable.setAlignment(1,1,"center");
 			submitTable.setVerticalAlignment(1,1,"middle");
-			submitTable.setWidth("100%");
+      if ( onlyLogoutButton ) {
+        submitTable.setWidth(loginWidth);
+        submitTable.setHeight(loginHeight);
+        submitTable.setAlignment(loginAlignment);
+      }
+      else {
+        submitTable.setWidth("100%");
+      }
 
       submitTable.add(new SubmitButton(logoutImage,"utskraning"));
       submitTable.add(new Parameter(LoginBusiness.LoginStateParameter,"logoff"));
@@ -338,7 +344,7 @@ protected IWBundle iwb;
 
 		Table loginTable = new Table(1,2);
 			loginTable.setBackgroundImage(new Image(backgroundImageUrl));
-			//loginTable.setAlignment("center");
+			loginTable.setAlignment(loginAlignment);
 			loginTable.setWidth(loginWidth);
 			loginTable.setHeight(loginHeight);
       loginTable.setHeight(1,"50%");
@@ -456,11 +462,6 @@ protected IWBundle iwb;
     submitButtonAlignment = "center";
     LAYOUT = LAYOUT_VERTICAL;
 
-    outerTable = new Table();
-      outerTable.setCellpadding(0);
-      outerTable.setCellspacing(0);
-      outerTable.setAlignment("center");
-
     myForm = new Form();
       myForm.setEventListener(LoginBusiness.class.getName());
 			myForm.setMethod("post");
@@ -551,16 +552,17 @@ protected IWBundle iwb;
     onlyLogoutButton = logout;
   }
 
+  public void setLoginAlignment(String alignment) {
+    loginAlignment = alignment;
+  }
+
 
   public Object clone() {
     Login obj = null;
     try {
       obj = (Login)super.clone();
 
-      if (this.outerTable != null) {
-        obj.outerTable=(Table)this.outerTable.clone();
-      }
-      if (this.myForm != null) {
+     if (this.myForm != null) {
         obj.myForm=(Form)this.myForm.clone();
       }
       if (this.loginImage != null) {
