@@ -9,6 +9,7 @@ package com.idega.block.login.business;
 import com.idega.jmodule.object.*;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.accesscontrol.data.LoginInfo;
+import com.idega.core.accesscontrol.data.PermissionGroup;
 import com.idega.core.user.data.User;
 import java.sql.*;
 import java.io.*;
@@ -30,6 +31,7 @@ public class LoginBusiness implements IWEventListener{
 
 
   public static String UserAttributeParameter="user_login";
+  public static String PermissionGroupParameter="user_permission_groups";
   public static String UserAccessAttributeParameter="user_access";
   public static String LoginStateParameter="login_state";
 
@@ -115,19 +117,24 @@ public class LoginBusiness implements IWEventListener{
     return (User)modinfo.getSessionAttribute(UserAttributeParameter);
   }
 
+  public static PermissionGroup[] getPermissionGroups(ModuleInfo modinfo){
+    return (PermissionGroup[])modinfo.getSessionAttribute(PermissionGroupParameter);
+  }
 
   private boolean verifyPassword(ModuleInfo modinfo,String login, String password) throws IOException,SQLException{
           boolean returner = false;
-          LoginTable[] login_table = (LoginTable[]) (new LoginTable()).findAllByColumn("user_login",login);
+          LoginTable[] login_table = (LoginTable[]) (new LoginTable()).findAllByColumn(LoginTable.getUserLoginColumnName(),login);
 
           for (int i = 0 ; i < login_table.length ; i++ ) {
                   if (login_table[i].getUserPassword().equals(password)) {
-                          modinfo.getSession().setAttribute(UserAttributeParameter,new User(login_table[i].getUserId())   );
+                          User user = new User(login_table[i].getUserId());
+                          modinfo.getSession().setAttribute(UserAttributeParameter, user);
+                          modinfo.setSessionAttribute(PermissionGroupParameter, AccessControl.getPermissionGroups(user));
                           returner = true;
                   }
           }
           if (isAdmin(modinfo)) {
-                  modinfo.getSession().setAttribute(UserAccessAttributeParameter,"admin");
+                  modinfo.setSessionAttribute(UserAccessAttributeParameter,"admin");
           }
 /*		if (isDeveloper(modinfo)) {
                   modinfo.getSession().setAttribute("user_access","developer");
@@ -145,8 +152,9 @@ public class LoginBusiness implements IWEventListener{
 
 
     private void logOut(ModuleInfo modinfo) throws Exception{
-            //System.out.print("inside logOut");
             modinfo.removeSessionAttribute(UserAttributeParameter);
+            modinfo.removeSessionAttribute(PermissionGroupParameter);
+
             if (modinfo.getSessionAttribute(UserAccessAttributeParameter) != null) {
                     modinfo.removeSessionAttribute(UserAccessAttributeParameter);
             }
@@ -156,7 +164,7 @@ public class LoginBusiness implements IWEventListener{
         boolean returner = false;
 
         if (user_pass_one.equals(user_pass_two)) {
-            LoginTable[] logTable = (LoginTable[]) (new LoginTable()).findAllByColumn("USER_LOGIN",user_login);
+            LoginTable[] logTable = (LoginTable[]) (new LoginTable()).findAllByColumn(LoginTable.getUserLoginColumnName(),user_login);
             if (logTable.length == 0) {
                 LoginTable logT = new LoginTable();
                   logT.setUserId(user_id);
