@@ -24,6 +24,7 @@ import com.idega.core.contact.data.Email;
 import com.idega.core.user.data.User;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -35,6 +36,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
@@ -123,6 +125,8 @@ public class Login extends Block {
 	private static final String HINT_ANSWER_PARAMETER_NAME = "hint_answer";
 
 	//private IBPage _pageForInvalidLogin = null;
+	
+	private boolean lockedAsWapLayout = false;
 
 	public Login() {
 		super();
@@ -212,7 +216,11 @@ public class Login extends Block {
 				}
 				break;
 			default:
-				startState(iwc);
+				if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(iwc.getLanguage())) {
+					startStateWML(iwc);
+				} else {
+					startState(iwc);
+				}
 				break;
 		}
 
@@ -220,6 +228,13 @@ public class Login extends Block {
 		if (hintMessage != null) {
 			add(hintMessage);
 		}
+	}
+	
+	/**
+	 * @param lockedAsWapLayout The lockedAsWapLayout to set.
+	 */
+	public void setLockedAsWapLayout(boolean lockedAsWapLayout) {
+		this.lockedAsWapLayout = lockedAsWapLayout;
 	}
 
 	private String resetPasswordAndsendMessage(IWContext iwc) {
@@ -660,6 +675,40 @@ public class Login extends Block {
 		submitTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, ACTION_LOG_IN));
 		getMainForm().add(loginTable);
 	}
+	
+	protected void startStateWML(IWContext iwc) {
+		
+		if (_logOnPage > 0) {
+			getMainForm().setPageToSubmitTo(_logOnPage);
+		}
+
+		Table myTable = new Table(1,5);
+		
+		TextInput login = new TextInput(LOGIN_PARAMETER_NAME);
+		login.setMarkupAttribute("style", styleAttribute);
+		login.setSize(inputLength);
+		
+		PasswordInput passw = new PasswordInput(PASSWORD_PARAMETER_NAME);
+		passw.setMarkupAttribute("style", styleAttribute);
+		passw.setSize(inputLength);
+		
+		Label loginTexti = new Label(userText,login);
+		Label passwordTexti = new Label(passwordText,passw);
+		
+		SubmitButton button = new SubmitButton(iwrb.getLocalizedString("login_text", "login"), "tengja");
+
+		int row = 1;
+		myTable.add(loginTexti,1,row++);
+		myTable.add(login,1,row++);
+		myTable.add(passwordTexti,1,row++);
+		myTable.add(passw,1,row++);
+		
+		myTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, ACTION_LOG_IN));
+		myTable.add(button,1,row++);
+		
+		getMainForm().add(myTable);
+	}
+
 
 	private Link getRegisterLink() {
 		Link link = new Link(iwrb.getLocalizedString("register.register", "Register"));
