@@ -310,7 +310,6 @@ public class Login extends Block {
 						HiddenInput hInput = new HiddenInput(LOGIN_PARAMETER_NAME, userName);
 						
 						Table qTable = new Table();
-						int row = 1;
 						qTable.mergeCells(1, 1, 2, 1);
 						qTable.add(helpText, 1, 1);
 						qTable.mergeCells(1, 2, 2, 2);
