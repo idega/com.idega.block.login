@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.1 2005/03/09 02:12:37 tryggvil Exp $
+ * $Id: Login2.java,v 1.2 2005/03/10 19:14:06 tryggvil Exp $
  * Created on 7.3.2005 in project com.idega.block.login
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -21,18 +21,18 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.PresentationObjectTransitional;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.GenericButton;
+import com.idega.presentation.ui.Parameter;
 
 
 /**
  * <p>
  * New Login component based on JSF and CSS. Will gradually replace old Login component
  * </p>
- *  Last modified: $Date: 2005/03/09 02:12:37 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2005/03/10 19:14:06 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 
@@ -57,19 +57,30 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			layer = new Layer();
 			((Layer) layer).setStyleClass(getStyleClass());
 			
-			Form form = new Form();
-			layer.getChildren().add(form);
+			//Form form = new Form();
+			//layer.getChildren().add(form);
 			
 			User user = iwc.getCurrentUser();
 			Text text = new Text();
 			String name = user.getName();
 			text.setText(name);
-			form.add(text);
+			layer.getChildren().add(text);
 			
 			String logoutText = getLocalizedString("logout_text", "Log out",iwc);
 			
-			SubmitButton sbutton = new SubmitButton(logoutText,LoginBusinessBean.LoginStateParameter,LoginBusinessBean.LOGIN_EVENT_LOGOFF);
-			form.add(sbutton);
+			
+			//SubmitButton sbutton = new SubmitButton(logoutText,LoginBusinessBean.LoginStateParameter,LoginBusinessBean.LOGIN_EVENT_LOGOFF);
+			GenericButton gbutton = new GenericButton("logoutbutton",logoutText);
+			String loginParameter = LoginBusinessBean.LoginStateParameter;
+			String logoutParamValue = LoginBusinessBean.LOGIN_EVENT_LOGOFF;
+
+			Parameter param = new Parameter(loginParameter,"");
+			
+			gbutton.setOnClick("this.form.elements['"+loginParameter+"'].value='"+logoutParamValue+"';this.form.submit();");
+			
+			layer.getChildren().add(param);
+			layer.getChildren().add(gbutton);
+			//layer.getChildren().add(sbutton);
 			//layer.add(button);			
 			getFacets().put(FACET_LOGGED_IN,layer);
 
