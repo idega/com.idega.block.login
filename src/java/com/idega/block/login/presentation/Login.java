@@ -9,6 +9,7 @@ import com.idega.core.user.data.User;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
+import com.idega.util.text.TextStyler;
 import java.util.*;
 import com.idega.block.login.business.*;
 import com.idega.core.accesscontrol.business.AccessControl;
@@ -33,7 +34,7 @@ private String backgroundImageUrl = "";
 private String newUserImageUrl = "";
 private String loginWidth = "";
 private String loginHeight = "";
-private String loginAlignment = "center";
+private String loginAlignment = "left";
 
 private String userText;
 private String passwordText;
@@ -46,7 +47,8 @@ private int userTextSize = -1;
 private int passwordTextSize = -1;
 private int inputLength = 10;
 
-private String styleAttribute = "font-size: 10pt";
+private String styleAttribute = "font-family: Verdana; font-size: 8pt; border: 1 solid #000000";
+private String textStyles = TextStyler.getDefaultStyle();
 private String submitButtonAlignment;
 
 private Form myForm;
@@ -63,6 +65,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.login";
 public static final int LAYOUT_VERTICAL = 1;
 public static final int LAYOUT_HORIZONTAL = 2;
 public static final int LAYOUT_STACKED = 3;
+public static final int SINGLE_LINE = 4;
 private int LAYOUT = -1;
 
 protected IWResourceBundle iwrb;
@@ -118,17 +121,21 @@ protected IWBundle iwb;
   }
 
   private void startState(){
-  Table loginTable = new Table(1,2);
+    Table loginTable = new Table();
       loginTable.setAlignment(loginAlignment);
       loginTable.setBorder(0);
+			if ( loginWidth != null )
       loginTable.setWidth(loginWidth);
-      loginTable.setHeight(loginHeight);
+      if ( loginHeight != null )
+			loginTable.setHeight(loginHeight);
       if (!(color.equals(""))) {
         loginTable.setColor(color);
       }
       loginTable.setCellpadding(0);
       loginTable.setCellspacing(0);
       loginTable.setBackgroundImage(new Image(backgroundImageUrl));
+    int ypos = 1;
+    int xpos = 1;
 
     HelpButton helpImage = new HelpButton(iwrb.getLocalizedString("help_headline","Web Access"),iwrb.getLocalizedString("help",""),iwrb.getImage("help_image.gif").getURL());
 
@@ -139,6 +146,7 @@ protected IWBundle iwb;
       if ( userTextColor != null ) {
         loginTexti.setFontColor(userTextColor);
       }
+      loginTexti.setFontStyle(textStyles);
     Text passwordTexti = new Text(passwordText);
       if ( passwordTextSize != -1 ) {
         passwordTexti.setFontSize(passwordTextSize);
@@ -146,6 +154,7 @@ protected IWBundle iwb;
       if ( passwordTextColor != null ) {
         passwordTexti.setFontColor(passwordTextColor);
       }
+      passwordTexti.setFontStyle(textStyles);
 
 		Table inputTable;
 
@@ -159,26 +168,22 @@ protected IWBundle iwb;
 
     switch (LAYOUT) {
       case LAYOUT_HORIZONTAL:
-        inputTable = new Table(5,2);
+        inputTable = new Table(2,2);
           inputTable.setBorder(0);
           if (!(color.equals(""))) {
           inputTable.setColor(color);
           }
-          inputTable.setCellpadding(0);
+          inputTable.setCellpadding(1);
           inputTable.setCellspacing(0);
-          inputTable.setAlignment(2,1,"right");
-          inputTable.setAlignment(2,2,"right");
-          inputTable.setWidth("100%");
+          inputTable.setAlignment("center");
 
+        inputTable.add(loginTexti,1,1);
+        inputTable.add(login,1,2);
+        inputTable.add(passwordTexti,2,1);
+        inputTable.add(passw,2,2);
 
-        inputTable.add(loginTexti,2,1);
-        inputTable.add(login,2,2);
-        inputTable.setAlignment(2,1,"right");
-        inputTable.setAlignment(2,2,"right");
-        inputTable.add(passwordTexti,4,1);
-        inputTable.add(passw,4,2);
-
-        loginTable.add(inputTable,1,1);
+        loginTable.add(inputTable,xpos,ypos);
+        ypos++;
         break;
 
       case LAYOUT_VERTICAL:
@@ -187,12 +192,11 @@ protected IWBundle iwb;
           if (!(color.equals(""))) {
           inputTable.setColor(color);
           }
-          inputTable.setCellpadding(0);
+          inputTable.setCellpadding(1);
           inputTable.setCellspacing(0);
           inputTable.setAlignment("center");
           inputTable.mergeCells(1,2,3,2);
-          inputTable.addText("",1,2);
-          inputTable.setHeight(2,"10");
+          inputTable.setHeight(2,"2");
           inputTable.setAlignment(1,1,"right");
           inputTable.setAlignment(1,3,"right");
 
@@ -201,7 +205,8 @@ protected IWBundle iwb;
         inputTable.add(passwordTexti,1,3);
         inputTable.add(passw,3,3);
 
-        loginTable.add(inputTable,1,1);
+        loginTable.add(inputTable,xpos,ypos);
+        ypos++;
         break;
 
       case LAYOUT_STACKED:
@@ -223,10 +228,31 @@ protected IWBundle iwb;
         inputTable.add(passwordTexti,1,4);
         inputTable.add(passw,1,5);
 
-        loginTable.add(inputTable,1,1);
+        loginTable.add(inputTable,xpos,ypos);
+        ypos++;
+        break;
+
+      case SINGLE_LINE:
+        inputTable = new Table(4,1);
+          inputTable.setBorder(0);
+          inputTable.setCellpadding(3);
+          inputTable.setCellspacing(0);
+          inputTable.setAlignment("center");
+          if (!(color.equals(""))) {
+            inputTable.setColor(color);
+          }
+          inputTable.setAlignment(1,1,"right");
+          inputTable.setAlignment(3,1,"right");
+
+        inputTable.add(loginTexti,1,1);
+        inputTable.add(login,2,1);
+        inputTable.add(passwordTexti,3,1);
+        inputTable.add(passw,4,1);
+
+        loginTable.add(inputTable,xpos,ypos);
+        xpos = 2;
         break;
 		}
-
 
 		Table submitTable = new Table(1,1);
       if ( helpButton ) {
@@ -256,7 +282,7 @@ protected IWBundle iwb;
       }
       submitTable.add(new Parameter(LoginBusiness.LoginStateParameter,"login"));
 
-    loginTable.add(submitTable,1,2);
+    loginTable.add(submitTable,xpos,ypos);
 
     myForm.add(loginTable);
 	}
@@ -265,39 +291,49 @@ protected IWBundle iwb;
 	private void isLoggedOn(IWContext iwc) throws Exception{
 		User user = (User) getUser(iwc);
 
-                if (loggedOnLink != null) {
-                  if (userTextSize > -1)
-                    loggedOnLink.setFontSize(userTextSize);
-                  if (userTextColor != null && !userTextColor.equals(""))
-                    loggedOnLink.setFontColor(userTextColor);
-                  loggedOnLink.setText(user.getName());
-                }
+    if (loggedOnLink != null) {
+      if (userTextSize > -1)
+        loggedOnLink.setFontSize(userTextSize);
+      if (userTextColor != null && !userTextColor.equals(""))
+        loggedOnLink.setFontColor(userTextColor);
+      loggedOnLink.setText(user.getName());
+    }
 
-
-	      	  Text userText = new Text();
-	  		if ( userTextSize > -1 ) {
+    Text userText = new Text();
+      if ( userTextSize > -1 ) {
 				userText.setFontSize(userTextSize);
 			}
 			if (userTextColor != null && !(userTextColor.equals(""))) {
 				userText.setFontColor(userTextColor);
 			}
+      userText.setFontStyle(textStyles);
+      userText.addToText(user.getName());
 
-                  userText.addToText(user.getName());
-		Table loginTable = new Table(1,2);
+		Table loginTable = new Table();
 			loginTable.setBorder(0);
 			loginTable.setBackgroundImage(new Image(backgroundImageUrl));
 			loginTable.setAlignment(loginAlignment);
-			loginTable.setWidth(loginWidth);
+			if ( loginWidth != null )
+      loginTable.setWidth(loginWidth);
+      if ( loginHeight != null )
 			loginTable.setHeight(loginHeight);
-      loginTable.setHeight(1,"50%");
-      loginTable.setHeight(2,"50%");
 			loginTable.setCellpadding(0);
 			loginTable.setCellspacing(0);
-      loginTable.setVerticalAlignment(1,1,"bottom");
-      loginTable.setVerticalAlignment(1,2,"top");
 			if (!(color.equals(""))) {
         loginTable.setColor(color);
 			}
+
+    if ( this.LAYOUT != this.SINGLE_LINE ) {
+      loginTable.setHeight(1,"50%");
+      loginTable.setHeight(2,"50%");
+      loginTable.setVerticalAlignment(1,1,"bottom");
+      loginTable.setVerticalAlignment(1,2,"top");
+    }
+    else {
+      loginTable.setWidth(1,1,"100%");
+      loginTable.setCellpadding(3);
+      loginTable.setAlignment(1,1,"right");
+    }
 
 		Table inputTable = new Table(1,1);
 			if (!(color.equals(""))) {
@@ -306,23 +342,28 @@ protected IWBundle iwb;
 			inputTable.setBorder(0);
 			inputTable.setCellpadding(0);
 			inputTable.setCellspacing(0);
-			inputTable.setAlignment(1,1,"center");
-			inputTable.setVerticalAlignment(1,1,"middle");
-			inputTable.setWidth("100%");
+      if ( LAYOUT != SINGLE_LINE ) {
+        inputTable.setAlignment(1,1,"center");
+        inputTable.setVerticalAlignment(1,1,"middle");
+        inputTable.setWidth("100%");
+      }
 
-                if (loggedOnLink != null) {
-                  inputTable.add(loggedOnLink);
-                }else {
-  		  inputTable.add(userText);
-                }
+      if (loggedOnLink != null) {
+        inputTable.add(loggedOnLink);
+      }
+      else {
+        inputTable.add(userText);
+      }
 
 		Table submitTable = new Table(1,1);
 			submitTable.setBorder(0);
 			if (!(color.equals(""))) {
 				submitTable.setColor(color);
 			}
-			submitTable.setAlignment(1,1,"center");
-			submitTable.setVerticalAlignment(1,1,"middle");
+      if ( LAYOUT != SINGLE_LINE ) {
+        submitTable.setAlignment(1,1,"center");
+        submitTable.setVerticalAlignment(1,1,"middle");
+      }
       if ( onlyLogoutButton ) {
         submitTable.setWidth(loginWidth);
         submitTable.setHeight(loginHeight);
@@ -335,8 +376,14 @@ protected IWBundle iwb;
       submitTable.add(new SubmitButton(logoutImage,"utskraning"));
       submitTable.add(new Parameter(LoginBusiness.LoginStateParameter,"logoff"));
 
-    loginTable.add(inputTable,1,1);
-    loginTable.add(submitTable,1,2);
+    if ( LAYOUT != SINGLE_LINE ) {
+      loginTable.add(inputTable,1,1);
+      loginTable.add(submitTable,1,2);
+    }
+    else {
+      loginTable.add(inputTable,1,1);
+      loginTable.add(submitTable,2,1);
+    }
 
 		if ( onlyLogoutButton ) {
       myForm.add(submitTable);
@@ -354,22 +401,33 @@ protected IWBundle iwb;
 			if ( userTextColor != null ) {
 				mistokst.setFontColor(userTextColor);
 			}
+      mistokst.setFontStyle(textStyles);
 
-		Table loginTable = new Table(1,2);
+		Table loginTable = new Table();
+			loginTable.setBorder(0);
 			loginTable.setBackgroundImage(new Image(backgroundImageUrl));
 			loginTable.setAlignment(loginAlignment);
-			loginTable.setWidth(loginWidth);
+			if ( loginWidth != null )
+      loginTable.setWidth(loginWidth);
+      if ( loginHeight != null )
 			loginTable.setHeight(loginHeight);
-      loginTable.setHeight(1,"50%");
-      loginTable.setHeight(2,"50%");
-			loginTable.setBorder(0);
 			loginTable.setCellpadding(0);
 			loginTable.setCellspacing(0);
+			if (!(color.equals(""))) {
+        loginTable.setColor(color);
+			}
+
+    if ( this.LAYOUT != this.SINGLE_LINE ) {
+      loginTable.setHeight(1,"50%");
+      loginTable.setHeight(2,"50%");
       loginTable.setVerticalAlignment(1,1,"bottom");
       loginTable.setVerticalAlignment(1,2,"top");
-			if (!(color.equals(""))) {
-				loginTable.setColor(color);
-			}
+    }
+    else {
+      loginTable.setWidth(1,1,"100%");
+      loginTable.setCellpadding(3);
+      loginTable.setAlignment(1,1,"right");
+    }
 
 		Table inputTable = new Table(1,1);
 			inputTable.setBorder(0);
@@ -378,9 +436,11 @@ protected IWBundle iwb;
 			}
 			inputTable.setCellpadding(0);
 			inputTable.setCellspacing(0);
-			inputTable.setAlignment(1,1,"center");
-			inputTable.setVerticalAlignment(1,1,"middle");
-			inputTable.setWidth("100%");
+      if ( LAYOUT != SINGLE_LINE ) {
+        inputTable.setAlignment(1,1,"center");
+        inputTable.setVerticalAlignment(1,1,"middle");
+        inputTable.setWidth("100%");
+      }
 
   		inputTable.add(mistokst,1,1);
 
@@ -389,15 +449,23 @@ protected IWBundle iwb;
 			if (!(color.equals(""))) {
 				submitTable.setColor(color);
 			}
-			submitTable.setAlignment(1,1,"center");
-			submitTable.setVerticalAlignment(1,1,"middle");
-			submitTable.setWidth("100%");
+      if ( LAYOUT != SINGLE_LINE ) {
+        submitTable.setAlignment(1,1,"center");
+        submitTable.setVerticalAlignment(1,1,"middle");
+			  submitTable.setWidth("100%");
+      }
 
       submitTable.add(new SubmitButton(tryAgainImage,"tryAgain"));
       submitTable.add(new Parameter(LoginBusiness.LoginStateParameter,"tryagain"));
 
-    loginTable.add(submitTable,1,2);
-    loginTable.add(inputTable,1,1);
+    if ( LAYOUT != SINGLE_LINE ) {
+      loginTable.add(inputTable,1,1);
+      loginTable.add(submitTable,1,2);
+    }
+    else {
+      loginTable.add(inputTable,1,1);
+      loginTable.add(submitTable,2,1);
+    }
 
 		myForm.add(loginTable);
 	}
@@ -412,11 +480,14 @@ protected IWBundle iwb;
       else if (what.equals("toBig")) {
         textinn.addToText(iwrb.getLocalizedString("without_hyphen","Social-security number must be written without a hyphen"));
       }
+      textinn.setFontStyle(textStyles);
 
 		Table loginTable = new Table(1,2);
 			loginTable.setBackgroundImage(new com.idega.presentation.Image(backgroundImageUrl));
 			loginTable.setAlignment("center");
-			loginTable.setWidth(loginWidth);
+			if ( loginWidth != null )
+      loginTable.setWidth(loginWidth);
+      if ( loginHeight != null )
 			loginTable.setHeight(loginHeight);
 			loginTable.setBorder(0);
 			if (!(color.equals(""))) {
@@ -433,9 +504,11 @@ protected IWBundle iwb;
 			inputTable.setBorder(0);
 			inputTable.setCellpadding(0);
 			inputTable.setCellspacing(0);
-			inputTable.setAlignment(1,1,"center");
-			inputTable.setVerticalAlignment(1,1,"middle");
-			inputTable.setWidth("100%");
+      if ( LAYOUT != SINGLE_LINE ) {
+        inputTable.setAlignment(1,1,"center");
+        inputTable.setVerticalAlignment(1,1,"middle");
+        inputTable.setWidth("100%");
+      }
 
   		inputTable.add(textinn,1,1);
 
@@ -444,14 +517,22 @@ protected IWBundle iwb;
 				submitTable.setColor(color);
 			}
 			submitTable.setBorder(0);
-			submitTable.setAlignment(1,1,"center");
-			submitTable.setVerticalAlignment(1,1,"middle");
-			submitTable.setWidth("100%");
+      if ( LAYOUT != SINGLE_LINE ) {
+        submitTable.setAlignment(1,1,"center");
+        submitTable.setVerticalAlignment(1,1,"middle");
+        submitTable.setWidth("100%");
+      }
 
-		  submitTable.add(new SubmitButton(tryAgainImage),1,1);
+    submitTable.add(new SubmitButton(tryAgainImage),1,1);
 
-    loginTable.add(inputTable,1,1);
-    loginTable.add(submitTable,1,2);
+    if ( LAYOUT != SINGLE_LINE ) {
+      loginTable.add(inputTable,1,1);
+      loginTable.add(submitTable,1,2);
+    }
+    else {
+      loginTable.add(inputTable,1,1);
+      loginTable.add(submitTable,2,1);
+    }
 
 		myForm.add(loginTable);
 	}
@@ -469,9 +550,6 @@ protected IWBundle iwb;
   }
 
 	private void setDefaultValues() {
-		newUserImageUrl="/pics/templates/nyskraning2.gif";
-		loginWidth="148";
-		loginHeight="89";
     submitButtonAlignment = "center";
     LAYOUT = LAYOUT_VERTICAL;
 
@@ -497,8 +575,12 @@ protected IWBundle iwb;
 		LAYOUT = this.LAYOUT_STACKED;
 	}
 
-	public void setStyle(String styleAttribute){
+	public void setInputStyle(String styleAttribute){
     this.styleAttribute=styleAttribute;
+  }
+
+	public void setTextStyle(String styleAttribute){
+    this.textStyles=styleAttribute;
   }
 
   public void setInputLength(int inputLength) {
