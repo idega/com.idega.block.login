@@ -83,6 +83,12 @@ public class Login extends Block
 	protected boolean sendUserToHomePage=false;
   private boolean allowCookieLogin = false;
 
+	private int _spaceBetween = 4;
+
+	private boolean _buttonAsLink = false;
+	private final String _linkStyleClass = "Link";
+	private Image _iconImage;
+
 	public Login()
 	{
 		super();
@@ -263,9 +269,9 @@ public class Login extends Block
 				ypos++;
 				break;
 			case SINGLE_LINE :
-				inputTable = new Table(4, 1);
+				inputTable = new Table(7, 1);
 				inputTable.setBorder(0);
-				inputTable.setCellpadding(3);
+				inputTable.setCellpadding(0);
 				inputTable.setCellspacing(0);
 				inputTable.setAlignment("center");
 				if (!(color.equals("")))
@@ -274,10 +280,13 @@ public class Login extends Block
 				}
 				inputTable.setAlignment(1, 1, "right");
 				inputTable.setAlignment(3, 1, "right");
+				inputTable.setWidth(2,1,String.valueOf(_spaceBetween));
+				inputTable.setWidth(4,1,String.valueOf(_spaceBetween * 2));
+				inputTable.setWidth(6,1,String.valueOf(_spaceBetween));
 				inputTable.add(loginTexti, 1, 1);
-				inputTable.add(login, 2, 1);
-				inputTable.add(passwordTexti, 3, 1);
-				inputTable.add(passw, 4, 1);
+				inputTable.add(login, 3, 1);
+				inputTable.add(passwordTexti, 5, 1);
+				inputTable.add(passw, 7, 1);
 				loginTable.add(inputTable, xpos, ypos);
 				xpos = 2;
 				break;
@@ -301,80 +310,97 @@ public class Login extends Block
 			submitTable.setAlignment(2, 1, "right");
 		}
 		submitTable.setWidth("100%");
-		SubmitButton button = new SubmitButton(loginImage, "tengja");
-		if (!helpButton)
-		{
-			submitTable.add(button, 1, 1);
-		}
-		else
-		{
-			submitTable.add(button, 2, 1);
-		}
-		if (register || forgot || allowCookieLogin)
-		{
-			Link registerLink = getRegisterLink();
-			Link forgotLink = getForgotLink();
-			int row = 2;
-			int col = 1;
-			switch (LAYOUT)
-			{
-				case LAYOUT_HORIZONTAL :
-				case LAYOUT_VERTICAL :
-					row = 2;
-					if (register)
-						submitTable.add(registerLink, 1, row);
-					if (forgot)
-						submitTable.add(forgotLink, 2, row);
-          if(allowCookieLogin){
-            CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
-            Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
-		        cookieText.setFontStyle(this.textStyles);
-            row++;
-            submitTable.mergeCells(1, row, 2, row);
-            submitTable.add(cookieCheck,1,row);
-            submitTable.add(cookieText,1,row);
-          }
-					break;
-				case LAYOUT_STACKED :
-					row = 2;
-					if (register){
-						submitTable.mergeCells(1, row, 2, row);
-						submitTable.add(registerLink, 1, row);
-						row++;
-					}
-					if (forgot){
-						submitTable.mergeCells(1, row, 2, row);
-						submitTable.add(forgotLink, 1, row);
-            row++;
-					}
-          if(allowCookieLogin){
-            CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
-            Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
-		        cookieText.setFontStyle(this.textStyles);
-            submitTable.mergeCells(1, row, 2, row);
-            submitTable.add(cookieCheck,1,row);
-            submitTable.add(cookieText,1,row);
-            row++;
-          }
-					break;
-				case SINGLE_LINE :
-					col = 3;
-					if (register)
-						submitTable.add(registerLink, col++, 1);
-					if (forgot)
-						submitTable.add(forgotLink, col++, 1);
-          if(allowCookieLogin){
-            CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
-            Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
-		        cookieText.setFontStyle(this.textStyles);
-            submitTable.add(cookieCheck,col,1);
-            submitTable.add(cookieText,col++,1);
-          }
-					break;
+		if (_buttonAsLink) {
+			submitTable.setCellpadding(0);
+			int column = 1;
+			Link link = new Link(iwrb.getLocalizedString("login_text", "Login"));
+			link.setToFormSubmit(myForm);
+			link.setStyleClass(_linkStyleClass);
+			if (_iconImage != null) {
+				submitTable.add(_iconImage,column++,1);
+				submitTable.setWidth(column++,1,String.valueOf(_spaceBetween));
 			}
+			submitTable.add(link,column,1);
+			loginTable.setWidth(xpos++,ypos,String.valueOf(_spaceBetween + 2));
+			loginTable.add(submitTable, xpos, ypos);
 		}
+		else {
+			SubmitButton button = new SubmitButton(loginImage, "tengja");
+			if (!helpButton)
+			{
+				submitTable.add(button, 1, 1);
+			}
+			else
+			{
+				submitTable.add(button, 2, 1);
+			}
+			if (register || forgot || allowCookieLogin)
+			{
+				Link registerLink = getRegisterLink();
+				Link forgotLink = getForgotLink();
+				int row = 2;
+				int col = 1;
+				switch (LAYOUT)
+				{
+					case LAYOUT_HORIZONTAL :
+					case LAYOUT_VERTICAL :
+						row = 2;
+						if (register)
+							submitTable.add(registerLink, 1, row);
+						if (forgot)
+							submitTable.add(forgotLink, 2, row);
+	          if(allowCookieLogin){
+	            CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
+	            Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
+			        cookieText.setFontStyle(this.textStyles);
+	            row++;
+	            submitTable.mergeCells(1, row, 2, row);
+	            submitTable.add(cookieCheck,1,row);
+	            submitTable.add(cookieText,1,row);
+	          }
+						break;
+					case LAYOUT_STACKED :
+						row = 2;
+						if (register){
+							submitTable.mergeCells(1, row, 2, row);
+							submitTable.add(registerLink, 1, row);
+							row++;
+						}
+						if (forgot){
+							submitTable.mergeCells(1, row, 2, row);
+							submitTable.add(forgotLink, 1, row);
+	            row++;
+						}
+	          if(allowCookieLogin){
+	            CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
+	            Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
+			        cookieText.setFontStyle(this.textStyles);
+	            submitTable.mergeCells(1, row, 2, row);
+	            submitTable.add(cookieCheck,1,row);
+	            submitTable.add(cookieText,1,row);
+	            row++;
+	          }
+						break;
+					case SINGLE_LINE :
+						col = 3;
+						if (register)
+							submitTable.add(registerLink, col++, 1);
+						if (forgot)
+							submitTable.add(forgotLink, col++, 1);
+	          if(allowCookieLogin){
+	            CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
+	            Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
+			        cookieText.setFontStyle(this.textStyles);
+	            submitTable.add(cookieCheck,col,1);
+	            submitTable.add(cookieText,col++,1);
+	          }
+						break;
+				}
+			}
+			loginTable.add(submitTable, xpos, ypos);
+		}
+
 		submitTable.add(new Parameter(LoginBusiness.LoginStateParameter, "login"));
-		loginTable.add(submitTable, xpos, ypos);
 		myForm.add(loginTable);
 	}
 
@@ -477,7 +503,7 @@ public class Login extends Block
 		{
 			inputTable.add(userText);
 		}
-		Table submitTable = new Table(1, 1);
+		Table submitTable = new Table();
 		submitTable.setBorder(0);
 		if (!(color.equals("")))
 		{
@@ -498,7 +524,22 @@ public class Login extends Block
 		{
 			submitTable.setWidth("100%");
 		}
-		submitTable.add(new SubmitButton(logoutImage, "utskraning"));
+		if (_buttonAsLink) {
+			submitTable.setCellpadding(0);
+			loginTable.setCellpadding(0);
+			int column = 1;
+			Link link = new Link(iwrb.getLocalizedString("logout_text", "Logout"));
+			link.setToFormSubmit(myForm);
+			link.setStyleClass(_linkStyleClass);
+			if (_iconImage != null) {
+				submitTable.add(_iconImage,column++,1);
+				submitTable.setWidth(column++,1,String.valueOf(_spaceBetween));
+			}
+			submitTable.add(link,column,1);
+		}
+		else
+			submitTable.add(new SubmitButton(logoutImage, "utskraning"));
+			
 		submitTable.add(new Parameter(LoginBusiness.LoginStateParameter, "logoff"));
 		if (loggedOffPageId > 0)
 			submitTable.add(new Parameter(getIBPageParameterName(), String.valueOf(loggedOffPageId)));
@@ -556,7 +597,7 @@ public class Login extends Block
 		}
 		else
 		{
-			loginTable.setWidth(1, 1, "100%");
+			//loginTable.setWidth(1, 1, "100%");
 			loginTable.setCellpadding(3);
 			loginTable.setAlignment(1, 1, "right");
 		}
@@ -575,7 +616,7 @@ public class Login extends Block
 			inputTable.setWidth("100%");
 		}
 		inputTable.add(mistokst, 1, 1);
-		Table submitTable = new Table(1, 1);
+		Table submitTable = new Table();
 		submitTable.setBorder(0);
 		if (!(color.equals("")))
 		{
@@ -587,7 +628,21 @@ public class Login extends Block
 			submitTable.setVerticalAlignment(1, 1, "middle");
 			submitTable.setWidth("100%");
 		}
-		submitTable.add(new SubmitButton(tryAgainImage, "tryAgain"));
+		if (_buttonAsLink) {
+			submitTable.setCellpadding(0);
+			loginTable.setCellpadding(0);
+			int column = 1;
+			Link link = new Link(iwrb.getLocalizedString("logout_text", "Logout"));
+			link.setToFormSubmit(myForm);
+			link.setStyleClass(_linkStyleClass);
+			if (_iconImage != null) {
+				submitTable.add(_iconImage,column++,1);
+				submitTable.setWidth(column++,1,String.valueOf(_spaceBetween));
+			}
+			submitTable.add(link,column,1);
+		}
+		else
+			submitTable.add(new SubmitButton(tryAgainImage, "tryAgain"));
 		submitTable.add(new Parameter(LoginBusiness.LoginStateParameter, "tryagain"));
 		if (LAYOUT != SINGLE_LINE)
 		{
@@ -596,8 +651,11 @@ public class Login extends Block
 		}
 		else
 		{
-			loginTable.add(inputTable, 1, 1);
-			loginTable.add(submitTable, 2, 1);
+			int column = 1;
+			loginTable.add(inputTable, column++, 1);
+			if (_buttonAsLink)
+				loginTable.setWidth(column++,1,String.valueOf(_spaceBetween * 2));
+			loginTable.add(submitTable, column, 1);
 		}
 		myForm.add(loginTable);
 	}
@@ -940,6 +998,40 @@ public class Login extends Block
 	 **/
 	public void setToSendUserToHomePage(boolean doSendToHomePage){
 		sendUserToHomePage=doSendToHomePage;
+	}
+
+	/**
+	 * @see com.idega.presentation.Block#getStyleNames()
+	 */
+	public Map getStyleNames() {
+		Map styleMap = new HashMap();
+		styleMap.put(_linkStyleClass, "");
+		styleMap.put(_linkStyleClass+":hover", "");
+		return styleMap;
+	}
+
+	/**
+	 * Sets the submit button as link.
+	 * @param buttonAsLink The buttonAsLink to set
+	 */
+	public void setButtonAsLink(boolean buttonAsLink) {
+		_buttonAsLink = buttonAsLink;
+	}
+
+	/**
+	 * Sets the spaceBetween.
+	 * @param spaceBetween The spaceBetween to set
+	 */
+	public void setSpaceBetween(int spaceBetween) {
+		_spaceBetween = spaceBetween;
+	}
+
+	/**
+	 * Sets the iconImage.
+	 * @param iconImage The iconImage to set
+	 */
+	public void setIconImage(Image iconImage) {
+		_iconImage = iconImage;
 	}
 
 }
