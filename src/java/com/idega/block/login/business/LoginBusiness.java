@@ -135,7 +135,7 @@ public class LoginBusiness implements IWEventListener{
               }
               returner = true;
             }else{
-              System.err.println(login_table[i].getUserPassword()+" != "+ Encrypter.encryptOneWay(password));
+              //System.err.println(login_table[i].getUserPassword()+" != "+ Encrypter.encryptOneWay(password));
             }
           }
           if (isAdmin(modinfo)) {
