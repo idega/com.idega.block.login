@@ -124,8 +124,8 @@ public class LoginBusiness implements IWEventListener{
 
   }
 
-  public boolean isAdmin(IWContext iwc)throws SQLException{
-    return iwc.getAccessController().isAdmin(iwc);
+  public boolean isAdmin(IWContext iwc)throws Exception{
+    return iwc.isAdmin();
   }
 
   public static void setLoginAttribute(String key, Object value, IWContext iwc) throws NotLoggedOnException{
@@ -208,7 +208,7 @@ public class LoginBusiness implements IWEventListener{
     LoginBusiness.setLoginAttribute(PrimaryGroupParameter,value,iwc);
   }
 
-  private boolean logIn(IWContext iwc, int userId) throws SQLException{
+  private boolean logIn(IWContext iwc, int userId) throws Exception{
     User user = new User(userId);
     iwc.setSessionAttribute(LoginAttributeParameter,new Hashtable());
 
@@ -230,7 +230,7 @@ public class LoginBusiness implements IWEventListener{
     return true;
   }
 
-  private boolean verifyPasswordAndLogin(IWContext iwc,String login, String password) throws IOException,SQLException{
+  private boolean verifyPasswordAndLogin(IWContext iwc,String login, String password) throws Exception{
     boolean returner = false;
     LoginTable[] login_table = (LoginTable[]) (LoginTable.getStaticInstance()).findAllByColumn(LoginTable.getUserLoginColumnName(),login);
 
