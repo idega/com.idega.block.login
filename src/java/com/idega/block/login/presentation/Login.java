@@ -28,36 +28,42 @@ import com.idega.idegaweb.IWMainApplication;
 public class Login extends JModuleObject{
 
 String backgroundImageUrl = "";
-String loginImageUrl = "";
 String newUserImageUrl = "";
-String logOutImageUrl = "";
-String tryAgainImageUrl = "";
+
 String loginWidth = "";
 String loginHeight = "";
+
+String userText;
+String passwordText;
+
 String color = "";
-String loggedOnTextSize = "";
-String loggedOnTextColor = "";
-String userText = "";
-String userTextColor = "";
+String userTextColor;
+String passwordTextColor;
+
 int userTextSize = -1;
-String passwordText = "";
-String passwordTextColor = "";
 int passwordTextSize = -1;
-String styleAttribute = "font-size: 10pt";
 int inputLength = 10;
-boolean noLoginImage=true;
-String submitButtonAlignment = "";
+
+String styleAttribute = "font-size: 10pt";
+String submitButtonAlignment;
 
 private Table outerTable;
 private Form myForm;
+private Image loginImage;
+private Image logoutImage;
+private Image tryAgainImage;
 
 public static String controlParameter;
+
+private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.login";
 
 public static final int LAYOUT_VERTICAL = 1;
 public static final int LAYOUT_HORIZONTAL = 2;
 public static final int LAYOUT_STACKED = 3;
-
 private int LAYOUT = -1;
+
+protected IWResourceBundle iwrb;
+protected IWBundle iwb;
 
 	public Login() {
 		super();
@@ -65,8 +71,15 @@ private int LAYOUT = -1;
 	}
 
   public void main(ModuleInfo modinfo)throws Exception{
-    IWBundle iwb = getBundle(modinfo);
-    IWResourceBundle iwrb = getResourceBundle(modinfo);
+    iwb = getBundle(modinfo);
+    iwrb = getResourceBundle(modinfo);
+
+    loginImage = iwrb.getImage("login.gif");
+    logoutImage = iwrb.getImage("logout.gif");
+    tryAgainImage = iwrb.getImage("try_again.gif");
+
+		userText = iwrb.getLocalizedString("user","User");
+		passwordText = iwrb.getLocalizedString("password","Password");
 
     String state = internalGetState(modinfo);
     if(state!=null){
@@ -116,14 +129,14 @@ private int LAYOUT = -1;
       if ( userTextSize != -1 ) {
         loginTexti.setFontSize(userTextSize);
       }
-      if (!(userTextColor.equals(""))) {
+      if ( userTextColor != null ) {
         loginTexti.setFontColor(userTextColor);
       }
     Text passwordTexti = new Text(passwordText);
       if ( passwordTextSize != -1 ) {
         passwordTexti.setFontSize(passwordTextSize);
       }
-      if (!(passwordTextColor.equals(""))) {
+      if ( passwordTextColor != null ) {
         passwordTexti.setFontColor(passwordTextColor);
       }
 
@@ -218,15 +231,8 @@ private int LAYOUT = -1;
 			submitTable.setWidth("100%");
 			submitTable.setHeight("100%");
 
-      if(noLoginImage){
-        submitTable.add(new SubmitButton("tengja","Login"),1,1);
-        submitTable.add(new Parameter(LoginBusiness.LoginStateParameter,"login"));
-
-      }
-      else{
-        submitTable.add(new SubmitButton(new Image(loginImageUrl),"tengja"),1,1);
-        submitTable.add(new Parameter(LoginBusiness.LoginStateParameter,"login"));
-      }
+      submitTable.add(new SubmitButton(loginImage,"tengja"),1,1);
+      submitTable.add(new Parameter(LoginBusiness.LoginStateParameter,"login"));
 
     loginTable.add(submitTable,1,2);
 
@@ -285,15 +291,8 @@ private int LAYOUT = -1;
 			submitTable.setVerticalAlignment(1,1,"middle");
 			submitTable.setWidth("100%");
 
-      if (logOutImageUrl.equals("")) {
-        submitTable.add(new SubmitButton("action","Útskráning"));
-        submitTable.add(new Parameter(LoginBusiness.LoginStateParameter,"logoff"));
-      }
-      else {
-        Image logOut = new Image(logOutImageUrl);
-        submitTable.add(new SubmitButton(logOut,"utskraning"));
-        submitTable.add(new Parameter(LoginBusiness.LoginStateParameter,"logoff"));
-      }
+      submitTable.add(new SubmitButton(logoutImage,"utskraning"));
+      submitTable.add(new Parameter(LoginBusiness.LoginStateParameter,"logoff"));
 
     loginTable.add(inputTable,1,1);
     loginTable.add(submitTable,1,2);
@@ -302,16 +301,16 @@ private int LAYOUT = -1;
 	}
 
 	private void loginFailed() {
-		Text mistokst = new Text("Innskráning mistókst");
+		Text mistokst = new Text(iwrb.getLocalizedString("login_failed","Login failed"));
 			if ( userTextSize != -1 ) {
 				mistokst.setFontSize(userTextSize);
 			}
-			if (!(userTextColor.equals(""))) {
+			if ( userTextColor != null ) {
 				mistokst.setFontColor(userTextColor);
 			}
 
 		Table loginTable = new Table(1,2);
-			loginTable.setBackgroundImage(new com.idega.jmodule.object.Image(backgroundImageUrl));
+			loginTable.setBackgroundImage(new Image(backgroundImageUrl));
 			loginTable.setAlignment("center");
 			loginTable.setWidth(loginWidth);
 			loginTable.setHeight(loginHeight);
@@ -348,15 +347,8 @@ private int LAYOUT = -1;
 			submitTable.setVerticalAlignment(1,1,"middle");
 			submitTable.setWidth("100%");
 
-      if (tryAgainImageUrl.equals("")) {
-        submitTable.add(new SubmitButton("Reyna aftur"),1,1);
-        submitTable.add(new Parameter(LoginBusiness.LoginStateParameter,"tryagain"));
-      }
-      else {
-        Image tryAgain = new Image(tryAgainImageUrl);
-        submitTable.add(new SubmitButton(tryAgain,"tryAgain"));
-        submitTable.add(new Parameter(LoginBusiness.LoginStateParameter,"tryagain"));
-      }
+      submitTable.add(new SubmitButton(tryAgainImage,"tryAgain"));
+      submitTable.add(new Parameter(LoginBusiness.LoginStateParameter,"tryagain"));
 
     loginTable.add(submitTable,1,2);
     loginTable.add(inputTable,1,1);
@@ -369,10 +361,10 @@ private int LAYOUT = -1;
 			textinn.setFontSize(1);
 			textinn.setBold();
       if (what.equals("empty")) {
-        textinn.addToText("Skrifið kennitölu í notandareitinn");
+        textinn.addToText(iwrb.getLocalizedString("write_ssn","Type social-security number in user input"));
       }
       else if (what.equals("toBig")) {
-        textinn.addToText("Kennitala skal vera skrifuð án bandstriks");
+        textinn.addToText(iwrb.getLocalizedString("without_hyphen","Social-security number must be written without a hyphen"));
       }
 
 		Table loginTable = new Table(1,2);
@@ -410,7 +402,7 @@ private int LAYOUT = -1;
 			submitTable.setVerticalAlignment(1,1,"middle");
 			submitTable.setWidth("100%");
 
-		  submitTable.add(new SubmitButton("Reyna aftur"),1,1);
+		  submitTable.add(new SubmitButton(tryAgainImage),1,1);
 
     loginTable.add(inputTable,1,1);
     loginTable.add(submitTable,1,2);
@@ -422,17 +414,18 @@ private int LAYOUT = -1;
       return LoginBusiness.internalGetState(modinfo);
   }
 
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
+
   public void setLayout(int layout) {
     LAYOUT = layout;
   }
 
 	private void setDefaultValues() {
-		loginImageUrl="/pics/templates/tengjast2.gif";
 		newUserImageUrl="/pics/templates/nyskraning2.gif";
 		loginWidth="148";
 		loginHeight="89";
-		userText = "Notandi";
-		passwordText = "Lykilorð";
     submitButtonAlignment = "center";
     LAYOUT = LAYOUT_VERTICAL;
 
@@ -466,13 +459,6 @@ private int LAYOUT = -1;
   public void setInputLength(int inputLength) {
     this.inputLength=inputLength;
   }
-
-  public void setLoggedOnTextSize(String size) {
-		loggedOnTextSize = size;
-	}
-	public void setLoggedOnTextColor(String color) {
-		loggedOnTextColor = color;
-	}
 
 	public void setUserText(String text) {
 		userText = text;
@@ -512,24 +498,6 @@ private int LAYOUT = -1;
 
 	public void setBackgroundImageUrl(String url) {
 		backgroundImageUrl = url;
-	}
-
-	public void setLoginImageUrl(String url) {
-    noLoginImage=false;
-		loginImageUrl = url;
-	}
-
-	public void setNewUserImageUrl(String url) {
-    noLoginImage=false;
-		newUserImageUrl = url;
-	}
-
-	public void setTryAgainImageUrl(String url) {
-		tryAgainImageUrl = url;
-	}
-
-	public void setLogOutImageUrl(String url) {
-		logOutImageUrl = url;
 	}
 
   public void setSubmitButtonAlignment(String alignment) {
