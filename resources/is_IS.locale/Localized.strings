@@ -1,11 +1,13 @@
-#Wed Apr 24 19:05:08 GMT+00:00 2002
-write_ssn=Skrifi\u00F0 kennit\u00F6lu \u00ED notandareitinn
-user=Notandi
-help_headline=Vefa\u00F0gangur
+change_password=You need to change your password
 help=Hj\u00E1lp
-without_hyphen=Kennitala skal vera skrifu\u00F0 \u00E1n bandstriks
-login_failed=Innskr\u00E1ning mist\u00F3kst
+help_headline=Vefa\u00F0gangur
 iw.component.com.idega.block.login.presentation.Login.name=Innskr\u00E1ning
+login_failed=Innskr\u00E1ning mist\u00F3kst
+login_text=Login
 logout_text=\u00DAtskr\u00E1
-tryagain_text=Reyna aftur
 password=Lykilor\u00F0
+tryagain_text=Reyna aftur
+user=Notandi
+welcome_message.morning=Good morning
+without_hyphen=Kennitala skal vera skrifu\u00F0 \u00E1n bandstriks
+write_ssn=Skrifi\u00F0 kennit\u00F6lu \u00ED notandareitinn
