@@ -125,7 +125,7 @@ public class LoginBusiness implements IWEventListener{
   }
 
   public boolean isAdmin(IWContext iwc)throws SQLException{
-    return iwc.getAccessControler().isAdmin(iwc);
+    return iwc.getAccessController().isAdmin(iwc);
   }
 
   public static void setLoginAttribute(String key, Object value, IWContext iwc) throws NotLoggedOnException{

@@ -110,7 +110,7 @@ protected IWBundle iwb;
   }
 
   public static boolean isAdmin(IWContext iwc)throws Exception{
-    return iwc.getAccessControler().isAdmin(iwc);
+    return iwc.getAccessController().isAdmin(iwc);
   }
 
   public static User getUser(IWContext iwc){
