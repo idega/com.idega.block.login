@@ -19,7 +19,7 @@ import com.idega.idegaweb.IWException;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
 import com.idega.util.Encrypter;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 /**
  * Title:        LoginBusiness The default login business handler for the Login presentation module
  * Description:  
@@ -364,7 +364,7 @@ public class LoginBusiness implements IWEventListener
 		LoggedOnInfo lInfo = new LoggedOnInfo();
 		lInfo.setLogin(login);
 		lInfo.setSession(iwc.getSession());
-		lInfo.setTimeOfLogon(IWTimeStamp.RightNow());
+		lInfo.setTimeOfLogon(IWTimestamp.RightNow());
 		lInfo.setUser(user);
 		lInfo.setLoginRecordId(loginRecordId);
 		getLoggedOnInfoList(iwc).add(lInfo);
