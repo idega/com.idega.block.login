@@ -27,9 +27,10 @@ import com.idega.idegaweb.IWMainApplication;
 
 public class Login extends Block{
 
+private Link loggedOnLink;
+
 private String backgroundImageUrl = "";
 private String newUserImageUrl = "";
-
 private String loginWidth = "";
 private String loginHeight = "";
 private String loginAlignment = "center";
@@ -264,16 +265,24 @@ protected IWBundle iwb;
 	private void isLoggedOn(IWContext iwc) throws Exception{
 		User user = (User) getUser(iwc);
 
-		Text userText = new Text();
-			if ( userTextSize > -1 ) {
+                if (loggedOnLink != null) {
+                  if (userTextSize > -1)
+                    loggedOnLink.setFontSize(userTextSize);
+                  if (userTextColor != null && !userTextColor.equals(""))
+                    loggedOnLink.setFontColor(userTextColor);
+                  loggedOnLink.setText(user.getName());
+                }
+
+
+	      	  Text userText = new Text();
+	  		if ( userTextSize > -1 ) {
 				userText.setFontSize(userTextSize);
 			}
 			if (userTextColor != null && !(userTextColor.equals(""))) {
 				userText.setFontColor(userTextColor);
 			}
 
-      userText.addToText(user.getName());
-
+                  userText.addToText(user.getName());
 		Table loginTable = new Table(1,2);
 			loginTable.setBorder(0);
 			loginTable.setBackgroundImage(new Image(backgroundImageUrl));
@@ -301,7 +310,11 @@ protected IWBundle iwb;
 			inputTable.setVerticalAlignment(1,1,"middle");
 			inputTable.setWidth("100%");
 
-  		inputTable.add(userText);
+                if (loggedOnLink != null) {
+                  inputTable.add(loggedOnLink);
+                }else {
+  		  inputTable.add(userText);
+                }
 
 		Table submitTable = new Table(1,1);
 			submitTable.setBorder(0);
@@ -556,6 +569,9 @@ protected IWBundle iwb;
     loginAlignment = alignment;
   }
 
+  public void setLoggedOnLink(Link link) {
+    loggedOnLink = (Link) link.clone();
+  }
 
   public Object clone() {
     Login obj = null;
@@ -574,10 +590,15 @@ protected IWBundle iwb;
       if (this.tryAgainImage != null) {
         obj.tryAgainImage=(Image)this.tryAgainImage.clone();
       }
+      if (this.loggedOnLink != null) {
+        obj.loggedOnLink=(Link)this.loggedOnLink.clone();
+      }
     }
     catch(Exception ex) {
       ex.printStackTrace(System.err);
     }
     return obj;
   }
+
+
 }
