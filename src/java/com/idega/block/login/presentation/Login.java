@@ -45,7 +45,6 @@ import com.idega.user.business.UserBusiness;
 import com.idega.user.util.Converter;
 import com.idega.util.SendMail;
 import com.idega.util.StringHandler;
-import com.idega.util.URLUtil;
 
 /**
  * Title: Login - The standard login block in idegaWeb Description: Copyright:
