@@ -279,7 +279,7 @@ public class LoginEditor extends PresentationObjectContainer {
 		return formatText(String.valueOf(i));
 	}
 	protected void setStyle(InterfaceObject O) {
-		O.setAttribute("style", this.styleAttribute);
+		O.setMarkupAttribute("style", this.styleAttribute);
 	}
 	public void main(IWContext iwc) {
 		iwrb = getResourceBundle(iwc);

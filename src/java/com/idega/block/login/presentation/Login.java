@@ -220,12 +220,12 @@ public class Login extends Block {
 		passwordTexti.setFontStyle(textStyles);
 		Table inputTable;
 		TextInput login = new TextInput("login");
-		login.setAttribute("style", styleAttribute);
+		login.setMarkupAttribute("style", styleAttribute);
 		login.setSize(inputLength);
 		if (_enterSubmit)
 			login.setOnKeyPress("return enterSubmit(this,event)");
 		PasswordInput passw = new PasswordInput("password");
-		passw.setAttribute("style", styleAttribute);
+		passw.setMarkupAttribute("style", styleAttribute);
 		passw.setSize(inputLength);
 		if (_enterSubmit)
 			passw.setOnKeyPress("return enterSubmit(this,event)");
