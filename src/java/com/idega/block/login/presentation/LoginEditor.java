@@ -141,8 +141,8 @@ public class LoginEditor extends PresentationObjectContainer{
     T.add(formatText(iwrb.getLocalizedString("confirm","Confirm")+":"),1,7);
     T.add(psw2,1,8);
 
-    SubmitButton ok = new SubmitButton(iwrb.getImage("ok.gif"),"ok");
-    CloseButton close = new CloseButton(iwrb.getImage("close.gif"));
+    SubmitButton ok = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"ok");
+    CloseButton close = new CloseButton(iwrb.getLocalizedImageButton("close","Close"));
     T.add(ok,1,9);
     T.add(Text.NON_BREAKING_SPACE,1,9);
     T.add(close,1,9);
@@ -157,7 +157,7 @@ public class LoginEditor extends PresentationObjectContainer{
     boolean returner = false;
 
     if (sPasswd.equals(sConfirm)) {
-      LoginTable logTable = LoginDBHandler.findUserLogin(iUserId);
+      LoginTable logTable = LoginDBHandler.getUserLogin(iUserId);
       if (logTable == null) {
         try {
           if (sPasswd.equals(sConfirm) ) {
@@ -199,7 +199,7 @@ public class LoginEditor extends PresentationObjectContainer{
   }
 
   public String getUserLogin(int iUserId){
-    LoginTable L = LoginDBHandler.findUserLogin(iUserId);
+    LoginTable L = LoginDBHandler.getUserLogin(iUserId);
     if(L != null )
       return L.getUserLogin();
     else

@@ -17,8 +17,10 @@ public class LoginEditorWindow extends IWAdminWindow{
 
   public LoginEditorWindow() {
     super();
-    setWidth(200 );
-    setHeight(300 );
+    setScrollbar(false);
+    setWidth(170 );
+    setHeight(270 );
+    //keepFocus();
   }
 
   public void main(IWContext iwc) throws Exception{
