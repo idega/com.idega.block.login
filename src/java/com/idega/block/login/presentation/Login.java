@@ -1512,4 +1512,10 @@ public class Login extends Block {
 	public void setNoStyles(){
 		setNoStyles=true;
 	}
+
+	
+	protected ICPage getFirstLogOnPage() {
+		return firstLogOnPage;
+	}
+	
 }
