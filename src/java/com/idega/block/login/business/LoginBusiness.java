@@ -269,8 +269,11 @@ public class LoginBusiness implements IWEventListener{
 
      // this.getLoggedOnInfoList(iwc).remove(this.getLoggedOnInfo(iwc));
       List ll =  this.getLoggedOnInfoList(iwc);
-      LoggedOnInfo _logOnInfo = (LoggedOnInfo)ll.remove(ll.indexOf(getLoggedOnInfo(iwc)));
-      LoginDBHandler.recordLogout(_logOnInfo.getLoginRecordId());
+      int indexOfLoggedOfInfo = ll.indexOf(getLoggedOnInfo(iwc));
+      if(indexOfLoggedOfInfo > 0){
+        LoggedOnInfo _logOnInfo = (LoggedOnInfo)ll.remove(indexOfLoggedOfInfo);
+        LoginDBHandler.recordLogout(_logOnInfo.getLoginRecordId());
+      }
       iwc.removeSessionAttribute(LoginAttributeParameter);
     }
   }
