@@ -24,6 +24,7 @@ public class WelcomeMessage extends Text {
 	
 	private boolean iShowUserName = true;
 	private boolean displayDate = false;
+	private boolean displayWelcomeMessage = true;
 
 	public WelcomeMessage() {
 		super("");
@@ -32,15 +33,18 @@ public class WelcomeMessage extends Text {
 	public void main(IWContext iwc) {
 		
 		if(iwc.isLoggedOn()){
+		  
 			try {
 				IWTimestamp stamp = new IWTimestamp();
 				String welcomeString = "";
-				if (stamp.getHour() < 12)
-					welcomeString = getResourceBundle(iwc).getLocalizedString(WELCOME_KEY_MORNING,"Good morning");
-				else if (stamp.getHour() < 18)
-					welcomeString = getResourceBundle(iwc).getLocalizedString(WELCOME_KEY_AFTERNOON,"Good afternoon");
-				else
-					welcomeString = getResourceBundle(iwc).getLocalizedString(WELCOME_KEY_EVENING,"Good evening");
+				if(displayWelcomeMessage) {
+				  if (stamp.getHour() < 12)
+						welcomeString = getResourceBundle(iwc).getLocalizedString(WELCOME_KEY_MORNING,"Good morning");
+					else if (stamp.getHour() < 18)
+						welcomeString = getResourceBundle(iwc).getLocalizedString(WELCOME_KEY_AFTERNOON,"Good afternoon");
+					else
+						welcomeString = getResourceBundle(iwc).getLocalizedString(WELCOME_KEY_EVENING,"Good evening"); 
+			  }
 				if (iShowUserName) {
 					User newUser = iwc.getCurrentUser();
 					welcomeString = welcomeString + " " + newUser.getName();
@@ -71,5 +75,8 @@ public class WelcomeMessage extends Text {
 	}
 	public void showDate(boolean showDate) {
 		displayDate = showDate;
+	}
+	public void showWelcomeMessage(boolean showWM) {
+	  displayWelcomeMessage = showWM;
 	}
 }
