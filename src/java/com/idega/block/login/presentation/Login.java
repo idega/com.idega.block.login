@@ -184,9 +184,6 @@ public class Login extends Block {
 			case LoginBusinessBean.STATE_LOGIN_EXPIRED :
 				loginFailed(iwc, iwrb.getLocalizedString("login_expired", "Login expired"));
 				break;
-			case LoginBusinessBean.STATE_LOGIN_DISABLED :
-				loginFailed(iwc, iwrb.getLocalizedString("login_disabled", "Login disabled"));
-				break;
 			case LoginBusinessBean.STATE_LOGIN_FAILED_DISABLED_NEXT_TIME :
 				loginFailed(iwc, iwrb.getLocalizedString("login_wrong_disabled_next_time", "Invalid password, access closed next time login fails"));
 				if(hintMessage==null) {
@@ -336,7 +333,7 @@ public class Login extends Block {
 	
 	/*
 	  public static boolean isAdmin(IWContext iwc)throws Exception{
-	    return iwc.isAdmin();
+	    return iwc.is   Admin();
 	  }
 	*/
 	public static User getUser(IWContext iwc) {
@@ -1030,6 +1027,7 @@ public class Login extends Block {
 		register = value;
 	}
 	public void setShowHint(boolean value) {
+		System.out.println("ShowHint set to " + value);
 		showHint = value;
 	}
 	public void setLogOnPage(ICPage page) {
