@@ -575,6 +575,10 @@ protected IWBundle iwb;
 		LAYOUT = this.LAYOUT_STACKED;
 	}
 
+	public void setStyle(String styleAttribute){
+    setInputStyle(styleAttribute);
+  }
+
 	public void setInputStyle(String styleAttribute){
     this.styleAttribute=styleAttribute;
   }
