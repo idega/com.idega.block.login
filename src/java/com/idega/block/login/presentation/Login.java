@@ -107,7 +107,7 @@ public class Login extends Block
 					script = new Script();
 					getParentPage().setAssociatedScript(script);
 				}
-				script.addFunction("enterSubmit", "function enterSubmit(input) {  if (window.event && window.event.keyCode == 13) input.form.submit(); else return true; }");
+				script.addFunction("enterSubmit", "function enterSubmit(myfield,e) { var keycode; if (window.event) keycode = window.event.keyCode; else if (e) keycode = e.which; else return true; if (keycode == 13) { myfield.form.submit(); return false; } else return true; }");
 				_enterSubmit = true;
 			}
 		}
@@ -221,12 +221,12 @@ public class Login extends Block
 		login.setAttribute("style", styleAttribute);
 		login.setSize(inputLength);
 		if (_enterSubmit)
-			login.setOnKeyPress("return enterSubmit(this)");
+			login.setOnKeyPress("return enterSubmit(this,event)");
 		PasswordInput passw = new PasswordInput("password");
 		passw.setAttribute("style", styleAttribute);
 		passw.setSize(inputLength);
 		if (_enterSubmit)
-			passw.setOnKeyPress("return enterSubmit(this)");
+			passw.setOnKeyPress("return enterSubmit(this,event)");
 		switch (LAYOUT)
 		{
 			case LAYOUT_HORIZONTAL :
