@@ -5,7 +5,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
-
 import com.idega.builder.business.BuilderLogic;
 import com.idega.business.IWEventListener;
 import com.idega.core.accesscontrol.business.LoggedOnInfo;
@@ -59,6 +58,22 @@ public class LoginBusiness implements IWEventListener
 	public static String internalGetState(IWContext iwc)
 	{
 		return (String) iwc.getSessionAttribute(LoginStateParameter);
+	}
+	/**
+	 * To get the userame of the current log-in attempt
+	 * @return The username the current user is trying to log in with. Returns null if no log-in attemt is going on.
+	 */
+	protected String getLoginUserName(IWContext iwc)
+	{
+		return iwc.getParameter("login");
+	}
+	/**
+	 * To get the password of the current log-in attempt
+	 * @return The password the current user is trying to log in with. Returns null if no log-in attemt is going on.
+	 */
+	protected String getLoginPassword(IWContext iwc)
+	{
+		return iwc.getParameter("password");
 	}
 	/**
 	 * @return True if logIn was succesful, false if it failed
@@ -143,8 +158,8 @@ public class LoginBusiness implements IWEventListener
 					if (controlParameter.equals("login"))
 					{
 						boolean canLogin = false;
-						String username = iwc.getParameter("login");
-						String password = iwc.getParameter("password");
+						String username = getLoginUserName(iwc);
+						String password = getLoginPassword(iwc);
 						if ((username != null) && (password != null))
 						{
 							canLogin = verifyPasswordAndLogin(iwc, username, password);
