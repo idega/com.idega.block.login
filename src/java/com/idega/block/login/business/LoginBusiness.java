@@ -40,7 +40,7 @@ public class LoginBusiness implements IWEventListener{
   public static String PermissionGroupParameter="user_permission_groups";
   public static String LoginStateParameter="login_state";
   private static String LoginAttributeParameter="login_attributes";
-  private static String UserGroupRepresentativeParameter = "ic_user_representive_group";
+  private static String UserGroupRepresentativeParameter = "ic_user_representative_group";
   private static String PrimaryGroupsParameter = "ic_user_primarygroups";
   private static String PrimaryGroupParameter = "ic_user_primarygroup";
 
@@ -176,7 +176,7 @@ public class LoginBusiness implements IWEventListener{
     return (List)LoginBusiness.getLoginAttribute(PermissionGroupParameter,modinfo);
   }
 
-  public static UserGroupRepresentative getUserRepresentiveGroup(ModuleInfo modinfo)throws NotLoggedOnException {
+  public static UserGroupRepresentative getUserRepresentativeGroup(ModuleInfo modinfo)throws NotLoggedOnException {
     return (UserGroupRepresentative)LoginBusiness.getLoginAttribute(UserGroupRepresentativeParameter,modinfo);
   }
 
@@ -193,7 +193,7 @@ public class LoginBusiness implements IWEventListener{
     LoginBusiness.setLoginAttribute(PermissionGroupParameter,value,modinfo);
   }
 
-  protected static void setUserRepresentiveGroup(ModuleInfo modinfo, UserGroupRepresentative value){
+  protected static void setUserRepresentativeGroup(ModuleInfo modinfo, UserGroupRepresentative value){
     LoginBusiness.setLoginAttribute(UserGroupRepresentativeParameter,value,modinfo);
   }
 
@@ -212,7 +212,7 @@ public class LoginBusiness implements IWEventListener{
       LoginBusiness.setPermissionGroups(modinfo,groups);
     }
 
-    LoginBusiness.setUserRepresentiveGroup(modinfo,new UserGroupRepresentative(user.getGroupID()));
+    LoginBusiness.setUserRepresentativeGroup(modinfo,new UserGroupRepresentative(user.getGroupID()));
 
     if(user.getPrimaryGroupID() != -1){
       GenericGroup primaryGroup = new GenericGroup(user.getPrimaryGroupID());
