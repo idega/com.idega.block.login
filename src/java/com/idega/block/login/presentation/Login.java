@@ -134,6 +134,7 @@ public class Login extends Block {
 	private String classToOpenOnLogin;
 	
 	private ICPage loggedOnPage;
+	private ICPage firstLogOnPage;
 
 	public Login() {
 		super();
@@ -614,7 +615,26 @@ public class Login extends Block {
 					submitTable.setWidth(column++, 1, String.valueOf(_spaceBetween));
 				}
 				submitTable.add(link, column, 1);
-				loginTable.setWidth(xpos++, ypos, String.valueOf(_spaceBetween * 2));
+				switch (LAYOUT) {
+					case LAYOUT_STACKED:
+						loginTable.setHeight(xpos, ypos++, String.valueOf(_spaceBetween * 2));
+						break;
+
+					case LAYOUT_VERTICAL:
+						loginTable.setHeight(xpos, ypos++, String.valueOf(_spaceBetween * 2));
+						break;
+
+					case LAYOUT_HORIZONTAL:
+						loginTable.setWidth(xpos++, ypos, String.valueOf(_spaceBetween * 2));
+						break;
+
+					case SINGLE_LINE:
+						loginTable.setWidth(xpos++, ypos, String.valueOf(_spaceBetween * 2));
+						break;
+
+					default:
+						break;
+				}
 				loginTable.add(submitTable, xpos, ypos);
 			}
 			else {
@@ -753,6 +773,12 @@ public class Login extends Block {
 			com.idega.user.data.Group newGroup = newUser.getPrimaryGroup();
 			if (newUser.getHomePageID() != -1) iwc.forwardToIBPage(this.getParentPage(), newUser.getHomePage());
 			if (newGroup != null && newGroup.getHomePageID() != -1) iwc.forwardToIBPage(this.getParentPage(), newGroup.getHomePage());
+		}
+		
+		if (LoginBusinessBean.isLogOnAction(iwc)) {
+			if (LoginDBHandler.getNumberOfSuccessfulLogins((LoginDBHandler.findUserLogin(user.getID())).getID()) == 1 && firstLogOnPage != null) {
+				iwc.forwardToIBPage(getParentPage(), firstLogOnPage);
+			}
 		}
 		
 		if (loggedOnPage != null && LoginBusinessBean.isLogOnAction(iwc)) {
@@ -1221,6 +1247,10 @@ public class Login extends Block {
 	public void setLoggedOnPage(ICPage page) {
 		loggedOnLink = new Link();
 		loggedOnLink.setPage(page);
+	}
+	
+	public void setFirstLogOnPage(ICPage page) {
+		firstLogOnPage = page;
 	}
 
 	public void setLoggedOffPage(int ibPageId) {
