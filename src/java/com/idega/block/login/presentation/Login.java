@@ -591,6 +591,7 @@ public class Login extends Block {
 		}
 		else {
 			SubmitButton button = new SubmitButton(loginImage, "tengja");
+			button.setContent(iwrb.getLocalizedString("login_text", "login"));
 			if (!helpButton) {
 				submitTable.add(button, 1, 1);
 			}
@@ -775,8 +776,11 @@ public class Login extends Block {
 			}
 			submitTable.add(link, column, 1);
 		}
-		else
-			submitTable.add(new SubmitButton(logoutImage, "utskraning"));
+		else {
+			SubmitButton button = new SubmitButton(logoutImage, "utskraning");
+			submitTable.add(button);
+			button.setContent(iwrb.getLocalizedString("logout_text", "logout"));
+		}
 
 		submitTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, ACTION_LOG_OFF));
 		//TODO: TL Look into this. Is this Necessary?
