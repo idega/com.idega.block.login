@@ -151,6 +151,9 @@ public class Login extends Block {
 			case LoginBusinessBean.STATE_LOGIN_EXPIRED :
 				loginFailed(iwc, iwrb.getLocalizedString("login_expired", "Login expired"));
 				break;
+			case LoginBusinessBean.STATE_LOGIN_DISABLED :
+				loginFailed(iwc, iwrb.getLocalizedString("login_disabled", "Login disabled"));
+				break;
 			default :
 				startState(iwc);
 				break;
