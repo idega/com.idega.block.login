@@ -1,5 +1,7 @@
 package com.idega.block.login.business;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Hashtable;
@@ -8,6 +10,7 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.ejb.EJBException;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
 import com.idega.builder.business.BuilderLogic;
@@ -31,6 +34,7 @@ import com.idega.user.business.UserProperties;
 import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
 import com.idega.util.ListUtil;
+import com.idega.util.reflect.MethodFinder;
 /**
  * Title:        LoginBusiness The default login business handler for the Login presentation module
  * Description:
@@ -494,7 +498,7 @@ public class LoginBusiness implements IWEventListener
 			// this.getLoggedOnInfoList(iwc).remove(this.getLoggedOnInfo(iwc));
 			List ll = this.getLoggedOnInfoList(iwc);
 			int indexOfLoggedOfInfo = ll.indexOf(getLoggedOnInfo(iwc));
-			if (indexOfLoggedOfInfo > 0)
+			if (indexOfLoggedOfInfo > -1)
 			{
 				LoggedOnInfo _logOnInfo = (LoggedOnInfo) ll.remove(indexOfLoggedOfInfo);
 				LoginDBHandler.recordLogout(_logOnInfo.getLoginRecordId());
@@ -524,14 +528,43 @@ public class LoginBusiness implements IWEventListener
 		return loggedOnList;
 	}
 	
-	public static List getLoggedOnInfoList(HttpSession session)
-	{
+	public static List getLoggedOnInfoList(HttpSession session){
 		List loggedOnList = null;
-		// (List) session.getServletContext().getAttribute(_APPADDRESS_LOGGED_ON_LIST);
-		if (loggedOnList == null)
-		{
+		MethodFinder finder = MethodFinder.getInstance();
+		ServletContext context = null;
+		
+		
+		try {
+			Method method = finder.getMethodsWithNameAndNoParameters(HttpSession.class,"getServletContext");
+			try {
+				context = (ServletContext) method.invoke(null,null);
+			}
+			catch (IllegalArgumentException e1) {
+				e1.printStackTrace();
+			}
+			catch (IllegalAccessException e1) {
+				e1.printStackTrace();
+			}
+			catch (InvocationTargetException e1) {
+				e1.printStackTrace();
+			}
+		}
+		catch (NoSuchMethodException e) {
+			System.out.println("The method session.getServletContext() is not in this implementation of the Servlet spec.");
+			e.printStackTrace();
+		}
+		 
+		
+		if(context!=null){
+			loggedOnList = (List) context.getAttribute(_APPADDRESS_LOGGED_ON_LIST);
+		}
+		
+		
+		if (loggedOnList == null){
 			loggedOnList = new Vector();
-			//session.getServletContext().setAttribute(_APPADDRESS_LOGGED_ON_LIST, loggedOnList);
+			if(context!=null){
+				context.setAttribute(_APPADDRESS_LOGGED_ON_LIST, loggedOnList);
+			}
 		}
 		return loggedOnList;
 	}
