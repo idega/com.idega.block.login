@@ -92,6 +92,8 @@ public class Login extends Block {
 
 	private int _loginPageID = -1;
 	private final static String FROM_PAGE_PARAMETER = "log_from_page";
+	
+	private IBPage _pageForInvalidLogin = null;
 
 	public Login() {
 		super();
@@ -174,6 +176,12 @@ public class Login extends Block {
 			//System.err.println("adding hidden redirect parameter");
 			myForm.add(new HiddenInput(LoginBusinessBean.LoginRedirectPageParameter, String.valueOf(_redirectPage)));
 		}
+		
+		if (_pageForInvalidLogin != null) {
+			//System.err.println("adding hidden redirect parameter");
+			myForm.add(new HiddenInput(LoginBusinessBean.LoginFailedRedirectPageParameter, _pageForInvalidLogin.getPrimaryKey().toString()));
+		}
+		
 		Table loginTable = new Table();
 		loginTable.setAlignment(loginAlignment);
 		loginTable.setBorder(0);
@@ -984,6 +992,10 @@ public class Login extends Block {
 	 */
 	public void setLogInPageID(int pageID) {
 		_loginPageID = pageID;
+	}
+
+	public void setPageForInvalidLogin(IBPage page) {
+		_pageForInvalidLogin = page;
 	}
 
 }
