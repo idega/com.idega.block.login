@@ -22,17 +22,11 @@ import com.idega.presentation.IWContext;
 import com.idega.util.Encrypter;
 import com.idega.util.idegaTimestamp;
 /**
-
- * Title:        LoginBusiness
-
- * Description:
-
- * Copyright:    Copyright (c) 2000-2001 idega.is All Rights Reserved
-
+ * Title:        LoginBusiness The default login business handler for the Login presentation module
+ * Description:  
+ * Copyright:    Copyright (c) 2000-2002 idega.is All Rights Reserved
  * Company:      idega
-
   *@author <a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>,<a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
-
  * @version 1.1
 
  */
@@ -67,7 +61,7 @@ public class LoginBusiness implements IWEventListener
 		return (String) iwc.getSessionAttribute(LoginStateParameter);
 	}
 	/**
-	 * @return True if logOut was succesful, false if it failed
+	 * @return True if logIn was succesful, false if it failed
 	 */
 	protected boolean logInUser(IWContext iwc, String username, String password)
 	{
@@ -102,6 +96,7 @@ public class LoginBusiness implements IWEventListener
 		}
 	}
 	/**
+	 * Invoked when the login failed
 	 * Can be overrided in subclasses to alter behaviour
 	 * By default this sets the state to "login failed" and does not log in a user
 	 */
@@ -111,6 +106,7 @@ public class LoginBusiness implements IWEventListener
 		internalSetState(iwc, "loginfailed");
 	}
 	/**
+	 * Invoked when the login was succesful
 	 * Can be overrided in subclasses to alter behaviour
 	 * By default this sets the state to "logged on"
 	 */
