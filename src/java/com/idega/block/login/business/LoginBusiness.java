@@ -14,9 +14,11 @@ import com.idega.core.user.data.User;
 import java.sql.*;
 import java.io.*;
 import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.core.accesscontrol.business.NotLoggedOnException;
 import com.idega.business.IWEventListener;
 import com.idega.idegaweb.IWException;
 import com.idega.util.Encrypter;
+import java.util.Hashtable;
 
 /**
  * Title:        LoginBusiness
@@ -34,6 +36,7 @@ public class LoginBusiness implements IWEventListener{
   public static String PermissionGroupParameter="user_permission_groups";
   public static String UserAccessAttributeParameter="user_access";
   public static String LoginStateParameter="login_state";
+  private static String LoginAttributeParameter="login_attributes";
 
   public LoginBusiness() {
   }
@@ -112,6 +115,44 @@ public class LoginBusiness implements IWEventListener{
     return AccessControl.isAdmin(modinfo);
   }
 
+  public static void setLoginAttribute(String key, Object value, ModuleInfo modinfo) throws NotLoggedOnException{
+    if (isLoggedOn(modinfo)){
+      Object obj = modinfo.getSessionAttribute(LoginAttributeParameter);
+      if(obj == null){
+        Hashtable tb = new Hashtable();
+        modinfo.setSessionAttribute(LoginAttributeParameter,tb);
+        obj = tb;
+      }
+      ((Hashtable)obj).put(key,value);
+    }else{
+      throw new NotLoggedOnException();
+    }
+  }
+
+  public static Object getLoginAttribute(String key, ModuleInfo modinfo) throws NotLoggedOnException {
+    if(isLoggedOn(modinfo)){
+      Object obj = modinfo.getSessionAttribute(LoginAttributeParameter);
+      if(obj == null){
+        return null;
+      }else{
+        return ((Hashtable)obj).get(key);
+      }
+    }else{
+      throw new NotLoggedOnException();
+    }
+  }
+
+  public static void removeLoginAttribute(String key, ModuleInfo modinfo){
+    if(isLoggedOn(modinfo)){
+      Object obj = modinfo.getSessionAttribute(LoginAttributeParameter);
+      if(obj != null){
+        ((Hashtable)obj).remove(key);
+      }
+    }else if (modinfo.getSessionAttribute(LoginAttributeParameter) != null) {
+        modinfo.removeSessionAttribute(LoginAttributeParameter);
+    }
+  }
+
 
   public static User getUser(ModuleInfo modinfo){
     return (User)modinfo.getSessionAttribute(UserAttributeParameter);
@@ -134,23 +175,11 @@ public class LoginBusiness implements IWEventListener{
                 modinfo.setSessionAttribute(PermissionGroupParameter,groups);
               }
               returner = true;
-            }else{
-              //System.err.println(login_table[i].getUserPassword()+" != "+ Encrypter.encryptOneWay(password));
             }
           }
           if (isAdmin(modinfo)) {
                   modinfo.setSessionAttribute(UserAccessAttributeParameter,"admin");
           }
-/*		if (isDeveloper(modinfo)) {
-                  modinfo.getSession().setAttribute("user_access","developer");
-          }
-          if (isClubAdmin(modinfo)) {
-                  modinfo.getSession().setAttribute("user_access","club_admin");
-          }
-          if (isUser(modinfo)) {
-                  modinfo.getSession().setAttribute("user_access","user");
-          }
-*/
           return returner;
   }
 
@@ -163,8 +192,14 @@ public class LoginBusiness implements IWEventListener{
             if (modinfo.getSessionAttribute(UserAccessAttributeParameter) != null) {
                     modinfo.removeSessionAttribute(UserAccessAttributeParameter);
             }
+            if (modinfo.getSessionAttribute(LoginAttributeParameter) != null) {
+                    modinfo.removeSessionAttribute(LoginAttributeParameter);
+            }
     }
 
+
+
+/*
     public static boolean registerUserLogin(int user_id,String user_login,String user_pass_one,String user_pass_two) throws SQLException {
         boolean returner = false;
 
@@ -199,5 +234,5 @@ public class LoginBusiness implements IWEventListener{
         return returner;
     }
 
-
+*/
 }
