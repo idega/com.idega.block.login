@@ -564,6 +564,10 @@ protected IWBundle iwb;
 		helpButton = true;
 	}
 
+  public void setHelpButton(boolean usehelp){
+    helpButton = usehelp;
+  }
+
 	public void setVertical() {
 		LAYOUT = LAYOUT_VERTICAL;
 	}
