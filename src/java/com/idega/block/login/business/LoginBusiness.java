@@ -90,7 +90,7 @@ public class LoginBusiness implements IWEventListener{
 
                                 boolean canLogin = false;
 				if ((iwc.getParameter("login") != null) && (iwc.getParameter("password") != null)) {
-					canLogin = verifyPassword(iwc, iwc.getParameter("login"),iwc.getParameter("password"));
+					canLogin = verifyPasswordAndLogin(iwc, iwc.getParameter("login"),iwc.getParameter("password"));
 					if (canLogin) {
 						isLoggedOn(iwc);
                                                 internalSetState(iwc,"loggedon");
@@ -222,7 +222,7 @@ public class LoginBusiness implements IWEventListener{
     return true;
   }
 
-  private boolean verifyPassword(IWContext iwc,String login, String password) throws IOException,SQLException{
+  private boolean verifyPasswordAndLogin(IWContext iwc,String login, String password) throws IOException,SQLException{
     boolean returner = false;
     LoginTable[] login_table = (LoginTable[]) (LoginTable.getStaticInstance()).findAllByColumn(LoginTable.getUserLoginColumnName(),login);
 
@@ -235,6 +235,18 @@ public class LoginBusiness implements IWEventListener{
     return returner;
   }
 
+  public static boolean verifyPassword(User user,String login, String password) throws IOException,SQLException{
+    boolean returner = false;
+    LoginTable[] login_table = (LoginTable[]) (LoginTable.getStaticInstance()).findAllByColumn(LoginTable.getUserIDColumnName(),Integer.toString(user.getID()),LoginTable.getUserLoginColumnName(),login);
+
+    if(login_table != null && login_table.length > 0){
+      if ( Encrypter.verifyOneWayEncrypted(login_table[0].getUserPassword(), password)) {
+        returner = true;
+      }
+    }
+
+    return returner;
+  }
 
 
   private void logOut(IWContext iwc) throws Exception{
