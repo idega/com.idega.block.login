@@ -217,7 +217,6 @@ public class Login extends Block {
 		
 		// temp password, sent to user so he can log in and change his password.
 		String tmpPassword = StringHandler.getRandomStringNonAmbiguous(8);
-		System.out.println("created temp password \"" + tmpPassword + "\"");
 		
 		String server = iwb.getProperty("email_server");
 		if(server == null) {
@@ -295,6 +294,9 @@ public class Login extends Block {
 	private void handleHint(IWContext iwc) {
 		if(showHint) {
 			String userName = iwc.getParameter(LOGIN_PARAMETER_NAME);
+			if(userName==null) {
+				userName = (String) iwc.getSessionAttribute(LoginBusinessBean.UserAttributeParameter);
+			}
 			if(userName!=null && userName.length()>0) {
 				try {
 					User user = getUserBusiness(iwc).getUser(userName);
@@ -307,20 +309,20 @@ public class Login extends Block {
 						
 						HiddenInput hInput = new HiddenInput(LOGIN_PARAMETER_NAME, userName);
 						
-						Table qTable = new Table(2, 3);
+						Table qTable = new Table();
+						int row = 1;
 						qTable.mergeCells(1, 1, 2, 1);
 						qTable.add(helpText, 1, 1);
+						qTable.mergeCells(1, 2, 2, 2);
 						qTable.add(question, 1, 2);
-						qTable.add(input, 2, 2);
-						qTable.add(button, 2, 3);
+						qTable.mergeCells(1, 3, 2, 3);
+						qTable.add(input, 1, 3);
+						qTable.add(button, 2, 4);
 						
 						Form form = new Form();
 						form.add(qTable);
 						form.add(hInput);
-						System.out.println("Adding hint form to response");
 						add(form);
-					} else {
-						System.out.println("No hint info found for user " + userName);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -515,7 +517,6 @@ public class Login extends Block {
 						link.setPage(_loginPageID);
 						link.setParameter(FROM_PAGE_PARAMETER,String.valueOf(iwc.getCurrentIBPageID()));
 						link.setHttps(sendToHTTPS);
-						
 					} else {
 						try {
 							throw new Exception(this.getClassName()+": No login page is set");
