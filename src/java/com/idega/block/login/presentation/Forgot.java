@@ -38,46 +38,33 @@ import com.idega.util.SendMail;
 
 public class Forgot extends Block {
 
-	private String errorMsg = "";
+	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.login";
 
 	private final static String PRM_USER_LOGIN = "user_login";
+	private final static String PARAMETER_PROCESS = "process";
 
 	private boolean _loginInput = false;
-
 	private boolean _hideMessage = false;
 
 	public static String prmUserId = "user_id";
 
-	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.login";
-
 	protected IWResourceBundle iwrb;
-
 	protected IWBundle iwb;
 
+	private String errorMsg = "";
+
 	public static final int INIT = 100;
-
 	public static final int NORMAL = 0;
-
 	public static final int USER_NAME_EXISTS = 1;
-
 	public static final int ILLEGAL_USERNAME = 2;
-
 	public static final int ILLEGAL_EMAIL = 3;
-
 	public static final int NO_NAME = 5;
-
 	public static final int NO_EMAIL = 6;
-
 	public static final int NO_USERNAME = 7;
-
 	public static final int NO_SERVER = 8;
-
 	public static final int NO_LETTER = 9;
-
 	public static final int ERROR = 10;
-
 	public static final int SENT = 11;
-
 	public static final int NO_LOGIN = 12;
 
 	private String portalname = "";
@@ -104,7 +91,7 @@ public class Forgot extends Block {
 		portalname = iwc.getServerName();
 		form = TextFormat.getInstance();
 		int code = INIT;
-		if (iwc.isParameterSet("send.x"))
+		if (iwc.isParameterSet(PARAMETER_PROCESS))
 			code = processForm(iwc);
 		if (code == NORMAL)
 			add(getSent(iwc));
@@ -155,6 +142,7 @@ public class Forgot extends Block {
 		String message = getMessage(code);
 
 		Form myForm = new Form();
+		myForm.addParameter(PARAMETER_PROCESS, "true");
 		Table T = new Table();
 		T.setColumns(2);
 		T.setWidth(Table.HUNDRED_PERCENT);
