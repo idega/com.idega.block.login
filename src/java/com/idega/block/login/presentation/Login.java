@@ -42,6 +42,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.PasswordInput;
+import com.idega.presentation.ui.StyledButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.Window;
@@ -192,16 +193,6 @@ public class Login extends Block {
 		}
 		if (this.sendToHTTPS) {
 			getMainForm().setToSendToHTTPS();
-		}
-		if (loginImage == null) //loginImage = iwrb.getImage("login.gif");
-				loginImage = iwrb.getLocalizedImageButton("login_text", "Login");
-		if (logoutImage == null) //logoutImage = iwrb.getImage("logout.gif");
-				logoutImage = iwrb.getLocalizedImageButton("logout_text", "Log out");
-		if (tryAgainImage == null){
-		// tryAgainImage = iwrb.getImage("try_again.gif");
-			if(useImageButton){
-				tryAgainImage = iwrb.getLocalizedImageButton("tryagain_text", "Try again");
-			}		
 		}
 		userText = iwrb.getLocalizedString("user", "User");
 		passwordText = iwrb.getLocalizedString("password", "Password");
@@ -664,18 +655,18 @@ public class Login extends Block {
 			else {
 				
 				SubmitButton button;
-				if(useImageButton){
-					button = new SubmitButton(loginImage, "tengja");
+				if(useImageButton && loginImage != null){
+					button = new SubmitButton(loginImage, "login");
 				}
 				else{
-					button = new SubmitButton(iwrb.getLocalizedString("login_text", "login"),"tengja");
+					button = new SubmitButton("login", iwrb.getLocalizedString("login_text", "Login"));
 				}
-				button.setContent(iwrb.getLocalizedString("login_text", "login"));
-				if (!helpButton) {
-					submitTable.add(button, 1, 1);
+				int pos = !helpButton?xpos:xpos+1;
+				if (useImageButton && loginImage == null) {
+				    submitTable.add(new StyledButton(button), pos, 1);
 				}
 				else {
-					submitTable.add(button, 2, 1);
+				    submitTable.add(button, pos, 1);
 				}
 	
 				if (register || forgot || allowCookieLogin) {
@@ -774,7 +765,7 @@ public class Login extends Block {
 		Label loginTexti = new Label(userText,login);
 		Label passwordTexti = new Label(passwordText,passw);
 		
-		SubmitButton button = new SubmitButton(iwrb.getLocalizedString("login_text", "login"), "tengja");
+		SubmitButton button = new SubmitButton("login", iwrb.getLocalizedString("login_text", "Login"));
 
 		int row = 1;
 		myTable.add(loginTexti,1,row++);
@@ -919,7 +910,7 @@ public class Login extends Block {
 			submitTable.setCellspacing(0);
 			loginTable.setCellpadding(0);
 			int column = 1;
-			Link link = this.getStyleLink(iwrb.getLocalizedString("logout_text", "Logoff"), _linkStyleClass);
+			Link link = this.getStyleLink(iwrb.getLocalizedString("logout_text", "Log out"), _linkStyleClass);
 			link.setToFormSubmit(getMainForm());
 			if (_iconImage != null) {
 				submitTable.add(_iconImage, column++, 1);
@@ -929,14 +920,18 @@ public class Login extends Block {
 		}
 		else {
 			SubmitButton button;
-			if(useImageButton){
-				button = new SubmitButton(logoutImage, "utskraning");
+			if(useImageButton && logoutImage != null){
+				button = new SubmitButton(logoutImage, "logout");
 			}
-			else{
-				button = new SubmitButton(iwrb.getLocalizedString("logout_text", "logout"),"utskraning");
+			else {
+				button = new SubmitButton("logout", iwrb.getLocalizedString("logout_text", "Log out"));
 			}
-			submitTable.add(button);
-			button.setContent(iwrb.getLocalizedString("logout_text", "logout"));
+			if (useImageButton && logoutImage == null) {
+			    submitTable.add(new StyledButton(button));
+			}
+			else {
+			    submitTable.add(button);
+			}
 		}
 
 		submitTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, ACTION_LOG_OFF));
@@ -1057,13 +1052,18 @@ public class Login extends Block {
 			}
 			else{
 				SubmitButton button;
-				if(useImageButton){
+				if(useImageButton && tryAgainImage != null){
 					button = new SubmitButton(tryAgainImage,ACTION_TRY_AGAIN);
 				}
 				else{
-					button = new SubmitButton(iwrb.getLocalizedString("tryagain_text", "Try again"),ACTION_TRY_AGAIN);
+					button = new SubmitButton(ACTION_TRY_AGAIN, iwrb.getLocalizedString("tryagain_text", "Try again"));
 				}
-				submitTable.add(button);
+				if (useImageButton && tryAgainImage == null) {
+				    submitTable.add(new StyledButton(button));
+				}
+				else {
+				    submitTable.add(button);
+				}
 			}
 			submitTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, ACTION_TRY_AGAIN));
 			if (LAYOUT != SINGLE_LINE) {
@@ -1129,10 +1129,10 @@ public class Login extends Block {
 		}
 		SubmitButton button;
 		if(useImageButton){
-			button = new SubmitButton(tryAgainImage);
+			button = new SubmitButton(tryAgainImage,ACTION_TRY_AGAIN);
 		}
 		else{
-			button = new SubmitButton(iwrb.getLocalizedString("tryagain_text", "Try again"),"tryagain");
+			button = new SubmitButton(ACTION_TRY_AGAIN, iwrb.getLocalizedString("tryagain_text", "Try again"));
 		}
 		submitTable.add(button, 1, 1);
 		if (LAYOUT != SINGLE_LINE) {
