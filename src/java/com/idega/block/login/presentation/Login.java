@@ -136,6 +136,7 @@ public class Login extends Block {
 	
 	private ICPage loggedOnPage;
 	private ICPage firstLogOnPage;
+	private String urlToForwardToOnLogin;
 
 	public Login() {
 		super();
@@ -799,6 +800,11 @@ public class Login extends Block {
 		if (getParentPage() != null && loggedOnPage != null && LoginBusinessBean.isLogOnAction(iwc)) {
 			iwc.forwardToIBPage(getParentPage(), loggedOnPage);
 		}
+		
+		if (getParentPage() != null && getUrlToForwardToOnLogin() != null && LoginBusinessBean.isLogOnAction(iwc)) {
+			iwc.forwardToURL(getParentPage(), getUrlToForwardToOnLogin());
+		}
+
 
 		if (loggedOnLink != null) {
 			if (userTextSize > -1) loggedOnLink.setFontSize(userTextSize);
@@ -1474,4 +1480,13 @@ public class Login extends Block {
 	public void setLoginImageAsForwardLink(boolean imageAsForwardLink) {
 		_loginImageAsForwardLink = imageAsForwardLink;
 	}
+	
+	public void setUrlToForwardToOnLogin(String url){
+		this.urlToForwardToOnLogin=url;
+	}
+	
+	public String getUrlToForwardToOnLogin(){
+		return urlToForwardToOnLogin;
+	}
+	
 }
