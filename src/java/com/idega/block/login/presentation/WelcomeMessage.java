@@ -52,7 +52,13 @@ public class WelcomeMessage extends Text {
 				if(displayDate) {
 					IWTimestamp s = IWTimestamp.RightNow();
 					String date = s.getDateString("EEEEEEEEEEEE dd.MM.yyyy",iwc.getCurrentLocale()); 
-					welcomeString = welcomeString + Text.BREAK + date;
+					if(displayWelcomeMessage) {
+					  welcomeString = welcomeString + Text.BREAK + date;
+					}
+					else {
+					  welcomeString = date;
+					}
+					
 				}
 				super.setText(welcomeString);	
 			}
