@@ -476,6 +476,7 @@ public class Login extends Block {
 		TextInput login = new TextInput(LOGIN_PARAMETER_NAME);
 		login.setMarkupAttribute("style", styleAttribute);
 		login.setSize(inputLength);
+		login.setInFocusOnPageLoad(true);
 		if (_enterSubmit) login.setOnKeyPress("return enterSubmit(this,event)");
 		PasswordInput passw = new PasswordInput(PASSWORD_PARAMETER_NAME);
 		passw.setMarkupAttribute("style", styleAttribute);
