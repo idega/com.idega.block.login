@@ -144,6 +144,7 @@ public class LoginEditor extends PresentationObjectContainer{
     SubmitButton ok = new SubmitButton(iwrb.getImage("ok.gif"),"ok");
     CloseButton close = new CloseButton(iwrb.getImage("close.gif"));
     T.add(ok,1,9);
+    T.add(Text.NON_BREAKING_SPACE,1,9);
     T.add(close,1,9);
     T.add(new HiddenInput(prmUserId,String.valueOf(user.getID())));
     Form myForm = new Form();
