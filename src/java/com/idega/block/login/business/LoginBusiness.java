@@ -526,11 +526,12 @@ public class LoginBusiness implements IWEventListener
 	
 	public static List getLoggedOnInfoList(HttpSession session)
 	{
-		List loggedOnList = (List) session.getServletContext().getAttribute(_APPADDRESS_LOGGED_ON_LIST);
+		List loggedOnList = null;
+		// (List) session.getServletContext().getAttribute(_APPADDRESS_LOGGED_ON_LIST);
 		if (loggedOnList == null)
 		{
 			loggedOnList = new Vector();
-			session.getServletContext().setAttribute(_APPADDRESS_LOGGED_ON_LIST, loggedOnList);
+			//session.getServletContext().setAttribute(_APPADDRESS_LOGGED_ON_LIST, loggedOnList);
 		}
 		return loggedOnList;
 	}
