@@ -307,8 +307,10 @@ public class LoginBusiness implements IWEventListener{
       middle = tok.nextToken();
     if(tok.hasMoreTokens())
       last = tok.nextToken();
-    else
+    else{
       last = middle;
+      middle = "";
+    }
 
     LoginContext loginContext = null;
     try{
@@ -318,9 +320,9 @@ public class LoginBusiness implements IWEventListener{
       if(user !=null){
         if(email !=null && email.length() >0)
           ub.addNewUserEmail(user.getID(),email);
-        if(login!=null)
+        if(login==null)
           login = LoginCreator.createLogin(user.getName());
-        if(pass!=null)
+        if(pass ==null)
           pass = LoginCreator.createPasswd(8);
 
 
@@ -328,7 +330,9 @@ public class LoginBusiness implements IWEventListener{
         loginContext = new LoginContext(user,login,pass);
       }
     }
-    catch(Exception ex){}
+    catch(Exception ex){
+      ex.printStackTrace();
+    }
 
     return loginContext;
   }

@@ -46,6 +46,7 @@ private String passwordTextColor;
 private int userTextSize = -1;
 private int passwordTextSize = -1;
 private int inputLength = 10;
+private int loggedOffPageId = -1;
 
 private String styleAttribute = "font-family: Verdana; font-size: 8pt; border: 1 solid #000000";
 private String textStyles = "font-family: Arial,Helvetica,sans-serif; font-size: 8pt; font-weight: bold; color: #000000; text-decoration: none;";
@@ -57,6 +58,8 @@ private Image logoutImage;
 private Image tryAgainImage;
 private boolean helpButton = false;
 private boolean onlyLogoutButton = false;
+private boolean register = false;
+private boolean forgot = false;
 
 public static String controlParameter;
 
@@ -254,10 +257,10 @@ protected IWBundle iwb;
         break;
 		}
 
-		Table submitTable = new Table(1,1);
-      if ( helpButton ) {
-        submitTable = new Table(2,1);
-      }
+		Table submitTable = new Table();
+      //if ( helpButton ) {
+      //  submitTable = new Table(2,1);
+      //}
 			submitTable.setBorder(0);
 			if (!(color.equals(""))) {
   			submitTable.setColor(color);
@@ -270,7 +273,6 @@ protected IWBundle iwb;
         submitTable.setAlignment(2,1,"right");
       }
 			submitTable.setWidth("100%");
-
       SubmitButton button = new SubmitButton(loginImage,"tengja");
 
       if ( !helpButton ) {
@@ -278,14 +280,67 @@ protected IWBundle iwb;
       }
       else {
         submitTable.add(button,2,1);
-        submitTable.add(helpImage,1,1);
       }
+
+      if(register || forgot ){
+        Link registerLink = getRegisterLink();
+        Link forgotLink = getForgotLink();
+        int row = 2;
+        int col = 1;
+        switch (LAYOUT) {
+          case LAYOUT_HORIZONTAL :
+          case LAYOUT_VERTICAL :
+            row = 2;
+            if(register)
+              submitTable.add(registerLink,1,row);
+            if(forgot)
+              submitTable.add(forgotLink,2,row);
+          break;
+          case LAYOUT_STACKED:
+            row = 2;
+            if(register){
+              submitTable.mergeCells(1,row,2,row);
+              submitTable.add(registerLink,1,row);
+              row++;
+            }
+            if(forgot){
+              submitTable.mergeCells(1,row,2,row);
+              submitTable.add(forgotLink,1,row);
+            }
+          break;
+          case SINGLE_LINE:
+            col = 3;
+            if(register)
+              submitTable.add(registerLink,col++,1);
+            if(forgot)
+              submitTable.add(forgotLink,col,1);
+          break;
+        }
+
+
+
+      }
+
       submitTable.add(new Parameter(LoginBusiness.LoginStateParameter,"login"));
 
     loginTable.add(submitTable,xpos,ypos);
 
     myForm.add(loginTable);
 	}
+
+  private Link getRegisterLink(){
+    Link L = new Link(iwrb.getLocalizedString("register.register","Nýskráning"));
+    L.setFontStyle(this.textStyles);
+    L.setWindowToOpen(RegisterWindow.class);
+    return L;
+  }
+
+  private Link getForgotLink(){
+    Link L = new Link(iwrb.getLocalizedString("register.forgot","Gleymt lykilorð"));
+    L.setFontStyle(this.textStyles);
+    L.setWindowToOpen(RegisterWindow.class);
+    return L;
+  }
 
 
 	private void isLoggedOn(IWContext iwc) throws Exception{
@@ -376,6 +431,8 @@ protected IWBundle iwb;
 
       submitTable.add(new SubmitButton(logoutImage,"utskraning"));
       submitTable.add(new Parameter(LoginBusiness.LoginStateParameter,"logoff"));
+      if(loggedOffPageId > 0)
+        submitTable.add(new Parameter(getIBPageParameterName(),String.valueOf(loggedOffPageId)));
 
     if ( LAYOUT != SINGLE_LINE ) {
       loginTable.add(inputTable,1,1);
@@ -676,6 +733,22 @@ protected IWBundle iwb;
     loggedOnLink.setPage(page);
   }
 
+  public void setLoggedOffPage(int ibPageId) {
+    loggedOffPageId = ibPageId;
+  }
+
+  public void setLoggedOffPage(IBPage page) {
+    loggedOffPageId = page.getID();
+  }
+
+  public void setRegister(boolean register){
+    this.register = register;
+  }
+
+  public void setForgot(boolean forgot){
+    this.forgot = forgot;
+  }
+
   public Object clone() {
     Login obj = null;
     try {
@@ -702,6 +775,4 @@ protected IWBundle iwb;
     }
     return obj;
   }
-
-
 }
