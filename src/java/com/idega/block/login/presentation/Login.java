@@ -19,6 +19,7 @@ import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.core.accesscontrol.data.LoginInfoHome;
 import com.idega.core.accesscontrol.data.LoginTable;
+import com.idega.core.builder.data.ICBuilderConstants;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.contact.data.Email;
 import com.idega.core.user.data.User;
@@ -39,10 +40,12 @@ import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.repository.data.ImplementorRepository;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.util.Converter;
 import com.idega.util.SendMail;
 import com.idega.util.StringHandler;
+import com.idega.util.URLUtil;
 
 /**
  * Title: Login - The standard login block in idegaWeb Description: Copyright:
@@ -57,6 +60,9 @@ public class Login extends Block {
 	protected static final String ACTION_TRY_AGAIN = "tryagain";
 	protected static final String ACTION_LOG_IN = "login";
 	protected static final String ACTION_LOG_OFF = "logoff";
+	
+	private static final String IB_PAGE_PARAMETER = ((ICBuilderConstants) ImplementorRepository.getInstance().getImplementorOrNull(ICBuilderConstants.class, Login.class)).getPageParameter();
+
 
 	private Link loggedOnLink;
 	private String backgroundImageUrl;
@@ -774,7 +780,7 @@ public class Login extends Block {
 			submitTable.add(new SubmitButton(logoutImage, "utskraning"));
 
 		submitTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, ACTION_LOG_OFF));
-		if (loggedOffPageId > 0) submitTable.add(new Parameter(getIBPageParameterName(), String.valueOf(loggedOffPageId)));
+		if (loggedOffPageId > 0) submitTable.add(new Parameter(IB_PAGE_PARAMETER, String.valueOf(loggedOffPageId)));
 		if (LAYOUT != SINGLE_LINE) {
 			loginTable.add(inputTable, 1, 1);
 			loginTable.add(submitTable, 1, 2);
