@@ -21,6 +21,8 @@ public class WelcomeMessage extends Text {
 	private static final String WELCOME_KEY_MORNING = "welcome_message.morning";
 	private static final String WELCOME_KEY_AFTERNOON = "welcome_message.afternoon";
 	private static final String WELCOME_KEY_EVENING = "welcome_message.evening";
+	
+	private boolean iShowUserName = true;
 
 	public WelcomeMessage() {
 		super("");
@@ -30,15 +32,18 @@ public class WelcomeMessage extends Text {
 		
 		if(iwc.isLoggedOn()){
 			try {
-				User newUser = iwc.getCurrentUser();
 				IWTimestamp stamp = new IWTimestamp();
-				String welcomeString = newUser.getName();
+				String welcomeString = "";
 				if (stamp.getHour() < 12)
-					welcomeString = getResourceBundle(iwc).getLocalizedString(WELCOME_KEY_MORNING,"Good morning") + " " + welcomeString;
+					welcomeString = getResourceBundle(iwc).getLocalizedString(WELCOME_KEY_MORNING,"Good morning");
 				else if (stamp.getHour() < 18)
-					welcomeString = getResourceBundle(iwc).getLocalizedString(WELCOME_KEY_AFTERNOON,"Good afternoon") + " " + welcomeString;
+					welcomeString = getResourceBundle(iwc).getLocalizedString(WELCOME_KEY_AFTERNOON,"Good afternoon");
 				else
-					welcomeString = getResourceBundle(iwc).getLocalizedString(WELCOME_KEY_EVENING,"Good evening") + " " + welcomeString;
+					welcomeString = getResourceBundle(iwc).getLocalizedString(WELCOME_KEY_EVENING,"Good evening");
+				if (iShowUserName) {
+					User newUser = iwc.getCurrentUser();
+					welcomeString = welcomeString + " " + newUser.getName();
+				}
 				super.setText(welcomeString);	
 			}
 			catch (Exception e) {
@@ -53,5 +58,9 @@ public class WelcomeMessage extends Text {
 	
 	public String getBundleIdentifier(){
 		return IW_BUNDLE_IDENTIFIER;
+	}
+	
+	public void showUserName(boolean showUserName) {
+		iShowUserName = showUserName;
 	}
 }

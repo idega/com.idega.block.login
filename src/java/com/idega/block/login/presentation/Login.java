@@ -1,8 +1,9 @@
-//idega 2000 Grimur Jonsson - Tryggvi Larusson - Thorhallur Helgason
+// idega 2000 Grimur Jonsson - Tryggvi Larusson - Thorhallur Helgason
 /*
-*Copyright 2000-2001 idega.is All Rights Reserved.
-*/
+ * Copyright 2000-2001 idega.is All Rights Reserved.
+ */
 package com.idega.block.login.presentation;
+
 import java.rmi.RemoteException;
 import java.text.MessageFormat;
 import java.util.Collection;
@@ -38,15 +39,21 @@ import com.idega.user.business.UserBusiness;
 import com.idega.user.util.Converter;
 import com.idega.util.SendMail;
 import com.idega.util.StringHandler;
+
 /**
- * Title:        Login - The standard login block in idegaWeb
- * Description:
- * Copyright:    Copyright (c) 2000-2001 idega.is All Rights Reserved
- * Company:      idega
-  *@author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>,<a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
+ * Title: Login - The standard login block in idegaWeb Description: Copyright:
+ * Copyright (c) 2000-2001 idega.is All Rights Reserved Company: idega
+ * 
+ * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson </a>, <a
+ *         href="mailto:tryggvi@idega.is">Tryggvi Larusson </a>
  * @version 1.1
  */
 public class Login extends Block {
+	
+	protected static final String ACTION_TRY_AGAIN = "tryagain";
+	protected static final String ACTION_LOG_IN = "login";
+	protected static final String ACTION_LOG_OFF = "logoff";
+
 	private Link loggedOnLink;
 	private String backgroundImageUrl;
 	private String newUserImageUrl = "";
@@ -93,7 +100,7 @@ public class Login extends Block {
 	private boolean allowCookieLogin = false;
 
 	private boolean showHint = false;
-	
+
 	private int _spaceBetween = 4;
 
 	private boolean _buttonAsLink = false;
@@ -103,34 +110,37 @@ public class Login extends Block {
 
 	private int _loginPageID = -1;
 	private final static String FROM_PAGE_PARAMETER = "log_from_page";
-	
-	private static final String LOGIN_PARAMETER_NAME = "login";
+
+	protected static final String LOGIN_PARAMETER_NAME = "login";
+	protected static final String PASSWORD_PARAMETER_NAME = "password";
 	private static final String HINT_ANSWER_PARAMETER_NAME = "hint_answer";
-	
+
 	//private IBPage _pageForInvalidLogin = null;
 
 	public Login() {
 		super();
 		setDefaultValues();
 	}
-	
+
 	public void main(IWContext iwc) throws Exception {
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
-		
+
 		String hintAnswer = iwc.getParameter(HINT_ANSWER_PARAMETER_NAME);
 		String hintMessage = null;
-		if(hintAnswer!=null && hintAnswer.length()>0) {
+		if (hintAnswer != null && hintAnswer.length() > 0) {
 			try {
-				boolean hintRight = testHint(iwc, hintAnswer);;
-				if(hintRight) {
+				boolean hintRight = testHint(iwc, hintAnswer);
+				;
+				if (hintRight) {
 					String sentTo = resetPasswordAndsendMessage(iwc);
-					hintMessage = sentTo==null?iwrb.getLocalizedString("login_hint_error", "Error validating hint answer"):
-											   iwrb.getLocalizedString("login_hint_correct", "Correct answer, instructions have been sent to: " + sentTo);
-				} else {
+					hintMessage = sentTo == null ? iwrb.getLocalizedString("login_hint_error", "Error validating hint answer") : iwrb.getLocalizedString("login_hint_correct", "Correct answer, instructions have been sent to: " + sentTo);
+				}
+				else {
 					hintMessage = iwrb.getLocalizedString("login_hint_incorrect", "Answer incorrect");
 				}
-			} catch(Exception e) {
+			}
+			catch (Exception e) {
 				hintMessage = iwrb.getLocalizedString("login_hint_error", "Error validating hint answer");
 			}
 		}
@@ -156,133 +166,124 @@ public class Login extends Block {
 			getMainForm().setToSendToHTTPS();
 		}
 		if (loginImage == null) //loginImage = iwrb.getImage("login.gif");
-			loginImage = iwrb.getLocalizedImageButton("login_text", "Login");
+				loginImage = iwrb.getLocalizedImageButton("login_text", "Login");
 		if (logoutImage == null) //logoutImage = iwrb.getImage("logout.gif");
-			logoutImage = iwrb.getLocalizedImageButton("logout_text", "Log out");
+				logoutImage = iwrb.getLocalizedImageButton("logout_text", "Log out");
 		if (tryAgainImage == null)
-			// tryAgainImage = iwrb.getImage("try_again.gif");
-			tryAgainImage = iwrb.getLocalizedImageButton("tryagain_text", "Try again");
+		// tryAgainImage = iwrb.getImage("try_again.gif");
+				tryAgainImage = iwrb.getLocalizedImageButton("tryagain_text", "Try again");
 		userText = iwrb.getLocalizedString("user", "User");
 		passwordText = iwrb.getLocalizedString("password", "Password");
 		int state = internalGetState(iwc);
 		switch (state) {
-			case LoginBusinessBean.STATE_LOGGED_ON :
+			case LoginBusinessBean.STATE_LOGGED_ON:
 				isLoggedOn(iwc);
 				break;
-			case LoginBusinessBean.STATE_LOGGED_OUT :
+			case LoginBusinessBean.STATE_LOGGED_OUT:
 				startState(iwc);
 				break;
-			case LoginBusinessBean.STATE_LOGIN_FAILED :
+			case LoginBusinessBean.STATE_LOGIN_FAILED:
 				loginFailed(iwc, iwrb.getLocalizedString("login_failed", "Login failed"));
 				break;
-			case LoginBusinessBean.STATE_NO_USER :
+			case LoginBusinessBean.STATE_NO_USER:
 				loginFailed(iwc, iwrb.getLocalizedString("login_no_user", "Invalid user"));
 				break;
-			case LoginBusinessBean.STATE_WRONG_PASSW :
+			case LoginBusinessBean.STATE_WRONG_PASSW:
 				loginFailed(iwc, iwrb.getLocalizedString("login_wrong", "Invalid password"));
 				break;
-			case LoginBusinessBean.STATE_LOGIN_EXPIRED :
+			case LoginBusinessBean.STATE_LOGIN_EXPIRED:
 				loginFailed(iwc, iwrb.getLocalizedString("login_expired", "Login expired"));
 				break;
-			case LoginBusinessBean.STATE_LOGIN_FAILED_DISABLED_NEXT_TIME :
+			case LoginBusinessBean.STATE_LOGIN_FAILED_DISABLED_NEXT_TIME:
 				loginFailed(iwc, iwrb.getLocalizedString("login_wrong_disabled_next_time", "Invalid password, access closed next time login fails"));
-				if(hintMessage==null) {
+				if (hintMessage == null) {
 					handleHint(iwc);
 				}
 				break;
-			default :
+			default:
 				startState(iwc);
 				break;
 		}
 
 		add(getMainForm());
-		if(hintMessage!=null) {
+		if (hintMessage != null) {
 			add(hintMessage);
 		}
 	}
-	
+
 	private String resetPasswordAndsendMessage(IWContext iwc) {
 		String login = iwc.getParameter(LOGIN_PARAMETER_NAME);
 		User user = null;
 		try {
 			user = getUserBusiness(iwc).getUser(login);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
-		if(user==null) {
+		if (user == null) {
 			System.out.println("no user found to change password and send notification to");
 			return null;
 		}
-		
+
 		// temp password, sent to user so he can log in and change his password.
 		String tmpPassword = StringHandler.getRandomStringNonAmbiguous(8);
-		
+
 		String server = iwb.getProperty("email_server");
-		if(server == null) {
+		if (server == null) {
 			System.out.println("email server bundle property not set, no password email sent to user " + user.getName());
 			return null;
 		}
-		
-		String letter =
-						iwrb.getLocalizedString(
-						"login.password_email_body",
-						"You are receiving this mail because you forgot your password on Felix and answered your hint question correctly.\n" +
-						"You need to select a new password. " +
-						"You have been given a new and temporary password on Felix so that you can log in and set a new password.\n " +
-						"Your new and temporary password is \"{0}\"\n");
+
+		String letter = iwrb.getLocalizedString("login.password_email_body", "You are receiving this mail because you forgot your password on Felix and answered your hint question correctly.\n" + "You need to select a new password. " + "You have been given a new and temporary password on Felix so that you can log in and set a new password.\n " + "Your new and temporary password is \"{0}\"\n");
 
 		StringBuffer buf = null;
-		
+
 		if (letter != null) {
 			try {
-				Collection emailCol = ((com.idega.user.data.User)user).getEmails();
-				if(emailCol!=null && !emailCol.isEmpty()) {
+				Collection emailCol = ((com.idega.user.data.User) user).getEmails();
+				if (emailCol != null && !emailCol.isEmpty()) {
 					Iterator emailIter = emailCol.iterator();
-					
+
 					LoginBusinessBean.resetPassword(login, tmpPassword, true);
-					
+
 					buf = new StringBuffer();
 					boolean firstAddress = true;
-					
-					while(emailIter.hasNext()) {
+
+					while (emailIter.hasNext()) {
 						String address = ((Email) emailIter.next()).getEmailAddress();
-						
-						if(firstAddress) {
+
+						if (firstAddress) {
 							firstAddress = false;
-						} else {
+						}
+						else {
 							buf.append(";");
 						}
 						buf.append(address);
-						
-						Object[] objs = {tmpPassword};
-						String body = MessageFormat.format(letter,objs);
-						
+
+						Object[] objs = { tmpPassword};
+						String body = MessageFormat.format(letter, objs);
+
 						System.out.println("Sending password to " + address);
-						
-						SendMail.send(
-							iwrb.getLocalizedString("register.email_sender", "<Felix-felagakerfi>felix@isi.is"),
-							address,
-							"",
-							"",
-							server,
-							iwrb.getLocalizedString("login.password_email_subject", "Forgotten password on Felix"),
-							body);
+
+						SendMail.send(iwrb.getLocalizedString("register.email_sender", "<Felix-felagakerfi>felix@isi.is"), address, "", "", server, iwrb.getLocalizedString("login.password_email_subject", "Forgotten password on Felix"), body);
 					}
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				System.out.println("Couldn't send email password notification to user " + user.getDisplayName());
 				e.printStackTrace();
 				return null;
 			}
-		} else {
+		}
+		else {
 			System.out.println("No password letter found, nothing sent to user " + user.getDisplayName());
 			return null;
 		}
-		
-		return buf==null?null:buf.toString();
+
+		return buf == null ? null : buf.toString();
 	}
-	
+
 	private boolean testHint(IWContext iwc, String answer) throws Exception {
 		User user = null;
 		boolean ok = false;
@@ -290,25 +291,25 @@ public class Login extends Block {
 		ok = answer.trim().equals(user.getMetaData("HINT_ANSWER").trim());
 		return ok;
 	}
-	
+
 	private void handleHint(IWContext iwc) {
-		if(showHint) {
+		if (showHint) {
 			String userName = iwc.getParameter(LOGIN_PARAMETER_NAME);
-			if(userName==null) {
+			if (userName == null) {
 				userName = (String) iwc.getSessionAttribute(LoginBusinessBean.UserAttributeParameter);
 			}
-			if(userName!=null && userName.length()>0) {
+			if (userName != null && userName.length() > 0) {
 				try {
 					User user = getUserBusiness(iwc).getUser(userName);
-					
+
 					String helpText = iwrb.getLocalizedString("login_hint_helptext", "You gave a hint question when you registered, provide the answer you gave at registration");
 					String question = user.getMetaData("HINT_QUESTION");
-					if(question!=null && question.length()>0) {
+					if (question != null && question.length() > 0) {
 						TextInput input = new TextInput(HINT_ANSWER_PARAMETER_NAME);
 						SubmitButton button = new SubmitButton(iwrb.getLocalizedString("hint_submit", "Answer"));
-						
+
 						HiddenInput hInput = new HiddenInput(LOGIN_PARAMETER_NAME, userName);
-						
+
 						Table qTable = new Table();
 						qTable.mergeCells(1, 1, 2, 1);
 						qTable.add(helpText, 1, 1);
@@ -317,64 +318,65 @@ public class Login extends Block {
 						qTable.mergeCells(1, 3, 2, 3);
 						qTable.add(input, 1, 3);
 						qTable.add(button, 2, 4);
-						
+
 						Form form = new Form();
 						form.add(qTable);
 						form.add(hInput);
 						add(form);
 					}
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					e.printStackTrace();
 				}
-			} else {
+			}
+			else {
 				System.out.println("Couldn't ask hint question, no login name found");
 			}
 		}
 	}
-	
+
 	/*
-	  public static boolean isAdmin(IWContext iwc)throws Exception{
-	    return iwc.is   Admin();
-	  }
-	*/
+	 * public static boolean isAdmin(IWContext iwc)throws Exception{ return iwc.is
+	 * Admin(); }
+	 */
 	public static User getUser(IWContext iwc) {
 		return LoginBusinessBean.getUser(iwc);
 	}
 
-	private void startState(IWContext iwc) {
+	protected void startState(IWContext iwc) {
 		if (_logOnPage > 0) {
 			getMainForm().setPageToSubmitTo(_logOnPage);
 		}
-		/*if (_redirectPage > 0) {
-			//System.err.println("adding hidden redirect parameter");
-			myForm.add(new HiddenInput(LoginBusinessBean.LoginRedirectPageParameter, String.valueOf(_redirectPage)));
-		}
-		
-		if (_pageForInvalidLogin != null) {
-			//System.err.println("adding hidden redirect parameter");
-			myForm.add(new HiddenInput(LoginBusinessBean.LoginFailedRedirectPageParameter, _pageForInvalidLogin.getPrimaryKey().toString()));
-		}*/
-		
+		/*
+		 * if (_redirectPage > 0) { //System.err.println("adding hidden redirect
+		 * parameter"); myForm.add(new
+		 * HiddenInput(LoginBusinessBean.LoginRedirectPageParameter,
+		 * String.valueOf(_redirectPage))); }
+		 * 
+		 * if (_pageForInvalidLogin != null) { //System.err.println("adding hidden
+		 * redirect parameter"); myForm.add(new
+		 * HiddenInput(LoginBusinessBean.LoginFailedRedirectPageParameter,
+		 * _pageForInvalidLogin.getPrimaryKey().toString())); }
+		 */
+
 		Table loginTable = new Table();
 		loginTable.setBorder(0);
-		if (loginWidth != null)
-			loginTable.setWidth(loginWidth);
-		if (loginHeight != null)
-			loginTable.setHeight(loginHeight);
+		if (loginWidth != null) loginTable.setWidth(loginWidth);
+		if (loginHeight != null) loginTable.setHeight(loginHeight);
 		if (!(color.equals(""))) {
 			loginTable.setColor(color);
 		}
 		loginTable.setCellpadding(0);
 		loginTable.setCellspacing(0);
-		if (backgroundImageUrl != null)
-			loginTable.setBackgroundImage(new Image(backgroundImageUrl));
+		if (backgroundImageUrl != null) loginTable.setBackgroundImage(new Image(backgroundImageUrl));
 		int ypos = 1;
 		int xpos = 1;
-		/*HelpButton helpImage =
-			new HelpButton(
-				iwrb.getLocalizedString("help_headline", "Web Access"),
-				iwrb.getLocalizedString("help", ""),
-				iwrb.getImage("help_image.gif").getURL());*/
+		/*
+		 * HelpButton helpImage = new HelpButton(
+		 * iwrb.getLocalizedString("help_headline", "Web Access"),
+		 * iwrb.getLocalizedString("help", ""),
+		 * iwrb.getImage("help_image.gif").getURL());
+		 */
 		Text loginTexti = new Text(userText);
 		if (userTextSize != -1) {
 			loginTexti.setFontSize(userTextSize);
@@ -395,15 +397,13 @@ public class Login extends Block {
 		TextInput login = new TextInput(LOGIN_PARAMETER_NAME);
 		login.setMarkupAttribute("style", styleAttribute);
 		login.setSize(inputLength);
-		if (_enterSubmit)
-			login.setOnKeyPress("return enterSubmit(this,event)");
-		PasswordInput passw = new PasswordInput("password");
+		if (_enterSubmit) login.setOnKeyPress("return enterSubmit(this,event)");
+		PasswordInput passw = new PasswordInput(PASSWORD_PARAMETER_NAME);
 		passw.setMarkupAttribute("style", styleAttribute);
 		passw.setSize(inputLength);
-		if (_enterSubmit)
-			passw.setOnKeyPress("return enterSubmit(this,event)");
+		if (_enterSubmit) passw.setOnKeyPress("return enterSubmit(this,event)");
 		switch (LAYOUT) {
-			case LAYOUT_HORIZONTAL :
+			case LAYOUT_HORIZONTAL:
 				inputTable = new Table(2, 2);
 				inputTable.setBorder(0);
 				if (!(color.equals(""))) {
@@ -419,7 +419,7 @@ public class Login extends Block {
 				loginTable.add(inputTable, xpos, ypos);
 				ypos++;
 				break;
-			case LAYOUT_VERTICAL :
+			case LAYOUT_VERTICAL:
 				inputTable = new Table(3, 3);
 				inputTable.setBorder(0);
 				if (!(color.equals(""))) {
@@ -439,7 +439,7 @@ public class Login extends Block {
 				loginTable.add(inputTable, xpos, ypos);
 				ypos++;
 				break;
-			case LAYOUT_STACKED :
+			case LAYOUT_STACKED:
 				inputTable = new Table(1, 5);
 				inputTable.setBorder(0);
 				inputTable.setCellpadding(0);
@@ -459,7 +459,7 @@ public class Login extends Block {
 				loginTable.add(inputTable, xpos, ypos);
 				ypos++;
 				break;
-			case SINGLE_LINE :
+			case SINGLE_LINE:
 				inputTable = new Table(7, 1);
 				inputTable.setBorder(0);
 				inputTable.setCellpadding(0);
@@ -480,8 +480,8 @@ public class Login extends Block {
 				loginTable.add(inputTable, xpos, ypos);
 				xpos = 2;
 				break;
-			case LAYOUT_FORWARD_LINK :
-				_buttonAsLink = true;  
+			case LAYOUT_FORWARD_LINK:
+				_buttonAsLink = true;
 				inputTable = new Table(1, 1);
 				inputTable.setBorder(0);
 				inputTable.setCellpadding(0);
@@ -500,7 +500,8 @@ public class Login extends Block {
 		submitTable.setRowVerticalAlignment(1, "middle");
 		if (!helpButton) {
 			submitTable.setAlignment(1, 1, submitButtonAlignment);
-		} else {
+		}
+		else {
 			submitTable.setAlignment(2, 1, "right");
 		}
 		submitTable.setWidth("100%");
@@ -510,22 +511,24 @@ public class Login extends Block {
 			int column = 1;
 			Link link = this.getStyleLink(iwrb.getLocalizedString("login_text", "Login"), _linkStyleClass);
 			switch (LAYOUT) {
-				case LAYOUT_FORWARD_LINK :
+				case LAYOUT_FORWARD_LINK:
 					if (_loginPageID != -1) {
 						//PopUp Link parameters
 						link.setPage(_loginPageID);
-						link.setParameter(FROM_PAGE_PARAMETER,String.valueOf(iwc.getCurrentIBPageID()));
+						link.setParameter(FROM_PAGE_PARAMETER, String.valueOf(iwc.getCurrentIBPageID()));
 						link.setHttps(sendToHTTPS);
-					} else {
+					}
+					else {
 						try {
-							throw new Exception(this.getClassName()+": No login page is set");
-						} catch (Exception e) {
+							throw new Exception(this.getClassName() + ": No login page is set");
+						}
+						catch (Exception e) {
 							System.err.println(e.getMessage());
 							e.printStackTrace();
 						}
 					}
 					break;
-				default :
+				default:
 					link.setToFormSubmit(getMainForm());
 			}
 			if (_iconImage != null) {
@@ -535,28 +538,27 @@ public class Login extends Block {
 			submitTable.add(link, column, 1);
 			loginTable.setWidth(xpos++, ypos, String.valueOf(_spaceBetween * 2));
 			loginTable.add(submitTable, xpos, ypos);
-		} else {
+		}
+		else {
 			SubmitButton button = new SubmitButton(loginImage, "tengja");
 			if (!helpButton) {
 				submitTable.add(button, 1, 1);
-			} else {
+			}
+			else {
 				submitTable.add(button, 2, 1);
 			}
-			
-			
+
 			if (register || forgot || allowCookieLogin) {
 				Link registerLink = getRegisterLink();
 				Link forgotLink = getForgotLink();
 				int row = 2;
 				int col = 1;
 				switch (LAYOUT) {
-					case LAYOUT_HORIZONTAL :
-					case LAYOUT_VERTICAL :
+					case LAYOUT_HORIZONTAL:
+					case LAYOUT_VERTICAL:
 						row = 2;
-						if (register)
-							submitTable.add(registerLink, 1, row);
-						if (forgot)
-							submitTable.add(forgotLink, 2, row);
+						if (register) submitTable.add(registerLink, 1, row);
+						if (forgot) submitTable.add(forgotLink, 2, row);
 						if (allowCookieLogin) {
 							CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
 							Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
@@ -567,7 +569,7 @@ public class Login extends Block {
 							submitTable.add(cookieText, 1, row);
 						}
 						break;
-					case LAYOUT_STACKED :
+					case LAYOUT_STACKED:
 						row = 2;
 						if (register) {
 							submitTable.mergeCells(1, row, 2, row);
@@ -589,12 +591,10 @@ public class Login extends Block {
 							row++;
 						}
 						break;
-					case SINGLE_LINE :
+					case SINGLE_LINE:
 						col = 3;
-						if (register)
-							submitTable.add(registerLink, col++, 1);
-						if (forgot)
-							submitTable.add(forgotLink, col++, 1);
+						if (register) submitTable.add(registerLink, col++, 1);
+						if (forgot) submitTable.add(forgotLink, col++, 1);
 						if (allowCookieLogin) {
 							CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
 							Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
@@ -607,12 +607,10 @@ public class Login extends Block {
 			}
 			loginTable.add(submitTable, xpos, ypos);
 		}
-		
-		submitTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, "login"));
+
+		submitTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, ACTION_LOG_IN));
 		getMainForm().add(loginTable);
 	}
-
-
 
 	private Link getRegisterLink() {
 		Link link = new Link(iwrb.getLocalizedString("register.register", "Register"));
@@ -621,34 +619,32 @@ public class Login extends Block {
 		link.setAsImageButton(true);
 		return link;
 	}
+
 	private Link getForgotLink() {
 		Link L = new Link(iwrb.getLocalizedString("register.forgot", "Forgot password�"));
 		L.setFontStyle(this.textStyles);
 		L.setWindowToOpen(ForgotWindow.class);
 		return L;
 	}
-	private void isLoggedOn(IWContext iwc) throws Exception {
 
-		if (this.loggedOffPageId != -1){
+	protected void isLoggedOn(IWContext iwc) throws Exception {
+
+		if (this.loggedOffPageId != -1) {
 			getMainForm().setPageToSubmitTo(loggedOffPageId);
 		}
-		
-		User user = (User)getUser(iwc);
+
+		User user = (User) getUser(iwc);
 
 		if (sendUserToHomePage && LoginBusinessBean.isLogOnAction(iwc)) {
 			com.idega.user.data.User newUser = Converter.convertToNewUser(user);
 			com.idega.user.data.Group newGroup = newUser.getPrimaryGroup();
-			if (newUser.getHomePageID() != -1)
-				iwc.forwardToIBPage(this.getParentPage(), newUser.getHomePage());
-			if (newGroup != null && newGroup.getHomePageID() != -1)
-				iwc.forwardToIBPage(this.getParentPage(), newGroup.getHomePage());
+			if (newUser.getHomePageID() != -1) iwc.forwardToIBPage(this.getParentPage(), newUser.getHomePage());
+			if (newGroup != null && newGroup.getHomePageID() != -1) iwc.forwardToIBPage(this.getParentPage(), newGroup.getHomePage());
 		}
 
 		if (loggedOnLink != null) {
-			if (userTextSize > -1)
-				loggedOnLink.setFontSize(userTextSize);
-			if (userTextColor != null && !userTextColor.equals(""))
-				loggedOnLink.setFontColor(userTextColor);
+			if (userTextSize > -1) loggedOnLink.setFontSize(userTextSize);
+			if (userTextColor != null && !userTextColor.equals("")) loggedOnLink.setFontColor(userTextColor);
 			loggedOnLink.setText(user.getName());
 			loggedOnLink.setFontStyle(textStyles);
 		}
@@ -662,12 +658,9 @@ public class Login extends Block {
 		userText.setFontStyle(textStyles);
 		Table loginTable = new Table();
 		loginTable.setBorder(0);
-		if (backgroundImageUrl != null)
-			loginTable.setBackgroundImage(new Image(backgroundImageUrl));
-		if (loginWidth != null)
-			loginTable.setWidth(loginWidth);
-		if (loginHeight != null)
-			loginTable.setHeight(loginHeight);
+		if (backgroundImageUrl != null) loginTable.setBackgroundImage(new Image(backgroundImageUrl));
+		if (loginWidth != null) loginTable.setWidth(loginWidth);
+		if (loginHeight != null) loginTable.setHeight(loginHeight);
 		loginTable.setCellpadding(0);
 		loginTable.setCellspacing(0);
 		if (!(color.equals(""))) {
@@ -678,7 +671,8 @@ public class Login extends Block {
 			loginTable.setHeight(2, "50%");
 			loginTable.setVerticalAlignment(1, 1, "bottom");
 			loginTable.setVerticalAlignment(1, 2, "top");
-		} else {
+		}
+		else {
 			loginTable.setWidth(1, 1, "100%");
 			loginTable.setCellpadding(3);
 			loginTable.setAlignment(1, 1, "right");
@@ -697,7 +691,8 @@ public class Login extends Block {
 		}
 		if (loggedOnLink != null) {
 			inputTable.add(loggedOnLink);
-		} else {
+		}
+		else {
 			inputTable.add(userText);
 		}
 		Table submitTable = new Table();
@@ -713,7 +708,8 @@ public class Login extends Block {
 			submitTable.setWidth(loginWidth);
 			submitTable.setHeight(loginHeight);
 			submitTable.setAlignment(1, 1, loginAlignment);
-		} else {
+		}
+		else {
 			submitTable.setWidth("100%");
 		}
 		if (_buttonAsLink) {
@@ -728,22 +724,24 @@ public class Login extends Block {
 				submitTable.setWidth(column++, 1, String.valueOf(_spaceBetween));
 			}
 			submitTable.add(link, column, 1);
-		} else
+		}
+		else
 			submitTable.add(new SubmitButton(logoutImage, "utskraning"));
 
-		submitTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, "logoff"));
-		if (loggedOffPageId > 0)
-			submitTable.add(new Parameter(getIBPageParameterName(), String.valueOf(loggedOffPageId)));
+		submitTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, ACTION_LOG_OFF));
+		if (loggedOffPageId > 0) submitTable.add(new Parameter(getIBPageParameterName(), String.valueOf(loggedOffPageId)));
 		if (LAYOUT != SINGLE_LINE) {
 			loginTable.add(inputTable, 1, 1);
 			loginTable.add(submitTable, 1, 2);
-		} else {
+		}
+		else {
 			loginTable.add(inputTable, 1, 1);
 			loginTable.add(submitTable, 2, 1);
 		}
 		if (onlyLogoutButton) {
 			getMainForm().add(submitTable);
-		} else {
+		}
+		else {
 			getMainForm().add(loginTable);
 		}
 		if (LoginBusinessBean.isLogOnAction(iwc)) {
@@ -758,7 +756,8 @@ public class Login extends Block {
 			}
 		}
 	}
-	private void loginFailed(IWContext iwc, String message) {
+
+	protected void loginFailed(IWContext iwc, String message) {
 		if (this.LAYOUT == Login.LAYOUT_FORWARD_LINK) {
 			startState(iwc);
 		}
@@ -773,12 +772,9 @@ public class Login extends Block {
 			mistokst.setFontStyle(textStyles);
 			Table loginTable = new Table();
 			loginTable.setBorder(0);
-			if (backgroundImageUrl != null)
-				loginTable.setBackgroundImage(new Image(backgroundImageUrl));
-			if (loginWidth != null)
-				loginTable.setWidth(loginWidth);
-			if (loginHeight != null)
-				loginTable.setHeight(loginHeight);
+			if (backgroundImageUrl != null) loginTable.setBackgroundImage(new Image(backgroundImageUrl));
+			if (loginWidth != null) loginTable.setWidth(loginWidth);
+			if (loginHeight != null) loginTable.setHeight(loginHeight);
 			loginTable.setCellpadding(0);
 			loginTable.setCellspacing(0);
 			if (!(color.equals(""))) {
@@ -789,7 +785,8 @@ public class Login extends Block {
 				loginTable.setHeight(2, "50%");
 				loginTable.setVerticalAlignment(1, 1, "bottom");
 				loginTable.setVerticalAlignment(1, 2, "top");
-			} else {
+			}
+			else {
 				//loginTable.setWidth(1, 1, "100%");
 				loginTable.setCellpadding(3);
 				loginTable.setAlignment(1, 1, "right");
@@ -829,39 +826,39 @@ public class Login extends Block {
 					submitTable.setWidth(column++, 1, String.valueOf(_spaceBetween));
 				}
 				submitTable.add(link, column, 1);
-			} else
-				submitTable.add(new SubmitButton(tryAgainImage, "tryAgain"));
-			submitTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, "tryagain"));
+			}
+			else
+				submitTable.add(new SubmitButton(tryAgainImage, ACTION_TRY_AGAIN));
+			submitTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, ACTION_TRY_AGAIN));
 			if (LAYOUT != SINGLE_LINE) {
 				loginTable.add(inputTable, 1, 1);
 				loginTable.add(submitTable, 1, 2);
-			} else {
+			}
+			else {
 				int column = 1;
 				loginTable.add(inputTable, column++, 1);
-				if (_buttonAsLink)
-					loginTable.setWidth(column++, 1, String.valueOf(_spaceBetween * 2));
+				if (_buttonAsLink) loginTable.setWidth(column++, 1, String.valueOf(_spaceBetween * 2));
 				loginTable.add(submitTable, column, 1);
 			}
 			getMainForm().add(loginTable);
 		}
 	}
+
 	private void isNotSignedOn(String what) {
 		Text textinn = new Text("");
 		textinn.setFontSize(1);
 		textinn.setBold();
 		if (what.equals("empty")) {
 			textinn.addToText(iwrb.getLocalizedString("write_ssn", "Type social-security number in user input"));
-		} else if (what.equals("toBig")) {
+		}
+		else if (what.equals("toBig")) {
 			textinn.addToText(iwrb.getLocalizedString("without_hyphen", "Social-security number must be written without a hyphen"));
 		}
 		textinn.setFontStyle(textStyles);
 		Table loginTable = new Table(1, 2);
-		if (backgroundImageUrl != null)
-			loginTable.setBackgroundImage(new com.idega.presentation.Image(backgroundImageUrl));
-		if (loginWidth != null)
-			loginTable.setWidth(loginWidth);
-		if (loginHeight != null)
-			loginTable.setHeight(loginHeight);
+		if (backgroundImageUrl != null) loginTable.setBackgroundImage(new com.idega.presentation.Image(backgroundImageUrl));
+		if (loginWidth != null) loginTable.setWidth(loginWidth);
+		if (loginHeight != null) loginTable.setHeight(loginHeight);
 		loginTable.setBorder(0);
 		if (!(color.equals(""))) {
 			loginTable.setColor(color);
@@ -896,21 +893,26 @@ public class Login extends Block {
 		if (LAYOUT != SINGLE_LINE) {
 			loginTable.add(inputTable, 1, 1);
 			loginTable.add(submitTable, 1, 2);
-		} else {
+		}
+		else {
 			loginTable.add(inputTable, 1, 1);
 			loginTable.add(submitTable, 2, 1);
 		}
 		getMainForm().add(loginTable);
 	}
+
 	public int internalGetState(IWContext iwc) {
 		return LoginBusinessBean.internalGetState(iwc);
 	}
+
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
+
 	public void setLayout(int layout) {
 		LAYOUT = layout;
 	}
+
 	protected void setDefaultValues() {
 		submitButtonAlignment = "center";
 		LAYOUT = LAYOUT_VERTICAL;
@@ -919,142 +921,185 @@ public class Login extends Block {
 		//getMainForm().setMethod("post");
 		//myForm.maintainAllParameters();
 	}
+
 	/**
-	 * Sets the login handler business class which this class sends the login/logout event to.<br><br>
-	 * This Class must implement com.idega.event.IWEventHandler.<br>
+	 * Sets the login handler business class which this class sends the
+	 * login/logout event to. <br>
+	 * <br>
+	 * This Class must implement com.idega.event.IWEventHandler. <br>
 	 * The default is LoginBusiness
 	 */
 	public void setLoginHandlerClass(String className) {
 		this.loginHandlerClass = className;
-		/*if (myForm != null)
-		{
-			myForm.setEventListener(className);
-		}*/
+		/*
+		 * if (myForm != null) { myForm.setEventListener(className); }
+		 */
 	}
+
 	/**
-	 * Sets the login handler business class which this class sends the login/logout event to.<br><br>
-	 * This Class must implement com.idega.event.IWEventHandler.<br>
+	 * Sets the login handler business class which this class sends the
+	 * login/logout event to. <br>
+	 * <br>
+	 * This Class must implement com.idega.event.IWEventHandler. <br>
 	 * The default is LoginBusiness
 	 */
 	public void setLoginHandlerClass(Class handlerClass) {
 		setLoginHandlerClass(handlerClass.getName());
 	}
+
 	public void addHelpButton() {
 		helpButton = true;
 	}
+
 	public void setHelpButton(boolean usehelp) {
 		helpButton = usehelp;
 	}
+
 	public void setVertical() {
 		LAYOUT = LAYOUT_VERTICAL;
 	}
+
 	public void setHorizontal() {
 		LAYOUT = LAYOUT_HORIZONTAL;
 	}
+
 	public void setStacked() {
 		LAYOUT = Login.LAYOUT_STACKED;
 	}
+
 	public void setStyle(String styleAttribute) {
 		setInputStyle(styleAttribute);
 	}
+
 	public void setInputStyle(String styleAttribute) {
 		this.styleAttribute = styleAttribute;
 	}
+
 	public void setTextStyle(String styleAttribute) {
 		this.textStyles = styleAttribute;
 	}
+
 	public void setInputLength(int inputLength) {
 		this.inputLength = inputLength;
 	}
+
 	public void setUserText(String text) {
 		userText = text;
 	}
+
 	public void setUserTextSize(int size) {
 		userTextSize = size;
 	}
+
 	public void setUserTextColor(String color) {
 		userTextColor = color;
 	}
+
 	public void setPasswordText(String text) {
 		passwordText = text;
 	}
+
 	public void setPasswordTextSize(int size) {
 		passwordTextSize = size;
 	}
+
 	public void setPasswordTextColor(String color) {
 		passwordTextColor = color;
 	}
+
 	public void setColor(String color) {
 		this.color = color;
 	}
+
 	public void setHeight(String height) {
 		loginHeight = height;
 	}
+
 	public void setWidth(String width) {
 		loginWidth = width;
 	}
+
 	public void setBackgroundImageUrl(String url) {
 		backgroundImageUrl = url;
 	}
+
 	public void setSubmitButtonAlignment(String alignment) {
 		submitButtonAlignment = alignment;
 	}
+
 	public void setLoginButtonImageURL(String loginImageURL) {
 		setLoginButton(new Image(loginImageURL));
 	}
+
 	public void setLoginButton(Image loginImage) {
 		this.loginImage = loginImage;
 	}
+
 	public void setLogoutButtonImageURL(String logoutImageURL) {
 		setLogoutButton(new Image(logoutImageURL));
 	}
+
 	public void setLogoutButton(Image logoutImage) {
 		this.logoutImage = logoutImage;
 	}
+
 	public void setTryAgainButton(Image tryAgainImage) {
 		this.tryAgainImage = tryAgainImage;
 	}
+
 	public void setViewOnlyLogoutButton(boolean logout) {
 		onlyLogoutButton = logout;
 	}
+
 	public void setLoginAlignment(String alignment) {
 		loginAlignment = alignment;
 	}
+
 	public void setLoggedOnLink(Link link) {
-		loggedOnLink = (Link)link.clone();
+		loggedOnLink = (Link) link.clone();
 	}
+
 	public void setRegisterLink(boolean value) {
 		register = value;
 	}
+
 	public void setShowHint(boolean value) {
 		System.out.println("ShowHint set to " + value);
 		showHint = value;
 	}
+
 	public void setLogOnPage(ICPage page) {
 		_logOnPage = page.getID();
 	}
+
 	public void setLogOnPage(int page) {
 		_logOnPage = page;
 	}
+
 	public void setLoggedOnWindow(boolean window) {
 		if (window) {
 			loggedOnLink = new Link();
 			loggedOnLink.setWindowToOpen(LoginEditorWindow.class);
 		}
 	}
+
 	public void setLoggedOnPage(ICPage page) {
 		loggedOnLink = new Link();
 		loggedOnLink.setPage(page);
 	}
+
 	public void setLoggedOffPage(int ibPageId) {
 		loggedOffPageId = ibPageId;
 	}
+
 	public void setLoggedOffPage(ICPage page) {
 		loggedOffPageId = page.getID();
 	}
+
 	public void setRegister(boolean register) {
 		this.register = register;
 	}
+
 	public void setForgot(boolean forgot) {
 		this.forgot = forgot;
 	}
@@ -1064,31 +1109,32 @@ public class Login extends Block {
 	}
 
 	/** todo: implement */
-	/*public void setRedirectPage(int page) {
-		System.err.println("setting redirect page");
-		_redirectPage = page;
-	}*/
+	/*
+	 * public void setRedirectPage(int page) { System.err.println("setting
+	 * redirect page"); _redirectPage = page; }
+	 */
 
 	public Object clone() {
 		Login obj = null;
 		try {
-			obj = (Login)super.clone();
+			obj = (Login) super.clone();
 			if (this.myForm != null) {
-				obj.setMainForm((Form)this.myForm.clone());
+				obj.setMainForm((Form) this.myForm.clone());
 			}
 			if (this.loginImage != null) {
-				obj.loginImage = (Image)this.loginImage.clone();
+				obj.loginImage = (Image) this.loginImage.clone();
 			}
 			if (this.logoutImage != null) {
-				obj.logoutImage = (Image)this.logoutImage.clone();
+				obj.logoutImage = (Image) this.logoutImage.clone();
 			}
 			if (this.tryAgainImage != null) {
-				obj.tryAgainImage = (Image)this.tryAgainImage.clone();
+				obj.tryAgainImage = (Image) this.tryAgainImage.clone();
 			}
 			if (this.loggedOnLink != null) {
-				obj.loggedOnLink = (Link)this.loggedOnLink.clone();
+				obj.loggedOnLink = (Link) this.loggedOnLink.clone();
 			}
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			ex.printStackTrace(System.err);
 		}
 		return obj;
@@ -1096,14 +1142,15 @@ public class Login extends Block {
 
 	/**
 	 * Set the form to automatically send over to a corresponding HTTPS address
-	 **/
+	 */
 	public void setToSendToHTTPS() {
 		setToSendToHTTPS(true);
 	}
 
 	/**
-	 * Set if the form should automatically send over to a corresponding HTTPS address
-	 **/
+	 * Set if the form should automatically send over to a corresponding HTTPS
+	 * address
+	 */
 	public void setToSendToHTTPS(boolean doSendToHTTPS) {
 		if (getMainForm() != null) {
 			getMainForm().setToSendToHTTPS(doSendToHTTPS);
@@ -1113,7 +1160,7 @@ public class Login extends Block {
 
 	/**
 	 * Set if the form should send the user to his home page after login.
-	 **/
+	 */
 	public void setToSendUserToHomePage(boolean doSendToHomePage) {
 		sendUserToHomePage = doSendToHomePage;
 	}
@@ -1130,7 +1177,9 @@ public class Login extends Block {
 
 	/**
 	 * Sets the submit button as link.
-	 * @param buttonAsLink The buttonAsLink to set
+	 * 
+	 * @param buttonAsLink
+	 *          The buttonAsLink to set
 	 */
 	public void setButtonAsLink(boolean buttonAsLink) {
 		_buttonAsLink = buttonAsLink;
@@ -1138,7 +1187,9 @@ public class Login extends Block {
 
 	/**
 	 * Sets the spaceBetween.
-	 * @param spaceBetween The spaceBetween to set
+	 * 
+	 * @param spaceBetween
+	 *          The spaceBetween to set
 	 */
 	public void setSpaceBetween(int spaceBetween) {
 		_spaceBetween = spaceBetween;
@@ -1146,7 +1197,9 @@ public class Login extends Block {
 
 	/**
 	 * Sets the iconImage.
-	 * @param iconImage The iconImage to set
+	 * 
+	 * @param iconImage
+	 *          The iconImage to set
 	 */
 	public void setIconImage(Image iconImage) {
 		_iconImage = iconImage;
@@ -1166,27 +1219,27 @@ public class Login extends Block {
 	public void setPopupPageID(int pageID) {
 		setLogInPageID(pageID);
 	}
-	
-	
+
 	/**
 	 * @param pageID
-	 * 
+	 *  
 	 */
 	public void setLogInPageID(int pageID) {
 		_loginPageID = pageID;
 	}
 
-	/*public void setPageForInvalidLogin(IBPage page) {
-		_pageForInvalidLogin = page;
-	}*/
-	
-	private UserBusiness getUserBusiness(IWContext iwc) throws RemoteException{
-		return (UserBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(),UserBusiness.class);
+	/*
+	 * public void setPageForInvalidLogin(IBPage page) { _pageForInvalidLogin =
+	 * page; }
+	 */
+
+	private UserBusiness getUserBusiness(IWContext iwc) throws RemoteException {
+		return (UserBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(), UserBusiness.class);
 	}
-	
-	public void empty(){
+
+	public void empty() {
 		super.empty();
-		this.myForm=null;
+		this.myForm = null;
 	}
 
 	protected void setMainForm(Form myForm) {
@@ -1194,10 +1247,28 @@ public class Login extends Block {
 	}
 
 	protected Form getMainForm() {
-		if(myForm==null){
-			myForm=new Form();
+		if (myForm == null) {
+			myForm = new Form();
 		}
 		return myForm;
 	}
 
+	/**
+	 * @return Returns the inputLength.
+	 */
+	protected int getInputLength() {
+		return this.inputLength;
+	}
+	/**
+	 * @return Returns the _enterSubmit.
+	 */
+	protected boolean isEnterSubmit() {
+		return this._enterSubmit;
+	}
+	/**
+	 * @return Returns the iwrb.
+	 */
+	protected IWResourceBundle getResourceBundle() {
+		return this.iwrb;
+	}
 }
