@@ -1,0 +1,22 @@
+#Wed Aug 27 17:46:34 CEST 2003
+close=Close
+confirm=Confirm
+help=
+help_headline=Web Access
+iw.component.com.idega.block.login.presentation.Login.name=Login
+iw.component.com.idega.block.login.presentation.WelcomeMessage.name=WelcomeMessage
+login=Login
+login_failed=Login failed
+login_text=Login
+login_wrong=Invalid password
+logout_text=Logout
+passwd=Passwd
+password=Password
+save=Save
+tryagain_text=Try again
+user=User
+welcome_message.afternoon=Good afternoon
+welcome_message.evening=Good evening
+welcome_message.morning=Good morning
+without_hyphen=Social-security number must be written without a hyphen
+write_ssn=Type social-security number in user input

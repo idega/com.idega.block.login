@@ -1,0 +1,7 @@
+#Wed Apr 24 19:05:08 GMT+00:00 2002
+user=Brugernavn
+password=Password
+iw.component.com.idega.block.login.presentation.Login.name=Log ind
+help=
+login_failed=Login ikke gyltigt
+help_headline=Web Access
