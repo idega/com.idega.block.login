@@ -52,6 +52,7 @@ private Form myForm;
 private Image loginImage;
 private Image logoutImage;
 private Image tryAgainImage;
+private boolean helpButton = false;
 
 public static String controlParameter;
 
@@ -124,6 +125,10 @@ protected IWBundle iwb;
 			loginTable.setCellpadding(0);
 			loginTable.setCellspacing(0);
 			loginTable.setBackgroundImage(new Image(backgroundImageUrl));
+
+    HelpButton helpImage = new HelpButton(iwrb.getLocalizedString("help"));
+
+    System.out.println("helpImage: "+this.helpButton);
 
     Text loginTexti = new Text(userText);
       if ( userTextSize != -1 ) {
@@ -222,16 +227,32 @@ protected IWBundle iwb;
 
 
 		Table submitTable = new Table(1,1);
+      if ( helpButton ) {
+        submitTable = new Table(2,1);
+      }
 			submitTable.setBorder(0);
 			if (!(color.equals(""))) {
   			submitTable.setColor(color);
 			}
-			submitTable.setVerticalAlignment(1,1,"middle");
-			submitTable.setAlignment(1,1,submitButtonAlignment);
+			submitTable.setRowVerticalAlignment(1,"middle");
+			if ( !helpButton ) {
+        submitTable.setAlignment(1,1,submitButtonAlignment);
+			}
+      else {
+        submitTable.setAlignment(2,1,"right");
+      }
 			submitTable.setWidth("100%");
 			submitTable.setHeight("100%");
 
-      submitTable.add(new SubmitButton(loginImage,"tengja"),1,1);
+      SubmitButton button = new SubmitButton(loginImage,"tengja");
+
+      if ( !helpButton ) {
+        submitTable.add(button,1,1);
+      }
+      else {
+        submitTable.add(button,2,1);
+        submitTable.add(helpImage,1,1);
+      }
       submitTable.add(new Parameter(LoginBusiness.LoginStateParameter,"login"));
 
     loginTable.add(submitTable,1,2);
@@ -438,6 +459,10 @@ protected IWBundle iwb;
       myForm.setEventListener(LoginBusiness.class.getName());
 			myForm.setMethod("post");
 			myForm.maintainAllParameters();
+	}
+
+	public void addHelpButton() {
+		helpButton = true;
 	}
 
 	public void setVertical() {
