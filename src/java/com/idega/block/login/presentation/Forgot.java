@@ -59,7 +59,7 @@ public class Forgot extends Block{
   }
 
   protected void control(IWContext iwc){
-    //debugParameters(iwc);
+    debugParameters(iwc);
     portalname = iwc.getServerName();
     form = TextFormat.getInstance();
     int code = INIT;
