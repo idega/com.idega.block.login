@@ -16,6 +16,7 @@ import java.io.*;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.business.IWEventListener;
 import com.idega.idegaweb.IWException;
+import com.idega.util.Encrypter;
 
 /**
  * Title:        LoginBusiness
@@ -28,7 +29,6 @@ import com.idega.idegaweb.IWException;
 
 
 public class LoginBusiness implements IWEventListener{
-
 
   public static String UserAttributeParameter="user_login";
   public static String PermissionGroupParameter="user_permission_groups";
@@ -126,12 +126,14 @@ public class LoginBusiness implements IWEventListener{
           LoginTable[] login_table = (LoginTable[]) (new LoginTable()).findAllByColumn(LoginTable.getUserLoginColumnName(),login);
 
           for (int i = 0 ; i < login_table.length ; i++ ) {
-                  if (login_table[i].getUserPassword().equals(password)) {
-                          User user = new User(login_table[i].getUserId());
-                          modinfo.getSession().setAttribute(UserAttributeParameter, user);
-                          modinfo.setSessionAttribute(PermissionGroupParameter, AccessControl.getPermissionGroups(user));
-                          returner = true;
-                  }
+            if ( Encrypter.verifyOneWayEncrypted(login_table[i].getUserPassword(), password)) {
+              User user = new User(login_table[i].getUserId());
+              modinfo.getSession().setAttribute(UserAttributeParameter, user);
+              modinfo.setSessionAttribute(PermissionGroupParameter, AccessControl.getPermissionGroups(user));
+              returner = true;
+            }else{
+              System.err.println(login_table[i].getUserPassword()+" != "+ Encrypter.encryptOneWay(password));
+            }
           }
           if (isAdmin(modinfo)) {
                   modinfo.setSessionAttribute(UserAccessAttributeParameter,"admin");
