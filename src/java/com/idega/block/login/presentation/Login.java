@@ -76,6 +76,7 @@ public class Login extends Block
 	protected IWResourceBundle iwrb;
 	protected IWBundle iwb;
 	private String loginHandlerClass = LoginBusiness.class.getName();
+	protected boolean sendToHTTPS=false;
 	public Login()
 	{
 		super();
@@ -84,6 +85,9 @@ public class Login extends Block
 	public void main(IWContext iwc) throws Exception
 	{
 		myForm.setEventListener(loginHandlerClass);
+		if(this.sendToHTTPS){
+			myForm.setToSendToHTTPS();	
+		}
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
 		if (loginImage == null)			//loginImage = iwrb.getImage("login.gif");
@@ -862,4 +866,22 @@ public class Login extends Block
 		}
 		return obj;
 	}
+
+	/**
+	 * Set the form to automatically send over to a corresponding HTTPS address
+	 **/	
+	public void setToSendToHTTPS(){
+		setToSendToHTTPS(true);	
+	}
+
+	/**
+	 * Set if the form should automatically send over to a corresponding HTTPS address
+	 **/
+	public void setToSendToHTTPS(boolean doSendToHTTPS){
+		if(myForm!=null){
+			myForm.setToSendToHTTPS(doSendToHTTPS);
+		}
+		sendToHTTPS=doSendToHTTPS;
+	}	
+	
 }
