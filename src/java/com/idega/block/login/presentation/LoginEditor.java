@@ -60,6 +60,9 @@ public class LoginEditor extends PresentationObjectContainer {
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.login";
 	protected IWResourceBundle iwrb;
 	protected IWBundle iwb;
+	
+	private static final String BUNDEL_PRPERTY_NAME_USERNAME_CONSTANT = "cannot_change_username";
+	
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
@@ -170,17 +173,36 @@ public class LoginEditor extends PresentationObjectContainer {
 			else
 				this.errorMsg =
 					iwrb.getLocalizedString("empty_fields", "Empty fields");
-			;
 		}
 		return register;
 	}
 	private PresentationObject doView(User user, String sUserLogin) {
+		boolean allowChangingUsername = true;
+		try {
+			String prop = iwb.getProperty(BUNDEL_PRPERTY_NAME_USERNAME_CONSTANT);
+			allowChangingUsername = !prop.trim().equalsIgnoreCase("true");
+		} catch (Exception e) {
+			// no property exists, use default.
+			e.printStackTrace();
+		}
+		
+		System.out.println("Creating view for changin password, allowChangingUsername=" + allowChangingUsername);
+		
+		Form myForm = new Form();
+		
 		Table T = new Table();
 		Text msgText = formatText(customMsg);
 		msgText.setFontColor(IWColor.getHexColorString(Color.blue));
 		T.add(msgText,1,1);
 		T.add(formatText(user.getName()), 1, 2);
-		TextInput tUsrLgn = new TextInput("ml.usrlgn", sUserLogin);
+		PresentationObject tUsrLgn;
+		if(allowChangingUsername) {
+			tUsrLgn = new TextInput("ml.usrlgn", sUserLogin);
+		} else {
+			tUsrLgn = new Text(sUserLogin);
+			HiddenInput hInput = new HiddenInput("ml.usrlgn", sUserLogin);
+			myForm.add(hInput);
+		}
 		this.setStyle(tUsrLgn);
 		PasswordInput psw1 = new PasswordInput("ml.psw1");
 		this.setStyle(psw1);
@@ -204,7 +226,6 @@ public class LoginEditor extends PresentationObjectContainer {
 			T.add(new HiddenInput("msg",customMsg));
 		if(changeNextTime)
 			T.add(new HiddenInput("chg","true"));
-		Form myForm = new Form();
 		myForm.add(T);
 		return myForm;
 	}
@@ -278,11 +299,12 @@ public class LoginEditor extends PresentationObjectContainer {
 	public Text formatText(int i) {
 		return formatText(String.valueOf(i));
 	}
-	protected void setStyle(InterfaceObject O) {
+	protected void setStyle(PresentationObject O) {
 		O.setMarkupAttribute("style", this.styleAttribute);
 	}
 	public void main(IWContext iwc) {
 		iwrb = getResourceBundle(iwc);
+		iwb = getBundle(iwc);
 		if (LoginBusinessBean.isLoggedOn(iwc))
 			control(iwc);
 		else
