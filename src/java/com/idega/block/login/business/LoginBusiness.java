@@ -268,8 +268,8 @@ public class LoginBusiness implements IWEventListener{
 
 
   private void logOut(IWContext iwc) throws Exception{
-    this.getLoggedOnInfoList(iwc).remove(this.getLoggedOnInfo(iwc));
     if (iwc.getSessionAttribute(LoginAttributeParameter) != null) {
+      this.getLoggedOnInfoList(iwc).remove(this.getLoggedOnInfo(iwc));
       iwc.removeSessionAttribute(LoginAttributeParameter);
     }
   }
