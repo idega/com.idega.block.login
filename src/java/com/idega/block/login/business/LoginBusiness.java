@@ -245,10 +245,11 @@ public class LoginBusiness implements IWEventListener{
     LoginTable[] login_table = (LoginTable[]) (LoginTable.getStaticInstance()).findAllByColumn(LoginTable.getUserLoginColumnName(),login);
 
     if(login_table != null && login_table.length > 0){
-      //if ( Encrypter.verifyOneWayEncrypted(login_table[0].getUserPassword(), password)) {
-      //if ( login_table[0].getUserPassword().equals(password) ) {
-        returner = logIn(iwc,login_table[0].getUserId(),login);
-      //}
+      if ( Encrypter.verifyOneWayEncrypted(login_table[0].getUserPassword(), password)) {
+        if ( login_table[0].getUserPassword().equals(password) ) {
+          returner = logIn(iwc,login_table[0].getUserId(),login);
+        }
+      }
     }
 
     return returner;
@@ -259,10 +260,10 @@ public class LoginBusiness implements IWEventListener{
     LoginTable[] login_table = (LoginTable[]) (LoginTable.getStaticInstance()).findAllByColumn(LoginTable.getUserIDColumnName(),Integer.toString(user.getID()),LoginTable.getUserLoginColumnName(),login);
 
     if(login_table != null && login_table.length > 0){
-      //if ( Encrypter.verifyOneWayEncrypted(login_table[0].getUserPassword(), password)) {
-			 if ( login_table[0].getUserPassword().equals(password) ) {
-
-        returner = true;
+      if ( Encrypter.verifyOneWayEncrypted(login_table[0].getUserPassword(), password)) {
+        if ( login_table[0].getUserPassword().equals(password) ) {
+          returner = true;
+        }
       }
     }
 
