@@ -41,6 +41,7 @@ import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.user.app.UserApplication;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.util.Converter;
 import com.idega.util.SendMail;
@@ -127,6 +128,7 @@ public class Login extends Block {
 	//private IBPage _pageForInvalidLogin = null;
 	
 	private boolean lockedAsWapLayout = false;
+	private boolean _openUserApplicationOnLogin = false;
 
 	public Login() {
 		super();
@@ -848,12 +850,23 @@ public class Login extends Block {
 		}
 		if (LoginBusinessBean.isLogOnAction(iwc)) {
 			LoginInfo loginInfo = LoginDBHandler.getLoginInfo((LoginDBHandler.findUserLogin(user.getID())).getID());
+			Script s = new Script();
+			boolean addScript = false;
 			if (loginInfo.getAllowedToChange() && loginInfo.getChangeNextTime()) {
-				Script s = new Script();
 				LoginEditorWindow window = new LoginEditorWindow();
 				window.setMessage(iwrb.getLocalizedString("change_password", "You need to change your password"));
 				window.setToChangeNextTime();
 				s.addMethod("wop", window.getCallingScriptString(iwc));
+				addScript = true;
+			}
+			
+			UserApplication userApplication = new UserApplication();
+			if (iwc.hasViewPermission(userApplication) && _openUserApplicationOnLogin) {
+				s.addMethod("openUserApplication", userApplication.getCallingScriptString(iwc));
+				addScript = true;
+			}
+			
+			if (addScript) {
 				getMainForm().add(s);
 			}
 		}
@@ -1372,5 +1385,11 @@ public class Login extends Block {
 	 */
 	protected IWResourceBundle getResourceBundle() {
 		return this.iwrb;
+	}
+	/**
+	 * @param userApplicationOnLogin The _openUserApplicationOnLogin to set.
+	 */
+	public void setToOpenUserApplicationOnLogin(boolean userApplicationOnLogin) {
+		_openUserApplicationOnLogin = userApplicationOnLogin;
 	}
 }
