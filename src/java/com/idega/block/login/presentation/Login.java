@@ -61,9 +61,9 @@ import com.idega.util.StringHandler;
  */
 public class Login extends Block {
 	
-	protected static final String ACTION_TRY_AGAIN = "tryagain";
-	protected static final String ACTION_LOG_IN = "login";
-	protected static final String ACTION_LOG_OFF = "logoff";
+	protected static final String ACTION_TRY_AGAIN = LoginBusinessBean.LOGIN_EVENT_TRYAGAIN;
+	protected static final String ACTION_LOG_IN = LoginBusinessBean.LOGIN_EVENT_LOGIN;
+	protected static final String ACTION_LOG_OFF = LoginBusinessBean.LOGIN_EVENT_LOGOFF;
 	
 	private static final String IB_PAGE_PARAMETER = ICBuilderConstants.IB_PAGE_PARAMETER;
 
@@ -128,8 +128,8 @@ public class Login extends Block {
 	private int _loginPageID = -1;
 	private final static String FROM_PAGE_PARAMETER = "log_from_page";
 
-	protected static final String LOGIN_PARAMETER_NAME = "login";
-	protected static final String PASSWORD_PARAMETER_NAME = "password";
+	protected static final String LOGIN_PARAMETER_NAME = LoginBusinessBean.PARAMETER_USERNAME;
+	protected static final String PASSWORD_PARAMETER_NAME = LoginBusinessBean.PARAMETER_PASSWORD;
 	private static final String HINT_ANSWER_PARAMETER_NAME = "hint_answer";
 
 	//private IBPage _pageForInvalidLogin = null;
