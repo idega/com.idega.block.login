@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.idega.block.login.business.LoginBusiness;
+import com.idega.block.login.business.LoginCookieListener;
 import com.idega.builder.data.IBPage;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
@@ -23,6 +24,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.Converter;
 import com.idega.user.data.Group;
@@ -78,6 +80,8 @@ public class Login extends Block
 	protected IWBundle iwb;
 	private String loginHandlerClass = LoginBusiness.class.getName();
 	protected boolean sendToHTTPS=false;
+  private boolean allowCookieLogin = false;
+
 	public Login()
 	{
 		super();
@@ -86,8 +90,11 @@ public class Login extends Block
 	public void main(IWContext iwc) throws Exception
 	{
 		myForm.setEventListener(loginHandlerClass);
+    if(allowCookieLogin){
+      iwc.getApplication().addApplicationEventListener(LoginCookieListener.class);
+    }
 		if(this.sendToHTTPS){
-			myForm.setToSendToHTTPS();	
+			myForm.setToSendToHTTPS();
 		}
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
@@ -302,7 +309,7 @@ public class Login extends Block
 		{
 			submitTable.add(button, 2, 1);
 		}
-		if (register || forgot)
+		if (register || forgot || allowCookieLogin)
 		{
 			Link registerLink = getRegisterLink();
 			Link forgotLink = getForgotLink();
@@ -317,27 +324,51 @@ public class Login extends Block
 						submitTable.add(registerLink, 1, row);
 					if (forgot)
 						submitTable.add(forgotLink, 2, row);
+          if(allowCookieLogin){
+            CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
+            Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
+		        cookieText.setFontStyle(this.textStyles);
+            row++;
+            submitTable.mergeCells(1, row, 2, row);
+            submitTable.add(cookieCheck,1,row);
+            submitTable.add(cookieText,1,row);
+          }
 					break;
 				case LAYOUT_STACKED :
 					row = 2;
-					if (register)
-					{
+					if (register){
 						submitTable.mergeCells(1, row, 2, row);
 						submitTable.add(registerLink, 1, row);
 						row++;
 					}
-					if (forgot)
-					{
+					if (forgot){
 						submitTable.mergeCells(1, row, 2, row);
 						submitTable.add(forgotLink, 1, row);
+            row++;
 					}
+          if(allowCookieLogin){
+            CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
+            Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
+		        cookieText.setFontStyle(this.textStyles);
+            submitTable.mergeCells(1, row, 2, row);
+            submitTable.add(cookieCheck,1,row);
+            submitTable.add(cookieText,1,row);
+            row++;
+          }
 					break;
 				case SINGLE_LINE :
 					col = 3;
 					if (register)
 						submitTable.add(registerLink, col++, 1);
 					if (forgot)
-						submitTable.add(forgotLink, col, 1);
+						submitTable.add(forgotLink, col++, 1);
+          if(allowCookieLogin){
+            CheckBox cookieCheck = new CheckBox(LoginCookieListener.prmUserAllowsLogin);
+            Text cookieText = new Text(iwrb.getLocalizedString("cookie.allow", "Keep me signed in"));
+		        cookieText.setFontStyle(this.textStyles);
+            submitTable.add(cookieCheck,col,1);
+            submitTable.add(cookieText,col++,1);
+          }
 					break;
 			}
 		}
@@ -345,6 +376,8 @@ public class Login extends Block
 		loginTable.add(submitTable, xpos, ypos);
 		myForm.add(loginTable);
 	}
+
+
 	private Link getRegisterLink()
 	{
 		Link L = new Link(iwrb.getLocalizedString("register.register", "Nýskráning"));
@@ -364,7 +397,7 @@ public class Login extends Block
 		if (this.loggedOffPageId != -1)
 			myForm.setPageToSubmitTo(loggedOffPageId);
 		User user = (User) getUser(iwc);
-		
+
 		if ( LoginBusiness.isLogOnAction(iwc) ) {
 			com.idega.user.data.User newUser = Converter.convertToNewUser(user);
 			com.idega.user.data.Group newGroup = newUser.getPrimaryGroup();
@@ -373,7 +406,7 @@ public class Login extends Block
 			if (newGroup != null && newGroup.getHomePageID() != -1 )
 				iwc.forwardToIBPage(this.getParentPage(), newGroup.getHomePage());
 		}
-		
+
 		if (loggedOnLink != null)
 		{
 			if (userTextSize > -1)
@@ -821,6 +854,11 @@ public class Login extends Block
 	{
 		this.forgot = forgot;
 	}
+
+  public void setAllowCookieLogin(boolean cookies){
+    this.allowCookieLogin = cookies;
+  }
+
 	/** todo: implement */
 	public void setRedirectPage(int page)
 	{
@@ -880,9 +918,9 @@ public class Login extends Block
 
 	/**
 	 * Set the form to automatically send over to a corresponding HTTPS address
-	 **/	
+	 **/
 	public void setToSendToHTTPS(){
-		setToSendToHTTPS(true);	
+		setToSendToHTTPS(true);
 	}
 
 	/**
@@ -893,6 +931,6 @@ public class Login extends Block
 			myForm.setToSendToHTTPS(doSendToHTTPS);
 		}
 		sendToHTTPS=doSendToHTTPS;
-	}	
-	
+	}
+
 }
