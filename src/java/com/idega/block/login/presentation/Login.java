@@ -341,7 +341,7 @@ public class Login extends Block
 				submitTable.setWidth(column++,1,String.valueOf(_spaceBetween));
 			}
 			submitTable.add(link,column,1);
-			loginTable.setWidth(xpos++,ypos,String.valueOf(_spaceBetween + 2));
+			loginTable.setWidth(xpos++,ypos,String.valueOf(_spaceBetween * 2));
 			loginTable.add(submitTable, xpos, ypos);
 		}
 		else {
