@@ -181,11 +181,17 @@ public class Forgot extends Block{
   }
 
   public PresentationObject getAnswer(){
+	Table table = new Table(1,1);
+	table.setCellpaddingAndCellspacing(0);
+	table.setHeight(Table.HUNDRED_PERCENT);
+	table.setWidth(Table.HUNDRED_PERCENT);
+	table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_CENTER);
+	table.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_MIDDLE);
+
     Table T = new Table(1,1);
-    T.setVerticalAlignment("center");
-    T.setAlignment("center");
-    T.add(iwrb.getLocalizedString("forgotten.done","Your login and password has been sent to you."));
-    return T;
+   T.add(iwrb.getLocalizedString("forgotten.done","Your login and password has been sent to you."));
+    table.add(T);
+    return table;
   }
 
   public User lookupUserByEmail(String emailAddress) throws LoginForgotException{
