@@ -18,6 +18,7 @@ import com.idega.core.user.data.UserGroupRepresentative;
 import com.idega.idegaweb.IWException;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
+import com.idega.user.business.UserProperties;
 import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
 /**
@@ -42,6 +43,7 @@ public class LoginBusiness implements IWEventListener
 	private static String PrimaryGroupParameter = "ic_user_primarygroup";
 	private static final String _APPADDRESS_LOGGED_ON_LIST = "ic_loggedon_list";
 	private static final String _LOGGINADDRESS_LOGGED_ON_INFO = "ic_loggedon_info";
+	public static final String USER_PROPERTY_PARAMETER = "user_properties";
 	public LoginBusiness()
 	{}
 	public static boolean isLoggedOn(IWUserContext iwc)
@@ -369,6 +371,10 @@ public class LoginBusiness implements IWEventListener
 		lInfo.setLoginRecordId(loginRecordId);
 		getLoggedOnInfoList(iwc).add(lInfo);
 		setLoggedOnInfo(lInfo, iwc);
+		
+		UserProperties properties = new UserProperties(iwc.getApplication(),user.getID());
+	  iwc.setSessionAttribute(USER_PROPERTY_PARAMETER,properties);
+	
 		return true;
 	}
 	private boolean verifyPasswordAndLogin(IWContext iwc, String login, String password) throws Exception
@@ -418,6 +424,11 @@ public class LoginBusiness implements IWEventListener
 				LoginDBHandler.recordLogout(_logOnInfo.getLoginRecordId());
 			}
 			iwc.removeSessionAttribute(LoginAttributeParameter);
+			
+			UserProperties properties = (UserProperties) iwc.getSessionAttribute(USER_PROPERTY_PARAMETER);
+			if ( properties != null )
+				properties.store();
+		  iwc.removeSessionAttribute(USER_PROPERTY_PARAMETER);
 		}
 	}
 	/**
