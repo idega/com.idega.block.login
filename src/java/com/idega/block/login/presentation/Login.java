@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.servlet.filter.IWAuthenticator;
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
@@ -964,7 +965,7 @@ public class Login extends Block {
 			}
 			
 			if (classToOpenOnLogin != null) {
-				Class classToOpen = Class.forName(classToOpenOnLogin);
+				Class classToOpen = RefactorClassRegistry.forName(classToOpenOnLogin);
         PresentationObject pObj = (PresentationObject) classToOpen.newInstance();
 				if (iwc.hasViewPermission(pObj) && pObj instanceof Window) {
 					s.addMethod("openUserApplication", Window.getCallingScriptString(classToOpen, iwc));

@@ -18,6 +18,7 @@ import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+import com.idega.repository.data.RefactorClassRegistry;
 public class RegisterWindow extends IWAdminWindow {
 	
 	public static final String BUNDLE_KEY_REGISTER_CLASS = "register_class";
@@ -40,7 +41,7 @@ public class RegisterWindow extends IWAdminWindow {
 		if(bClass!=null && bClass.trim().length()>0) {
 			Class classDef;
 			try {
-				classDef = Class.forName(bClass);
+				classDef = RefactorClassRegistry.forName(bClass);
 				register = (PresentationObject) classDef.newInstance();
 			} catch (Exception e) {
 				System.out.println("Couldn't instantiate class for registration, using default: " + bClass);
