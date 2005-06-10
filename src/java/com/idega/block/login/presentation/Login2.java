@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.3 2005/03/22 08:52:06 laddi Exp $
+ * $Id: Login2.java,v 1.4 2005/06/10 12:39:29 gummi Exp $
  * Created on 7.3.2005 in project com.idega.block.login
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -19,20 +19,28 @@ import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.user.data.User;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectTransitional;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
+import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.Parameter;
+import com.idega.presentation.ui.PasswordInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 
 
 /**
  * <p>
  * New Login component based on JSF and CSS. Will gradually replace old Login component
  * </p>
- *  Last modified: $Date: 2005/03/22 08:52:06 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/06/10 12:39:29 $ by $Author: gummi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 
@@ -40,6 +48,8 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	public static String STYLE_CLASS_SINGLELINE="login_singleline";
 	private static final String IW_BUNDLE_IDENTIFIER="com.idega.block.login";
 	protected static final String FACET_LOGGED_IN="login_loggedin";
+	protected static final String FACET_LOGGED_OUT = "login_loggedout";
+	private boolean useSubmitLinks = false;
 	
 	/**
 	 *
@@ -64,22 +74,43 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			Text text = new Text();
 			String name = user.getName();
 			text.setText(name);
+			text.setStyleClass("user_name");
 			layer.getChildren().add(text);
 			
 			String logoutText = getLocalizedString("logout_text", "Log out",iwc);
 			
-			
-			//SubmitButton sbutton = new SubmitButton(logoutText,LoginBusinessBean.LoginStateParameter,LoginBusinessBean.LOGIN_EVENT_LOGOFF);
-			GenericButton gbutton = new GenericButton("logoutbutton",logoutText);
 			String loginParameter = LoginBusinessBean.LoginStateParameter;
 			String logoutParamValue = LoginBusinessBean.LOGIN_EVENT_LOGOFF;
 
 			Parameter param = new Parameter(loginParameter,"");
 			
-			gbutton.setOnClick("this.form.elements['"+loginParameter+"'].value='"+logoutParamValue+"';this.form.submit();");
+//			SubmitButton sbutton = new SubmitButton(logoutText,LoginBusinessBean.LoginStateParameter,LoginBusinessBean.LOGIN_EVENT_LOGOFF);
+			PresentationObject formSubmitter = null;
+			if(!getUseSubmitLinks()){
+				GenericButton gbutton = new GenericButton("logoutbutton",logoutText);
+
+				gbutton.setOnClick("this.form.elements['"+loginParameter+"'].value='"+logoutParamValue+"';this.form.submit();");
+				formSubmitter = gbutton;
+			} else {
+				Link l = new Link();
+				l.setName("logoutbutton");
+				l.setText(logoutText);
+				l.setURL("#");
+				
+				String formRef = "this.form";
+				Form parentForm = getParentForm();
+				if(parentForm != null){
+					formRef = "document.forms['"+parentForm.getID()+"']";
+				}
+				l.setOnClick(formRef+".elements['"+loginParameter+"'].value='"+logoutParamValue+"';"+formRef+".submit();return false;");
+				formSubmitter = l;
+			}
+			
+
+			formSubmitter.setStyleClass("logout_button");
 			
 			layer.getChildren().add(param);
-			layer.getChildren().add(gbutton);
+			layer.getChildren().add(formSubmitter);
 			//layer.getChildren().add(sbutton);
 			//layer.add(button);			
 			getFacets().put(FACET_LOGGED_IN,layer);
@@ -98,6 +129,74 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 		}
 		return layer;
 	}
+	
+	
+	protected UIComponent getLoggedOutPart(IWContext iwc){
+
+		UIComponent layer = (UIComponent)getFacet(FACET_LOGGED_OUT);
+		if(layer==null){
+			layer = new Layer();
+			((Layer) layer).setStyleClass(getStyleClass());
+			
+			TextInput login = new TextInput(LoginBusinessBean.PARAMETER_USERNAME);
+
+			PasswordInput passw = new PasswordInput(LoginBusinessBean.PARAMETER_PASSWORD);
+			
+			String userText = getLocalizedString("user", "User",iwc);
+			String passwordText = getLocalizedString("password", "Password",iwc);
+			
+			Label loginTexti = new Label(userText,login);
+			Label passwordTexti = new Label(passwordText,passw);
+			
+			String loginParameter = LoginBusinessBean.LoginStateParameter;
+			String loginParamValue = LoginBusinessBean.LOGIN_EVENT_LOGIN;
+			Parameter param = new Parameter(loginParameter,"");
+			
+			PresentationObject formSubmitter = null;
+//			SubmitButton button = new SubmitButton("login_button", getLocalizedString("login_text", "Login",iwc));
+			if(!getUseSubmitLinks()){
+				GenericButton gbutton = new GenericButton("login_button",getLocalizedString("login_text", "Login",iwc));
+				
+				gbutton.setOnClick("this.form.elements['"+loginParameter+"'].value='"+loginParamValue+"';this.form.submit();");
+				formSubmitter = gbutton;
+			} else {
+				Link l = new Link();
+				l.setName("login_button");
+				l.setText(getLocalizedString("login_text", "Login",iwc));
+				l.setURL("#");
+				
+				String formRef = "this.form";
+				Form parentForm = getParentForm();
+				if(parentForm != null){
+					formRef = "document.forms['"+parentForm.getID()+"']";
+				}
+				l.setOnClick(formRef+".elements['"+loginParameter+"'].value='"+loginParamValue+"';"+formRef+".submit();return false;");
+				formSubmitter = l;
+			}
+			loginTexti.setStyleClass("user_name_text");
+			login.setStyleClass("user_name_input");
+			
+			passwordTexti.setStyleClass("password_text");
+			passw.setStyleClass("password_input");
+
+			formSubmitter.setStyleClass("login_button");
+			
+			layer.getChildren().add(loginTexti);
+			layer.getChildren().add(login);
+			
+			layer.getChildren().add(passwordTexti);
+			layer.getChildren().add(passw);
+			
+			layer.getChildren().add(param);
+			
+			layer.getChildren().add(formSubmitter);
+		
+			getFacets().put(FACET_LOGGED_OUT,layer);
+			
+		}
+		return layer;
+	}
+	
 
 	public String getBundleIdentifier(){
 		return IW_BUNDLE_IDENTIFIER;
@@ -116,7 +215,10 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			renderChild(context,loggedInPart);
 		}
 		else{
-			//TODO: implent logged out state
+//			LoginBusinessBean.internalGetState(iwc);
+			
+			UIComponent loggedOutPart = getLoggedOutPart(iwc);
+			renderChild(context,loggedOutPart);
 		}
 		
 	}
@@ -144,14 +246,28 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	 * @see com.idega.presentation.PresentationObjectContainer#restoreState(javax.faces.context.FacesContext, java.lang.Object)
 	 */
 	public void restoreState(FacesContext context, Object state) {
-		super.restoreState(context, state);
+		Object[] value = (Object[])state;
+		super.restoreState(context, value[0]);
+		useSubmitLinks = ((Boolean)value[1]).booleanValue();
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObjectContainer#saveState(javax.faces.context.FacesContext)
 	 */
 	public Object saveState(FacesContext context) {
-		return super.saveState(context);
+		Object[] state = new Object[2];
+		state[0] = super.saveState(context);
+		state[1] = Boolean.valueOf(useSubmitLinks);
+		return state;
 	}
 
+	public boolean getUseSubmitLinks() {
+		return useSubmitLinks;
+	}
+	public void setUseSubmitLinks(boolean useSubmitLinks) {
+		this.useSubmitLinks = useSubmitLinks;
+		//TODO: rather have one facet for button and one for link and decide when rendering which to render
+		//Now this clears all facets so that all states will be built again.
+		getFacets().clear();
+	}
 }
