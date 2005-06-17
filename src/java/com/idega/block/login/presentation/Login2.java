@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.4 2005/06/10 12:39:29 gummi Exp $
+ * $Id: Login2.java,v 1.5 2005/06/17 15:56:30 dainis Exp $
  * Created on 7.3.2005 in project com.idega.block.login
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -10,18 +10,21 @@
 package com.idega.block.login.presentation;
 
 import java.io.IOException;
+
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
+
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
+import com.idega.core.accesscontrol.business.LoginState;
 import com.idega.core.user.data.User;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectTransitional;
-import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
@@ -29,7 +32,6 @@ import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.PasswordInput;
-import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 
 
@@ -37,10 +39,10 @@ import com.idega.presentation.ui.TextInput;
  * <p>
  * New Login component based on JSF and CSS. Will gradually replace old Login component
  * </p>
- *  Last modified: $Date: 2005/06/10 12:39:29 $ by $Author: gummi $
+ *  Last modified: $Date: 2005/06/17 15:56:30 $ by $Author: dainis $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 
@@ -49,6 +51,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	private static final String IW_BUNDLE_IDENTIFIER="com.idega.block.login";
 	protected static final String FACET_LOGGED_IN="login_loggedin";
 	protected static final String FACET_LOGGED_OUT = "login_loggedout";
+	protected static final String FACET_LOGIN_FAILED = "login_login_failed";
 	private boolean useSubmitLinks = false;
 	
 	/**
@@ -197,6 +200,52 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 		return layer;
 	}
 	
+	protected UIComponent getLoginFailedPart(IWContext iwc, String message){
+	
+		UIComponent layer = (UIComponent)getFacet(FACET_LOGIN_FAILED);
+		if(layer==null){
+			layer = new Layer();
+			((Layer) layer).setStyleClass(getStyleClass());
+			
+			String loginParameter = LoginBusinessBean.LoginStateParameter;
+			String logoutParamValue = LoginBusinessBean.LOGIN_EVENT_TRYAGAIN ; 
+
+			Parameter param = new Parameter(loginParameter,"");
+			
+			Text t = new Text(message);
+			t.setStyleClass("error_message");
+			layer.getChildren().add(t);	
+			
+			PresentationObject formSubmitter = null;
+			if(!getUseSubmitLinks()){
+				GenericButton gbutton = new GenericButton("retrybutton", getLocalizedString("tryagain_text", "Try again",iwc));
+
+				gbutton.setOnClick("this.form.elements['"+loginParameter+"'].value='"+logoutParamValue+"';this.form.submit();");
+				formSubmitter = gbutton;
+			} else {
+				Link l = new Link();
+				l.setName("retrybutton");
+				l.setText(getLocalizedString("tryagain_text", "Try again",iwc));
+				l.setURL("#");
+				
+				String formRef = "this.form";
+				Form parentForm = getParentForm();
+				if(parentForm != null){
+					formRef = "document.forms['"+parentForm.getID()+"']";
+				}
+				l.setOnClick(formRef+".elements['"+loginParameter+"'].value='"+logoutParamValue+"';"+formRef+".submit();return false;");
+				formSubmitter = l;
+			}
+			formSubmitter.setStyleClass("retry_button");			
+			
+			layer.getChildren().add(param);
+			layer.getChildren().add(formSubmitter);
+			
+			getFacets().put(FACET_LOGIN_FAILED, layer);
+		}
+		return layer;
+	}
+	
 
 	public String getBundleIdentifier(){
 		return IW_BUNDLE_IDENTIFIER;
@@ -206,19 +255,46 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObjectTransitional#encodeChildren(javax.faces.context.FacesContext)
 	 */
-	public void encodeChildren(FacesContext context) throws IOException {
-		// TODO Auto-generated method stub
+	public void encodeChildren(FacesContext context) throws IOException {		
 		super.encodeChildren(context);
 		IWContext iwc = IWContext.getIWContext(context);
 		if(iwc.isLoggedOn()){
 			UIComponent loggedInPart = getLoggedInPart(iwc);
 			renderChild(context,loggedInPart);
 		}
-		else{
-//			LoginBusinessBean.internalGetState(iwc);
+		else {
+			//LoginBusinessBean.internalGetState(iwc);
 			
-			UIComponent loggedOutPart = getLoggedOutPart(iwc);
-			renderChild(context,loggedOutPart);
+			//TODO login state in core via 
+			//com.idega.core.accesscontrol.business.LoginBusinessBean.internalGetState(iwc)			
+			//and decide what to do	
+			
+			LoginState state = LoginBusinessBean.internalGetState(iwc);
+			if(state.equals(LoginState.LoggedOut)){
+				UIComponent loggedOutPart = getLoggedOutPart(iwc);
+				renderChild(context,loggedOutPart);
+			}
+			else { 
+				IWResourceBundle iwrb = getResourceBundle(iwc);
+				
+				UIComponent loginFailedPart = null;
+								
+				if(state.equals(LoginState.Failed)){
+					loginFailedPart = getLoginFailedPart(iwc, iwrb.getLocalizedString("login_failed", "Login failed"));
+				}
+				else if(state.equals(LoginState.NoUser)){
+					loginFailedPart = getLoginFailedPart(iwc, iwrb.getLocalizedString("login_no_user", "Invalid user"));
+				}
+				else if(state.equals(LoginState.WrongPassword)){
+					loginFailedPart = getLoginFailedPart(iwc, iwrb.getLocalizedString("login_wrong", "Invalid password"));
+				}
+				else if(state.equals(LoginState.Expired)){
+					loginFailedPart = getLoginFailedPart(iwc, iwrb.getLocalizedString("login_expired", "Login expired"));
+				}
+				
+				renderChild(context,loginFailedPart);
+			}	
+
 		}
 		
 	}
