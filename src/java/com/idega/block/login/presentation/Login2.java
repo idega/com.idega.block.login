@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.5 2005/06/17 15:56:30 dainis Exp $
+ * $Id: Login2.java,v 1.6 2005/06/17 15:57:44 dainis Exp $
  * Created on 7.3.2005 in project com.idega.block.login
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -39,10 +39,10 @@ import com.idega.presentation.ui.TextInput;
  * <p>
  * New Login component based on JSF and CSS. Will gradually replace old Login component
  * </p>
- *  Last modified: $Date: 2005/06/17 15:56:30 $ by $Author: dainis $
+ *  Last modified: $Date: 2005/06/17 15:57:44 $ by $Author: dainis $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 
@@ -263,12 +263,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			renderChild(context,loggedInPart);
 		}
 		else {
-			//LoginBusinessBean.internalGetState(iwc);
-			
-			//TODO login state in core via 
-			//com.idega.core.accesscontrol.business.LoginBusinessBean.internalGetState(iwc)			
-			//and decide what to do	
-			
+		
 			LoginState state = LoginBusinessBean.internalGetState(iwc);
 			if(state.equals(LoginState.LoggedOut)){
 				UIComponent loggedOutPart = getLoggedOutPart(iwc);
