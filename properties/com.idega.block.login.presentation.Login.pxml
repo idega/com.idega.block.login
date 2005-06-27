@@ -1143,7 +1143,7 @@
             <type>map</type>
           </key>
           <key>
-            <name>:method:1:implied:void:setLogOnPage:int:</name>
+            <name>:method:1:implied:void:setLoggedOffPage:int:</name>
             <value>
               <map>
                 <key>
@@ -1185,7 +1185,7 @@
                 <key>
                   <name>iw_method_identifier</name>
                   <type>java.lang.String</type>
-                  <value>:method:1:implied:void:setLogOnPage:int:</value>
+                  <value>:method:1:implied:void:setLoggedOffPage:int:</value>
                 </key>
               </map>
             </value>
@@ -1452,4 +1452,6 @@
     </key>
   </map>
 </pxml>
+
+
 
