@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.6 2005/06/17 15:57:44 dainis Exp $
+ * $Id: Login2.java,v 1.7 2005/07/07 14:05:08 dainis Exp $
  * Created on 7.3.2005 in project com.idega.block.login
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -22,6 +22,7 @@ import com.idega.core.accesscontrol.business.LoginState;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectTransitional;
@@ -32,6 +33,7 @@ import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.PasswordInput;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 
 
@@ -39,10 +41,10 @@ import com.idega.presentation.ui.TextInput;
  * <p>
  * New Login component based on JSF and CSS. Will gradually replace old Login component
  * </p>
- *  Last modified: $Date: 2005/06/17 15:57:44 $ by $Author: dainis $
+ *  Last modified: $Date: 2005/07/07 14:05:08 $ by $Author: dainis $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 
@@ -53,7 +55,12 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	protected static final String FACET_LOGGED_OUT = "login_loggedout";
 	protected static final String FACET_LOGIN_FAILED = "login_login_failed";
 	private boolean useSubmitLinks = false;
+		
+	private String buttonLoginImagePath = null;
 	
+
+
+
 	/**
 	 *
 	 */
@@ -134,74 +141,106 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	}
 	
 	
+	/**
+	 * this creates something like that:
+	 * 
+	 * <div class="block layer style class">
+	 * 
+	 * <div class="login_input"> <label>notandanafn:</label> <input type="text"
+	 * name="notandanafn" value="" /> </div>
+	 * 
+	 * <div class="login_input"> <label>lykilord:</label> <input type="text"
+	 * name="lykilord" value="" /> </div>
+	 * 
+	 * <input type="image" src="" name="login" class="button" />
+	 *  
+	 * </div>
+	 */	
 	protected UIComponent getLoggedOutPart(IWContext iwc){
-
 		UIComponent layer = (UIComponent)getFacet(FACET_LOGGED_OUT);
-		if(layer==null){
-			layer = new Layer();
-			((Layer) layer).setStyleClass(getStyleClass());
-			
-			TextInput login = new TextInput(LoginBusinessBean.PARAMETER_USERNAME);
-
-			PasswordInput passw = new PasswordInput(LoginBusinessBean.PARAMETER_PASSWORD);
-			
-			String userText = getLocalizedString("user", "User",iwc);
-			String passwordText = getLocalizedString("password", "Password",iwc);
-			
-			Label loginTexti = new Label(userText,login);
-			Label passwordTexti = new Label(passwordText,passw);
-			
-			String loginParameter = LoginBusinessBean.LoginStateParameter;
-			String loginParamValue = LoginBusinessBean.LOGIN_EVENT_LOGIN;
-			Parameter param = new Parameter(loginParameter,"");
-			
-			PresentationObject formSubmitter = null;
-//			SubmitButton button = new SubmitButton("login_button", getLocalizedString("login_text", "Login",iwc));
-			if(!getUseSubmitLinks()){
-				GenericButton gbutton = new GenericButton("login_button",getLocalizedString("login_text", "Login",iwc));
-				
-				gbutton.setOnClick("this.form.elements['"+loginParameter+"'].value='"+loginParamValue+"';this.form.submit();");
-				formSubmitter = gbutton;
-			} else {
-				Link l = new Link();
-				l.setName("login_button");
-				l.setText(getLocalizedString("login_text", "Login",iwc));
-				l.setURL("#");
-				
-				String formRef = "this.form";
-				Form parentForm = getParentForm();
-				if(parentForm != null){
-					formRef = "document.forms['"+parentForm.getID()+"']";
-				}
-				l.setOnClick(formRef+".elements['"+loginParameter+"'].value='"+loginParamValue+"';"+formRef+".submit();return false;");
-				formSubmitter = l;
-			}
-			loginTexti.setStyleClass("user_name_text");
-			login.setStyleClass("user_name_input");
-			
-			passwordTexti.setStyleClass("password_text");
-			passw.setStyleClass("password_input");
-
-			formSubmitter.setStyleClass("login_button");
-			
-			layer.getChildren().add(loginTexti);
-			layer.getChildren().add(login);
-			
-			layer.getChildren().add(passwordTexti);
-			layer.getChildren().add(passw);
-			
-			layer.getChildren().add(param);
-			
-			layer.getChildren().add(formSubmitter);
 		
-			getFacets().put(FACET_LOGGED_OUT,layer);
-			
-		}
+		if (layer != null) {return layer;}
+		
+		//surrounding layer
+		layer = new Layer();
+		((Layer) layer).setStyleClass(getStyleClass());		
+		
+		//username
+		Layer usernameLayer = new Layer();	
+		usernameLayer.setStyleClass("login_input");
+		TextInput username = new TextInput(LoginBusinessBean.PARAMETER_USERNAME);
+		Label usernameLabel = new Label(getLocalizedString("user", "User", iwc) + ":", username);
+		
+		usernameLayer.getChildren().add(usernameLabel);		
+		usernameLayer.getChildren().add(username);		
+		layer.getChildren().add(usernameLayer);		
+		
+		//password
+		Layer passwordLayer = new Layer();	
+		passwordLayer.setStyleClass("login_input");
+		PasswordInput password = new PasswordInput(LoginBusinessBean.PARAMETER_PASSWORD);
+		Label passwordLabel = new Label(getLocalizedString("password", "Password", iwc) + ":", password);
+		
+		passwordLayer.getChildren().add(passwordLabel);		
+		passwordLayer.getChildren().add(password);		
+		layer.getChildren().add(passwordLayer);		
+		
+		//login parameter
+		String loginParameter = LoginBusinessBean.LoginStateParameter;
+		String loginParamValue = LoginBusinessBean.LOGIN_EVENT_LOGIN;
+		Parameter param = new Parameter(loginParameter,"");		
+		layer.getChildren().add(param);
+	
+		//submit button... problems here: 
+		//  1. images aren't localized; 
+		//	2. one cannot change style of submit button- image, button or link	
+		// 	3. to set image using css would be mutch, mutch better... hmm... gotta think about this
+		//Image submitButtonImage = new Image("/skjalfandi/content/files/public/style/button_login.jpg");
+		Image submitButtonImage = new Image(getButtonLoginImagePath());
+		
+		submitButtonImage.setAlt(getLocalizedString("login_text", "Login",iwc));
+		SubmitButton sb = new SubmitButton(submitButtonImage);
+		sb.setStyleClass("button");		
+		sb.setOnClick("this.form.elements['"+loginParameter+"'].value='"+loginParamValue+"';this.form.submit();");
+		
+		layer.getChildren().add(sb);
+		
+		//final strich
+		getFacets().put(FACET_LOGGED_OUT, layer);
+		
 		return layer;
+		
 	}
 	
 	protected UIComponent getLoginFailedPart(IWContext iwc, String message){
 	
+		/* this is new implementation, not finished yet, but it is the right way to do this
+		UIComponent layer = (UIComponent)getFacet(FACET_LOGIN_FAILED);
+		if (layer != null) { return layer; }
+
+		layer = new Layer();
+		((Layer) layer).setStyleClass(getStyleClass());
+		
+		
+		String loginParameter = LoginBusinessBean.LoginStateParameter;
+		String logoutParamValue = LoginBusinessBean.LOGIN_EVENT_TRYAGAIN ; 
+		Parameter param = new Parameter(loginParameter,"");
+		
+		//TODO: try agin image there
+		Image submitButtonImage = new Image("/skjalfandi/content/files/public/style/button_login.jpg");
+		submitButtonImage.setAlt(getLocalizedString("tryagain_text", "Try again", iwc));
+		SubmitButton sb = new SubmitButton(submitButtonImage);
+		sb.setStyleClass("button");		
+		sb.setOnClick("this.form.elements['"+loginParameter+"'].value='"+logoutParamValue+"';this.form.submit();");
+		
+		layer.getChildren().add(sb);		
+		
+		
+		getFacets().put(FACET_LOGIN_FAILED, layer);		
+		return layer;
+		*/
+		
+		
 		UIComponent layer = (UIComponent)getFacet(FACET_LOGIN_FAILED);
 		if(layer==null){
 			layer = new Layer();
@@ -244,6 +283,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			getFacets().put(FACET_LOGIN_FAILED, layer);
 		}
 		return layer;
+		
 	}
 	
 
@@ -341,4 +381,14 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 		//Now this clears all facets so that all states will be built again.
 		getFacets().clear();
 	}
+	
+	
+	public String getButtonLoginImagePath() {
+		return buttonLoginImagePath;
+	}
+
+	public void setButtonLoginImagePath(String buttonLoginImagePath) {
+		this.buttonLoginImagePath = buttonLoginImagePath;
+	}
+	
 }
