@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.7 2005/07/07 14:05:08 dainis Exp $
+ * $Id: Login2.java,v 1.8 2005/07/26 09:18:12 dainis Exp $
  * Created on 7.3.2005 in project com.idega.block.login
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.presentation.ui.TextInput;
  * <p>
  * New Login component based on JSF and CSS. Will gradually replace old Login component
  * </p>
- *  Last modified: $Date: 2005/07/07 14:05:08 $ by $Author: dainis $
+ *  Last modified: $Date: 2005/07/26 09:18:12 $ by $Author: dainis $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 
@@ -57,9 +57,8 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	private boolean useSubmitLinks = false;
 		
 	private String buttonLoginImagePath = null;
+	private String buttonLogoutImagePath = null;
 	
-
-
 
 	/**
 	 *
@@ -69,6 +68,62 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 		setTransient(false);
 	}
 	
+	/*
+	  this will create such output	    
+	 
+ 	 <div class="block layer style class">
+	
+	    <div class="login_input">
+	        Username here
+	    </div>
+	
+	    <input type="image" src="logout_button_src" name="logout" class="button" />
+	
+	</div>
+	
+	 */		
+	
+	
+	/* commented out because it breaks logout in adminstration interface 
+	 * 
+	 * 
+	protected UIComponent getLoggedInPart(IWContext iwc){
+		UIComponent layer = (UIComponent)getFacet(FACET_LOGGED_IN);
+		
+		if (layer != null) {return layer;}
+		
+		// surrounding layer
+		layer = new Layer();
+		((Layer) layer).setStyleClass(getStyleClass());
+		
+		// username
+		Layer usernameLayer = new Layer();		
+		usernameLayer.setStyleClass("login_input");		
+		User user = iwc.getCurrentUser();
+		Text text = new Text(user.getName());
+		usernameLayer.getChildren().add(text);
+		layer.getChildren().add(usernameLayer);
+				
+		// logout parameter
+		String loginParameter = LoginBusinessBean.LoginStateParameter;
+		String logoutParamValue = LoginBusinessBean.LOGIN_EVENT_LOGOFF;
+		Parameter param = new Parameter(loginParameter, "");		
+		layer.getChildren().add(param);		
+		
+		// submit button
+		// Image submitButtonImage = new Image("/skjalfandi/content/files/public/style/button_logout.jpg");
+		Image submitButtonImage = new Image(getButtonLogoutImagePath());
+		
+		submitButtonImage.setAlt( getLocalizedString("logout_text", "Log out", iwc) );
+		SubmitButton sb = new SubmitButton(submitButtonImage);
+		sb.setStyleClass("button");		
+		sb.setOnClick("this.form.elements['"+loginParameter+"'].value='"+logoutParamValue+"';this.form.submit();");
+		
+		layer.getChildren().add(sb);
+		
+		return layer;
+	}
+	*/
 	
 	protected UIComponent getLoggedInPart(IWContext iwc){
 		//UIComponent layer = null;
@@ -79,7 +134,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			
 			//Form form = new Form();
 			//layer.getChildren().add(form);
-			
+
 			User user = iwc.getCurrentUser();
 			Text text = new Text();
 			String name = user.getName();
@@ -87,8 +142,8 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			text.setStyleClass("user_name");
 			layer.getChildren().add(text);
 			
-			String logoutText = getLocalizedString("logout_text", "Log out",iwc);
-			
+			String logoutText = getLocalizedString("logout_text", "Log out", iwc);
+
 			String loginParameter = LoginBusinessBean.LoginStateParameter;
 			String logoutParamValue = LoginBusinessBean.LOGIN_EVENT_LOGOFF;
 
@@ -118,7 +173,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			
 
 			formSubmitter.setStyleClass("logout_button");
-			
+
 			layer.getChildren().add(param);
 			layer.getChildren().add(formSubmitter);
 			//layer.getChildren().add(sbutton);
@@ -139,6 +194,8 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 		}
 		return layer;
 	}
+	
+	
 	
 	
 	/**
@@ -390,5 +447,13 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	public void setButtonLoginImagePath(String buttonLoginImagePath) {
 		this.buttonLoginImagePath = buttonLoginImagePath;
 	}
+	
+	public String getButtonLogoutImagePath() {
+		return buttonLogoutImagePath;
+	}
+
+	public void setButtonLogoutImagePath(String buttonLogoutImagePath) {
+		this.buttonLogoutImagePath = buttonLogoutImagePath;
+	}	
 	
 }
