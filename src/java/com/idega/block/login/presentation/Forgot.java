@@ -289,7 +289,7 @@ public class Forgot extends Block {
 
 		User usr = null;
 		try {
-			LoginTable[] login = (LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumn(com.idega.core.accesscontrol.data.LoginTableBMPBean.getUserLoginColumnName(), loginName);
+			LoginTable[] login = (LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumnEquals(com.idega.core.accesscontrol.data.LoginTableBMPBean.getUserLoginColumnName(), loginName);
 			if (login == null || login.length < 0) {
 				throw new LoginForgotException(NO_LOGIN);
 			}
