@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.8 2005/07/26 09:18:12 dainis Exp $
+ * $Id: Login2.java,v 1.9 2005/08/09 16:25:32 dainis Exp $
  * Created on 7.3.2005 in project com.idega.block.login
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -19,21 +19,20 @@ import javax.faces.event.ActionListener;
 
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginState;
-import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
 import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.PresentationObjectTransitional;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Paragraph;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.PasswordInput;
-import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 
 
@@ -41,306 +40,252 @@ import com.idega.presentation.ui.TextInput;
  * <p>
  * New Login component based on JSF and CSS. Will gradually replace old Login component
  * </p>
- *  Last modified: $Date: 2005/07/26 09:18:12 $ by $Author: dainis $
+ *  Last modified: $Date: 2005/08/09 16:25:32 $ by $Author: dainis $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 
-	public static String STYLE_CLASS_DEFAULT="login_default";
-	public static String STYLE_CLASS_SINGLELINE="login_singleline";
-	private static final String IW_BUNDLE_IDENTIFIER="com.idega.block.login";
+	public static final String IW_BUNDLE_IDENTIFIER="com.idega.block.login";
 	protected static final String FACET_LOGGED_IN="login_loggedin";
 	protected static final String FACET_LOGGED_OUT = "login_loggedout";
-	protected static final String FACET_LOGIN_FAILED = "login_login_failed";
-	private boolean useSubmitLinks = false;
-		
-	private String buttonLoginImagePath = null;
-	private String buttonLogoutImagePath = null;
+	private static final String FACET_LOGIN_FAILED = "login_logginfailed";
 	
-
+	public static String STYLE_CLASS_MAIN_DEFAULT = "login";
+	public static String STYLE_CLASS_MAIN_SINGLELINE = "loginSingleline";
+	
+	private static final String STYLE_CLASS_CURRENT_USER = "currentUser";
+	private static final String STYLE_CLASS_SUBMIT = "submit";
+	private static final String STYLE_CLASS_USERNAME = "username";
+	private static final String STYLE_CLASS_PASSWORD = "password";
+	private static final String STYLE_CLASS_ERROR_MESSAGE = "errorMessage";	
+	
+	private boolean useSubmitLinks = false;
+	private boolean generateContainingForm = false;
+	private boolean useSingleLineLayout = false;
+	
 	/**
 	 *
 	 */
 	public Login2() {
-		setStyleClass(STYLE_CLASS_DEFAULT);
+		setStyleClass(STYLE_CLASS_MAIN_DEFAULT);
 		setTransient(false);
 	}
 	
-	/*
-	  this will create such output	    
-	 
- 	 <div class="block layer style class">
 	
-	    <div class="login_input">
-	        Username here
-	    </div>
-	
-	    <input type="image" src="logout_button_src" name="logout" class="button" />
-	
-	</div>
-	
-	 */		
-	
-	
-	/* commented out because it breaks logout in adminstration interface 
-	 * 
-	 * 
-	protected UIComponent getLoggedInPart(IWContext iwc){
-		UIComponent layer = (UIComponent)getFacet(FACET_LOGGED_IN);
+	protected UIComponent getLoggedInPart(IWContext iwc){	
+
+		Layer layer = (Layer) getFacet(FACET_LOGGED_IN);
 		
-		if (layer != null) {return layer;}
-		
-		// surrounding layer
-		layer = new Layer();
-		((Layer) layer).setStyleClass(getStyleClass());
-		
-		// username
-		Layer usernameLayer = new Layer();		
-		usernameLayer.setStyleClass("login_input");		
-		User user = iwc.getCurrentUser();
-		Text text = new Text(user.getName());
-		usernameLayer.getChildren().add(text);
-		layer.getChildren().add(usernameLayer);
-				
-		// logout parameter
-		String loginParameter = LoginBusinessBean.LoginStateParameter;
-		String logoutParamValue = LoginBusinessBean.LOGIN_EVENT_LOGOFF;
-		Parameter param = new Parameter(loginParameter, "");		
-		layer.getChildren().add(param);		
-		
-		// submit button
-		// Image submitButtonImage = new Image("/skjalfandi/content/files/public/style/button_logout.jpg");
-		Image submitButtonImage = new Image(getButtonLogoutImagePath());
-		
-		submitButtonImage.setAlt( getLocalizedString("logout_text", "Log out", iwc) );
-		SubmitButton sb = new SubmitButton(submitButtonImage);
-		sb.setStyleClass("button");		
-		sb.setOnClick("this.form.elements['"+loginParameter+"'].value='"+logoutParamValue+"';this.form.submit();");
-		
-		layer.getChildren().add(sb);
-		
-		return layer;
-	}
-	*/
-	
-	protected UIComponent getLoggedInPart(IWContext iwc){
-		//UIComponent layer = null;
-		UIComponent layer = (UIComponent)getFacet(FACET_LOGGED_IN);
-		if(layer==null){
+		if(layer == null) {	
+			
 			layer = new Layer();
-			((Layer) layer).setStyleClass(getStyleClass());
+			layer.setStyleClass(getStyleClass());
 			
-			//Form form = new Form();
-			//layer.getChildren().add(form);
-
-			User user = iwc.getCurrentUser();
-			Text text = new Text();
-			String name = user.getName();
-			text.setText(name);
-			text.setStyleClass("user_name");
-			layer.getChildren().add(text);
+			PresentationObject container = new PresentationObjectContainer();			
+			if (getGenerateContainingForm()) {
+				Form form = new Form();				
+				layer.getChildren().add(form);
+				container = form;
+			} else {
+				container = layer;				
+			}
 			
-			String logoutText = getLocalizedString("logout_text", "Log out", iwc);
-
+			Paragraph p = new Paragraph();
+			p.getChildren().add(new Text(iwc.getCurrentUser().getName()));
+			p.setStyleClass(STYLE_CLASS_CURRENT_USER);
+			container.getChildren().add(p);			
+			
+			String logoutText = getLocalizedString("logout_text", "Log out",iwc);
+			
 			String loginParameter = LoginBusinessBean.LoginStateParameter;
 			String logoutParamValue = LoginBusinessBean.LOGIN_EVENT_LOGOFF;
-
-			Parameter param = new Parameter(loginParameter,"");
 			
-//			SubmitButton sbutton = new SubmitButton(logoutText,LoginBusinessBean.LoginStateParameter,LoginBusinessBean.LOGIN_EVENT_LOGOFF);
+			Parameter param = new Parameter(loginParameter,"");
 			PresentationObject formSubmitter = null;
+			
+			Layer submitLayer = new Layer();
+			submitLayer.setStyleClass(STYLE_CLASS_SUBMIT + " " + getCurrentLocaleLanguage(iwc));
+			container.getChildren().add(submitLayer);			
 			if(!getUseSubmitLinks()){
-				GenericButton gbutton = new GenericButton("logoutbutton",logoutText);
+				GenericButton gbutton = new GenericButton("logoutButton", logoutText);
 
 				gbutton.setOnClick("this.form.elements['"+loginParameter+"'].value='"+logoutParamValue+"';this.form.submit();");
 				formSubmitter = gbutton;
 			} else {
-				Link l = new Link();
-				l.setName("logoutbutton");
-				l.setText(logoutText);
-				l.setURL("#");
+				Layer span = new Layer(Layer.SPAN);
+				span.getChildren().add(new Text(logoutText));
+				
+				Link link = new Link(span);
+				link.setName("logoutButton");
+				link.setStyleClass("logoutButton");
+				link.setURL("#");
 				
 				String formRef = "this.form";
-				Form parentForm = getParentForm();
+				Form parentForm = submitLayer.getParentForm();
 				if(parentForm != null){
 					formRef = "document.forms['"+parentForm.getID()+"']";
 				}
-				l.setOnClick(formRef+".elements['"+loginParameter+"'].value='"+logoutParamValue+"';"+formRef+".submit();return false;");
-				formSubmitter = l;
-			}
+				link.setOnClick(formRef+".elements['"+loginParameter+"'].value='"+logoutParamValue+"';"+formRef+".submit();return false;");
+				formSubmitter = link;
+			}			
+			submitLayer.getChildren().add(param);
+			submitLayer.getChildren().add(formSubmitter);			
 			
-
-			formSubmitter.setStyleClass("logout_button");
-
-			layer.getChildren().add(param);
-			layer.getChildren().add(formSubmitter);
-			//layer.getChildren().add(sbutton);
-			//layer.add(button);			
-			getFacets().put(FACET_LOGGED_IN,layer);
-
-			/*HtmlOutputText hText = new HtmlOutputText();
-			hText.setValue(name);
-
-			layer.getChildren().add(hText);
-
-			UICommand cbutton = new HtmlCommandButton();
-			cbutton.setValue("Logout");
-			cbutton.addActionListener(this);
-
-			layer.getChildren().add(cbutton);*/
+			getFacets().put(FACET_LOGGED_IN, layer);
 			
 		}
-		return layer;
+		
+		return layer;		
 	}
+		
 	
-	
-	
-	
-	/**
-	 * this creates something like that:
-	 * 
-	 * <div class="block layer style class">
-	 * 
-	 * <div class="login_input"> <label>notandanafn:</label> <input type="text"
-	 * name="notandanafn" value="" /> </div>
-	 * 
-	 * <div class="login_input"> <label>lykilord:</label> <input type="text"
-	 * name="lykilord" value="" /> </div>
-	 * 
-	 * <input type="image" src="" name="login" class="button" />
-	 *  
-	 * </div>
-	 */	
 	protected UIComponent getLoggedOutPart(IWContext iwc){
-		UIComponent layer = (UIComponent)getFacet(FACET_LOGGED_OUT);
+
+		Layer layer = (Layer) getFacet(FACET_LOGGED_IN);
 		
-		if (layer != null) {return layer;}
+		if(layer == null) {	
+			
+			layer = new Layer();
+			layer.setStyleClass(getStyleClass());
+			
+			PresentationObject container = new PresentationObjectContainer();			
+			if (getGenerateContainingForm()) {
+				Form form = new Form();				
+				layer.getChildren().add(form);
+				container = form;
+			} else {
+				container = layer;				
+			}
+			
+			TextInput login = new TextInput(LoginBusinessBean.PARAMETER_USERNAME);
+			Label loginLabel = new Label(getLocalizedString("user", "User",iwc), login);
+			
+			Layer loginLayer = new Layer();
+			loginLayer.getChildren().add(loginLabel);
+			loginLayer.getChildren().add(login);
+			loginLayer.setStyleClass(STYLE_CLASS_USERNAME);			
+			container.getChildren().add(loginLayer);			
+						
+			PasswordInput password = new PasswordInput(LoginBusinessBean.PARAMETER_PASSWORD);
+			Label passwordLabel = new Label(
+					getLocalizedString("password", "Password",iwc), password);
+			
+			Layer passwordLayer = new Layer();	
+			passwordLayer.getChildren().add(passwordLabel);
+			passwordLayer.getChildren().add(password);
+			passwordLayer.setStyleClass(STYLE_CLASS_PASSWORD);			
+			container.getChildren().add(passwordLayer);
+			
+			
+			String loginParameter = LoginBusinessBean.LoginStateParameter;
+			String loginParamValue = LoginBusinessBean.LOGIN_EVENT_LOGIN;
+			Parameter param = new Parameter(loginParameter, "");
+			
+			PresentationObject formSubmitter = null;
+			
+			String loginText = getLocalizedString("login_text", "Login", iwc);			
+			
+			Layer submitLayer = new Layer();
+			submitLayer.setStyleClass(STYLE_CLASS_SUBMIT + " " + getCurrentLocaleLanguage(iwc));
+			container.getChildren().add(submitLayer);			
+			if (!getUseSubmitLinks()) {
+				GenericButton gbutton = new GenericButton("loginButton", loginText);
+				
+				gbutton.setOnClick("this.form.elements['" + loginParameter + "'].value='" + 
+						loginParamValue+"';this.form.submit();");
+				formSubmitter = gbutton;	
+				
+			} else {
+							
+				Layer span = new Layer(Layer.SPAN);
+				span.getChildren().add(new Text(loginText));				
+				Link l = new Link(span);
+				
+				l.setName("loginButton");		
+				l.setStyleClass("loginButton");
+				l.setURL("#");
+				
+				String formRef = "this.form";
+				Form parentForm = submitLayer.getParentForm();
+				if(parentForm != null){
+					formRef = "document.forms['"+parentForm.getID()+"']";
+				}
+				l.setOnClick(formRef+".elements['"+loginParameter+"'].value='"+loginParamValue+"';"+formRef+".submit();return false;");
+				formSubmitter = l;
+			}			
+			submitLayer.getChildren().add(param);
+			submitLayer.getChildren().add(formSubmitter);
+						
+			getFacets().put(FACET_LOGGED_OUT, layer);
+			
+		}
 		
-		//surrounding layer
-		layer = new Layer();
-		((Layer) layer).setStyleClass(getStyleClass());		
-		
-		//username
-		Layer usernameLayer = new Layer();	
-		usernameLayer.setStyleClass("login_input");
-		TextInput username = new TextInput(LoginBusinessBean.PARAMETER_USERNAME);
-		Label usernameLabel = new Label(getLocalizedString("user", "User", iwc) + ":", username);
-		
-		usernameLayer.getChildren().add(usernameLabel);		
-		usernameLayer.getChildren().add(username);		
-		layer.getChildren().add(usernameLayer);		
-		
-		//password
-		Layer passwordLayer = new Layer();	
-		passwordLayer.setStyleClass("login_input");
-		PasswordInput password = new PasswordInput(LoginBusinessBean.PARAMETER_PASSWORD);
-		Label passwordLabel = new Label(getLocalizedString("password", "Password", iwc) + ":", password);
-		
-		passwordLayer.getChildren().add(passwordLabel);		
-		passwordLayer.getChildren().add(password);		
-		layer.getChildren().add(passwordLayer);		
-		
-		//login parameter
-		String loginParameter = LoginBusinessBean.LoginStateParameter;
-		String loginParamValue = LoginBusinessBean.LOGIN_EVENT_LOGIN;
-		Parameter param = new Parameter(loginParameter,"");		
-		layer.getChildren().add(param);
-	
-		//submit button... problems here: 
-		//  1. images aren't localized; 
-		//	2. one cannot change style of submit button- image, button or link	
-		// 	3. to set image using css would be mutch, mutch better... hmm... gotta think about this
-		//Image submitButtonImage = new Image("/skjalfandi/content/files/public/style/button_login.jpg");
-		Image submitButtonImage = new Image(getButtonLoginImagePath());
-		
-		submitButtonImage.setAlt(getLocalizedString("login_text", "Login",iwc));
-		SubmitButton sb = new SubmitButton(submitButtonImage);
-		sb.setStyleClass("button");		
-		sb.setOnClick("this.form.elements['"+loginParameter+"'].value='"+loginParamValue+"';this.form.submit();");
-		
-		layer.getChildren().add(sb);
-		
-		//final strich
-		getFacets().put(FACET_LOGGED_OUT, layer);
-		
-		return layer;
-		
+		return layer;		
 	}
+	
 	
 	protected UIComponent getLoginFailedPart(IWContext iwc, String message){
-	
-		/* this is new implementation, not finished yet, but it is the right way to do this
-		UIComponent layer = (UIComponent)getFacet(FACET_LOGIN_FAILED);
-		if (layer != null) { return layer; }
 
-		layer = new Layer();
-		((Layer) layer).setStyleClass(getStyleClass());
+		Layer layer = (Layer) getFacet(FACET_LOGGED_IN);
 		
-		
-		String loginParameter = LoginBusinessBean.LoginStateParameter;
-		String logoutParamValue = LoginBusinessBean.LOGIN_EVENT_TRYAGAIN ; 
-		Parameter param = new Parameter(loginParameter,"");
-		
-		//TODO: try agin image there
-		Image submitButtonImage = new Image("/skjalfandi/content/files/public/style/button_login.jpg");
-		submitButtonImage.setAlt(getLocalizedString("tryagain_text", "Try again", iwc));
-		SubmitButton sb = new SubmitButton(submitButtonImage);
-		sb.setStyleClass("button");		
-		sb.setOnClick("this.form.elements['"+loginParameter+"'].value='"+logoutParamValue+"';this.form.submit();");
-		
-		layer.getChildren().add(sb);		
-		
-		
-		getFacets().put(FACET_LOGIN_FAILED, layer);		
-		return layer;
-		*/
-		
-		
-		UIComponent layer = (UIComponent)getFacet(FACET_LOGIN_FAILED);
-		if(layer==null){
+		if(layer == null) {	
+			
 			layer = new Layer();
-			((Layer) layer).setStyleClass(getStyleClass());
+			layer.setStyleClass(getStyleClass());
+			PresentationObject container = new PresentationObjectContainer();			
+			if (getGenerateContainingForm()) {
+				Form form = new Form();				
+				layer.getChildren().add(form);
+				container = form;
+			} else {
+				container = layer;				
+			}
+				
+			Paragraph p = new Paragraph();
+			p.setStyleClass(STYLE_CLASS_ERROR_MESSAGE);
+			p.getChildren().add(new Text(message));			
+			container.getChildren().add(p);	
 			
 			String loginParameter = LoginBusinessBean.LoginStateParameter;
 			String logoutParamValue = LoginBusinessBean.LOGIN_EVENT_TRYAGAIN ; 
-
 			Parameter param = new Parameter(loginParameter,"");
 			
-			Text t = new Text(message);
-			t.setStyleClass("error_message");
-			layer.getChildren().add(t);	
+			String tryAgainText = getLocalizedString("tryagain_text", "Try again",iwc);
 			
+			Layer submitLayer = new Layer();
+			submitLayer.setStyleClass(STYLE_CLASS_SUBMIT + " " + getCurrentLocaleLanguage(iwc));
+			container.getChildren().add(submitLayer);
 			PresentationObject formSubmitter = null;
 			if(!getUseSubmitLinks()){
-				GenericButton gbutton = new GenericButton("retrybutton", getLocalizedString("tryagain_text", "Try again",iwc));
+				GenericButton gbutton = new GenericButton("retryButton", tryAgainText);
 
 				gbutton.setOnClick("this.form.elements['"+loginParameter+"'].value='"+logoutParamValue+"';this.form.submit();");
 				formSubmitter = gbutton;
 			} else {
-				Link l = new Link();
-				l.setName("retrybutton");
-				l.setText(getLocalizedString("tryagain_text", "Try again",iwc));
+				
+				Layer span = new Layer(Layer.SPAN);
+				span.getChildren().add(new Text(tryAgainText));				
+				Link l = new Link(span);
+				l.setName("retryButton");
+				l.setStyleClass("retryButton");
 				l.setURL("#");
 				
 				String formRef = "this.form";
-				Form parentForm = getParentForm();
+				Form parentForm = submitLayer.getParentForm();
 				if(parentForm != null){
 					formRef = "document.forms['"+parentForm.getID()+"']";
 				}
 				l.setOnClick(formRef+".elements['"+loginParameter+"'].value='"+logoutParamValue+"';"+formRef+".submit();return false;");
 				formSubmitter = l;
-			}
-			formSubmitter.setStyleClass("retry_button");			
-			
-			layer.getChildren().add(param);
-			layer.getChildren().add(formSubmitter);
+			}			
+			submitLayer.getChildren().add(param);
+			submitLayer.getChildren().add(formSubmitter);
 			
 			getFacets().put(FACET_LOGIN_FAILED, layer);
 		}
-		return layer;
-		
+		return layer;	
 	}
 	
 
@@ -352,17 +297,17 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObjectTransitional#encodeChildren(javax.faces.context.FacesContext)
 	 */
-	public void encodeChildren(FacesContext context) throws IOException {		
+	public void encodeChildren(FacesContext context) throws IOException {
+		
 		super.encodeChildren(context);
 		IWContext iwc = IWContext.getIWContext(context);
 		if(iwc.isLoggedOn()){
 			UIComponent loggedInPart = getLoggedInPart(iwc);
-			renderChild(context,loggedInPart);
+			renderChild(context, loggedInPart);
 		}
-		else {
-		
+		else{
 			LoginState state = LoginBusinessBean.internalGetState(iwc);
-			if(state.equals(LoginState.LoggedOut)){
+			if(state.equals(LoginState.LoggedOut ) || state.equals(LoginState.NoState)){
 				UIComponent loggedOutPart = getLoggedOutPart(iwc);
 				renderChild(context,loggedOutPart);
 			}
@@ -383,21 +328,16 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 				else if(state.equals(LoginState.Expired)){
 					loginFailedPart = getLoginFailedPart(iwc, iwrb.getLocalizedString("login_expired", "Login expired"));
 				}
-				
+				else if(state.equals(LoginState.FailedDisabledNextTime)){					
+					loginFailedPart = getLoginFailedPart(iwc, iwrb.getLocalizedString("login_wrong_disabled_next_time", 
+							"Invalid password, access closed next time login fails"));
+				}
+									
+				// TODO: what about wml, see Login block				
 				renderChild(context,loginFailedPart);
 			}	
-
 		}
 		
-	}
-
-	/**
-	 * <p>
-	 * Sets the layout to be single line (like in the old Login module)
-	 * </p>
-	 */
-	public void setLayoutSingleline(){
-		setStyleClass(STYLE_CLASS_SINGLELINE);
 	}
 
 	/* (non-Javadoc)
@@ -416,16 +356,22 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	public void restoreState(FacesContext context, Object state) {
 		Object[] value = (Object[])state;
 		super.restoreState(context, value[0]);
-		useSubmitLinks = ((Boolean)value[1]).booleanValue();
+		useSubmitLinks = ((Boolean)value[1]).booleanValue();		
+		generateContainingForm = ((Boolean)value[2]).booleanValue();	
+		useSingleLineLayout = ((Boolean)value[3]).booleanValue();
+		
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObjectContainer#saveState(javax.faces.context.FacesContext)
 	 */
 	public Object saveState(FacesContext context) {
-		Object[] state = new Object[2];
+		Object[] state = new Object[4];
 		state[0] = super.saveState(context);
-		state[1] = Boolean.valueOf(useSubmitLinks);
+		state[1] = Boolean.valueOf(useSubmitLinks);		
+		state[2] = Boolean.valueOf(generateContainingForm);
+		state[3] = Boolean.valueOf(useSingleLineLayout);
+			
 		return state;
 	}
 
@@ -438,22 +384,36 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 		//Now this clears all facets so that all states will be built again.
 		getFacets().clear();
 	}
-	
-	
-	public String getButtonLoginImagePath() {
-		return buttonLoginImagePath;
+
+
+	public boolean getGenerateContainingForm() {
+		return generateContainingForm;
 	}
 
-	public void setButtonLoginImagePath(String buttonLoginImagePath) {
-		this.buttonLoginImagePath = buttonLoginImagePath;
+	public void setGenerateContainingForm(boolean generateContainingForm) {
+		this.generateContainingForm = generateContainingForm;
 	}
 	
-	public String getButtonLogoutImagePath() {
-		return buttonLogoutImagePath;
+	public boolean getUseSingleLineLayout() {
+		return useSingleLineLayout;
 	}
 
-	public void setButtonLogoutImagePath(String buttonLogoutImagePath) {
-		this.buttonLogoutImagePath = buttonLogoutImagePath;
-	}	
+	public void setUseSingleLineLayout(boolean useSingleLineLayout) {
+		this.useSingleLineLayout = useSingleLineLayout;
+		if (useSingleLineLayout) {
+			setStyleClass(STYLE_CLASS_MAIN_SINGLELINE); 
+		} else {
+			setStyleClass(STYLE_CLASS_MAIN_DEFAULT); 
+		}
+	}
 	
+	/**
+	 * a small helper method
+	 * @param iwc
+	 * @return
+	 */
+	private String getCurrentLocaleLanguage(IWContext iwc) {
+		return iwc.getLocale().getLanguage();				
+	}
+
 }

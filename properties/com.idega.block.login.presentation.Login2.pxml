@@ -30,7 +30,7 @@
                             <key>
                               <name>iw_method_param_handler</name>
                               <type>java.lang.String</type>
-                              <value>com.idega.builder.handler.StyleClassHandler</value>
+                              <value />
                             </key>
                             <key>
                               <name>iw_method_param_prim_key</name>
@@ -40,7 +40,7 @@
                             <key>
                               <name>iw_method_param_desc</name>
                               <type>java.lang.String</type>
-                              <value>Style Class</value>
+                              <value>Main style class</value>
                             </key>
                           </map>
                         </value>
@@ -58,12 +58,174 @@
                 <key>
                   <name>iw_method_description</name>
                   <type>java.lang.String</type>
-                  <value>Style Class</value>
+                  <value>Main style class</value>
                 </key>
                 <key>
                   <name>iw_method_identifier</name>
                   <type>java.lang.String</type>
                   <value>:method:1:implied:void:setStyleClass:java.lang.String:</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>:method:1:implied:void:setGenerateContainingForm:boolean:</name>
+            <value>
+              <map>
+                <key>
+                  <name>iw_method_params</name>
+                  <value>
+                    <map>
+                      <key>
+                        <name>0</name>
+                        <value>
+                          <map>
+                            <key>
+                              <name>iw_method_param_handler</name>
+                              <type>java.lang.String</type>
+                              <value />
+                            </key>
+                            <key>
+                              <name>iw_method_param_prim_key</name>
+                              <type>java.lang.Boolean</type>
+                              <value>false</value>
+                            </key>
+                            <key>
+                              <name>iw_method_param_desc</name>
+                              <type>java.lang.String</type>
+                              <value>Generate containing form</value>
+                            </key>
+                          </map>
+                        </value>
+                        <type>map</type>
+                      </key>
+                    </map>
+                  </value>
+                  <type>map</type>
+                </key>
+                <key>
+                  <name>iw_method_option_multiv</name>
+                  <type>java.lang.Boolean</type>
+                  <value>false</value>
+                </key>
+                <key>
+                  <name>iw_method_description</name>
+                  <type>java.lang.String</type>
+                  <value>Generate containing form</value>
+                </key>
+                <key>
+                  <name>iw_method_identifier</name>
+                  <type>java.lang.String</type>
+                  <value>:method:1:implied:void:setGenerateContainingForm:boolean:</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>:method:1:implied:void:setUseSubmitLinks:boolean:</name>
+            <value>
+              <map>
+                <key>
+                  <name>iw_method_params</name>
+                  <value>
+                    <map>
+                      <key>
+                        <name>0</name>
+                        <value>
+                          <map>
+                            <key>
+                              <name>iw_method_param_handler</name>
+                              <type>java.lang.String</type>
+                              <value />
+                            </key>
+                            <key>
+                              <name>iw_method_param_prim_key</name>
+                              <type>java.lang.Boolean</type>
+                              <value>false</value>
+                            </key>
+                            <key>
+                              <name>iw_method_param_desc</name>
+                              <type>java.lang.String</type>
+                              <value>Use submit links</value>
+                            </key>
+                          </map>
+                        </value>
+                        <type>map</type>
+                      </key>
+                    </map>
+                  </value>
+                  <type>map</type>
+                </key>
+                <key>
+                  <name>iw_method_option_multiv</name>
+                  <type>java.lang.Boolean</type>
+                  <value>false</value>
+                </key>
+                <key>
+                  <name>iw_method_description</name>
+                  <type>java.lang.String</type>
+                  <value>Use submit links</value>
+                </key>
+                <key>
+                  <name>iw_method_identifier</name>
+                  <type>java.lang.String</type>
+                  <value>:method:1:implied:void:setUseSubmitLinks:boolean:</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>:method:1:implied:void:setUseSingleLineLayout:boolean:</name>
+            <value>
+              <map>
+                <key>
+                  <name>iw_method_params</name>
+                  <value>
+                    <map>
+                      <key>
+                        <name>0</name>
+                        <value>
+                          <map>
+                            <key>
+                              <name>iw_method_param_handler</name>
+                              <type>java.lang.String</type>
+                              <value />
+                            </key>
+                            <key>
+                              <name>iw_method_param_prim_key</name>
+                              <type>java.lang.Boolean</type>
+                              <value>false</value>
+                            </key>
+                            <key>
+                              <name>iw_method_param_desc</name>
+                              <type>java.lang.String</type>
+                              <value>Use single line layout</value>
+                            </key>
+                          </map>
+                        </value>
+                        <type>map</type>
+                      </key>
+                    </map>
+                  </value>
+                  <type>map</type>
+                </key>
+                <key>
+                  <name>iw_method_option_multiv</name>
+                  <type>java.lang.Boolean</type>
+                  <value>false</value>
+                </key>
+                <key>
+                  <name>iw_method_description</name>
+                  <type>java.lang.String</type>
+                  <value>Use single line layout</value>
+                </key>
+                <key>
+                  <name>iw_method_identifier</name>
+                  <type>java.lang.String</type>
+                  <value>:method:1:implied:void:setUseSingleLineLayout:boolean:</value>
                 </key>
               </map>
             </value>

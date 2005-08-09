@@ -1,0 +1,102 @@
+.login {	
+	max-width: 20em;
+}
+
+.login div {	
+}
+
+.login label {
+	width: 6em; 
+	display: block; 
+	float: left;
+	text-align: right; 
+	margin-right: 0.4em;
+	margin-left: 0.4em;
+}
+
+.login p {    
+    margin: 0;
+}
+
+.login div.submit {
+	text-align: center;	
+}
+
+
+/* definitions for single line layout */
+.loginSingleline {	
+	max-width: 50em;
+}
+
+.loginSingleline div.username {	
+	display: inline;
+}
+
+.loginSingleline div.password {	
+	display: inline; 
+	margin-left: 0.6em;
+}
+
+.loginSingleline label {
+	width: 5em; 
+	text-align: right; 
+	margin-right: 0.2em;
+	margin-left: 0.6em;
+}
+
+.loginSingleline p {    
+    margin: 0; 
+    display: inline;
+}
+
+.loginSingleline div.submit {
+	text-align: left;
+	display: inline; 	
+	margin-left: 0.6em;
+}
+
+
+
+/* 
+For reference
+
+Image buttons should be styled like this:
+.login a{    
+    display:block;
+}
+.login a span {
+    display: none;
+}
+.login a.loginButton {
+	width: 56px; height: 17px; 
+    background: url(button_login.jpg); 	
+}
+
+.login a.logoutButton {
+	width: 56px; height: 17px; 
+    background: url(button_logout.jpg); 	
+}
+
+.login a.retryButton {
+	width: 56px; height: 17px; 
+    background: url(button_retry.jpg); 	
+}
+
+To do localization, it's like this:
+.login a{
+    width: 100px; height: 30px; 
+    border: 1px solid red; 
+    display:block;
+}
+login a span {
+    display: none;
+}
+.login .en a.loginButton {
+    background: url(login_en.png); 
+}
+.login .se a.loginButton {
+    background: url(login_se.png); 
+}
+and the same for logout and retry buttons
+*/
+
