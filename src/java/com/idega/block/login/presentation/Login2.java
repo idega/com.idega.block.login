@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.10 2005/08/30 15:00:24 dainis Exp $
+ * $Id: Login2.java,v 1.11 2005/08/30 17:35:57 gimmi Exp $
  * Created on 7.3.2005 in project com.idega.block.login
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,16 +34,17 @@ import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.TextInput;
+import com.idega.servlet.filter.IWAuthenticator;
 
 
 /**
  * <p>
  * New Login component based on JSF and CSS. Will gradually replace old Login component
  * </p>
- *  Last modified: $Date: 2005/08/30 15:00:24 $ by $Author: dainis $
+ *  Last modified: $Date: 2005/08/30 17:35:57 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 
@@ -64,6 +65,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	private boolean useSubmitLinks = false;
 	private boolean generateContainingForm = false;
 	private boolean useSingleLineLayout = false;
+	private boolean redirectUserToPrimaryGroupHomePage = false;
 	
 	/**
 	 *
@@ -215,6 +217,10 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 				l.setOnClick(formRef+".elements['"+loginParameter+"'].value='"+loginParamValue+"';"+formRef+".submit();return false;");
 				formSubmitter = l;
 			}			
+			if (redirectUserToPrimaryGroupHomePage) {
+				submitLayer.getChildren().add(new Parameter(IWAuthenticator.PARAMETER_REDIRECT_USER_TO_PRIMARY_GROUP_HOME_PAGE, "true"));
+			}
+
 			submitLayer.getChildren().add(param);
 			submitLayer.getChildren().add(formSubmitter);
 						
@@ -359,6 +365,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 		useSubmitLinks = ((Boolean)value[1]).booleanValue();		
 		generateContainingForm = ((Boolean)value[2]).booleanValue();	
 		useSingleLineLayout = ((Boolean)value[3]).booleanValue();
+		redirectUserToPrimaryGroupHomePage = ((Boolean)value[4]).booleanValue();
 		
 	}
 
@@ -366,12 +373,12 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	 * @see com.idega.presentation.PresentationObjectContainer#saveState(javax.faces.context.FacesContext)
 	 */
 	public Object saveState(FacesContext context) {
-		Object[] state = new Object[4];
+		Object[] state = new Object[5];
 		state[0] = super.saveState(context);
 		state[1] = Boolean.valueOf(useSubmitLinks);		
 		state[2] = Boolean.valueOf(generateContainingForm);
 		state[3] = Boolean.valueOf(useSingleLineLayout);
-			
+		state[4] = Boolean.valueOf(redirectUserToPrimaryGroupHomePage);
 		return state;
 	}
 
@@ -396,6 +403,10 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	
 	public boolean getUseSingleLineLayout() {
 		return useSingleLineLayout;
+	}
+	
+	public void setReditectUserToPrimaryGroupHomePage(boolean forward) {
+		this.redirectUserToPrimaryGroupHomePage = forward;
 	}
 
 	public void setUseSingleLineLayout(boolean useSingleLineLayout) {
