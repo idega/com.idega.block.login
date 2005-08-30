@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.9 2005/08/09 16:25:32 dainis Exp $
+ * $Id: Login2.java,v 1.10 2005/08/30 15:00:24 dainis Exp $
  * Created on 7.3.2005 in project com.idega.block.login
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -40,10 +40,10 @@ import com.idega.presentation.ui.TextInput;
  * <p>
  * New Login component based on JSF and CSS. Will gradually replace old Login component
  * </p>
- *  Last modified: $Date: 2005/08/09 16:25:32 $ by $Author: dainis $
+ *  Last modified: $Date: 2005/08/30 15:00:24 $ by $Author: dainis $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 
@@ -160,7 +160,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			}
 			
 			TextInput login = new TextInput(LoginBusinessBean.PARAMETER_USERNAME);
-			Label loginLabel = new Label(getLocalizedString("user", "User",iwc), login);
+			Label loginLabel = new Label(getLocalizedString("user", "User",iwc) + ":", login);
 			
 			Layer loginLayer = new Layer();
 			loginLayer.getChildren().add(loginLabel);
@@ -170,7 +170,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 						
 			PasswordInput password = new PasswordInput(LoginBusinessBean.PARAMETER_PASSWORD);
 			Label passwordLabel = new Label(
-					getLocalizedString("password", "Password",iwc), password);
+					getLocalizedString("password", "Password",iwc) + ":", password);
 			
 			Layer passwordLayer = new Layer();	
 			passwordLayer.getChildren().add(passwordLabel);
