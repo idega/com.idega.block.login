@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.11 2005/08/30 17:35:57 gimmi Exp $
+ * $Id: Login2.java,v 1.12 2005/09/01 14:20:37 eiki Exp $
  * Created on 7.3.2005 in project com.idega.block.login
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.servlet.filter.IWAuthenticator;
  * <p>
  * New Login component based on JSF and CSS. Will gradually replace old Login component
  * </p>
- *  Last modified: $Date: 2005/08/30 17:35:57 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/09/01 14:20:37 $ by $Author: eiki $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 
@@ -405,7 +405,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 		return useSingleLineLayout;
 	}
 	
-	public void setReditectUserToPrimaryGroupHomePage(boolean forward) {
+	public void setRedirectUserToPrimaryGroupHomePage(boolean forward) {
 		this.redirectUserToPrimaryGroupHomePage = forward;
 	}
 
