@@ -4,8 +4,8 @@
   <extend>${base.project.dir}/block-dependencies.xml</extend>
   <artifactId>com.idega.block.login</artifactId>
   <name>idegaWeb Login Block</name>
-  <currentVersion>1.1.5</currentVersion>
-  <!--currentVersion>1.1.6-SNAPSHOT</currentVersion-->
+  <!--currentVersion>1.1.5</currentVersion-->
+  <currentVersion>1.1.6-SNAPSHOT</currentVersion>
 
   <inceptionYear>2000</inceptionYear>
   <shortDescription>This is the default login module for idegaWeb</shortDescription>
@@ -88,11 +88,8 @@
     <dependency>
       <groupId>bundles</groupId>
       <artifactId>com.idega.core</artifactId>
-      <!--HELPER-->
-
-      <version>3.0.6</version>
-      <!--HELPER-->
-      <!--HELPERversion>SNAPSHOT</versionHELPER-->
+      <!--version>3.0.6</version-->
+      <version>SNAPSHOT</version>
 
       <type>jar</type>
       <url>http://www.idega.com/</url>
