@@ -4,8 +4,9 @@
   <extend>${base.project.dir}/block-dependencies.xml</extend>
   <artifactId>com.idega.block.login</artifactId>
   <name>idegaWeb Login Block</name>
-    <currentVersion>1.1.5</currentVersion>
+  <currentVersion>1.1.5</currentVersion>
   <!--currentVersion>1.1.6-SNAPSHOT</currentVersion-->
+
   <inceptionYear>2000</inceptionYear>
   <shortDescription>This is the default login module for idegaWeb</shortDescription>
   <versions>
@@ -34,10 +35,15 @@
       <name>1.1.3</name>
       <tag>LOGIN_1_1_3</tag>
     </version>
-        <version>
+    <version>
       <id>1.1.4</id>
       <name>1.1.4</name>
       <tag>LOGIN_1_1_4</tag>
+    </version>
+    <version>
+      <id>1.1.5</id>
+      <name>1.1.5</name>
+      <tag>LOGIN_1_1_5</tag>
     </version>
   </versions>
   <branches/>
@@ -76,20 +82,24 @@
       <email>dainis.brjuhoveckis@idega.lv</email>
       <organization>idega baltic</organization>
       <roles/>
-    </developer>    
+    </developer>
   </developers>
   <dependencies>
     <dependency>
       <groupId>bundles</groupId>
       <artifactId>com.idega.core</artifactId>
-      <!--HELPER--><version>3.0.6</version><!--HELPER-->
+      <!--HELPER-->
+
+      <version>3.0.6</version>
+      <!--HELPER-->
       <!--HELPERversion>SNAPSHOT</versionHELPER-->
+
       <type>jar</type>
       <url>http://www.idega.com/</url>
       <properties>
-        <j:if test="${idegaweb.project.source.dependent}=='true'}">
-        	<eclipse.dependency>true</eclipse.dependency>
-        </j:if>-->
+        <j:if test="${idegaweb.project.source.dependent}==&apos;true&apos;}">
+          <eclipse.dependency>true</eclipse.dependency>
+        </j:if>--&gt;
       </properties>
     </dependency>
   </dependencies>
