@@ -1,3 +1,12 @@
+/*
+ * $Id: WelcomeMessage.java,v 1.9 2005/02/17 17:52:26 tryggvil Exp $
+ * Created on 31.10.2002
+ *
+ * Copyright (C) 2002-2005 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package com.idega.block.login.presentation;
 
 import com.idega.business.IBOLookup;
@@ -8,12 +17,13 @@ import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 /**
- * @author Laddi
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * <p>
+ * This class displays a greeting message for the currently logged in user.
+ * </p>
+ *  Last modified: $Date: 2005/02/17 17:52:26 $ by $Author: tryggvil $
+ * 
+ * @author <a href="mailto:laddi@idega.com">Thorhallur Helgason</a>,<a href="mailto:tryggvil@idega.com">tryggvil</a>
+ * @version $Revision: 1.9 $
  */
 public class WelcomeMessage extends Text {
 
