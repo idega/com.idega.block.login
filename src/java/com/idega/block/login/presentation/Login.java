@@ -232,6 +232,11 @@ public class Login extends Block {
 			
 		}
 
+		
+		if(getUrlToForwardToOnLogin()!=null){
+			getMainForm().addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON,getUrlToForwardToOnLogin());
+		}
+		
 		add(getMainForm());
 		if (hintMessage != null) {
 			add(hintMessage);
