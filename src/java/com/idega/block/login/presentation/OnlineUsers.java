@@ -42,9 +42,13 @@ public class OnlineUsers extends Block {
 		Table table = new Table();
 		int row = 1;
 		Text tUsers = new Text(iwrb.getLocalizedString("online_users","Online users:"));
+		Collection usersLoggedIn = LoginBusinessBean.getLoggedOnInfoCollection(iwc);
+		if(usersLoggedIn!=null && !usersLoggedIn.isEmpty()){
+		    tUsers.addToText(" ");
+		    tUsers.addToText(String.valueOf(usersLoggedIn.size()));
+		}
 		tUsers.setBold();
 		table.add(tUsers,1,row++);
-		Collection usersLoggedIn = LoginBusinessBean.getLoggedOnInfoCollection(iwc);
 		if(usersLoggedIn!=null && !usersLoggedIn.isEmpty()){
 			for (Iterator iter = usersLoggedIn.iterator(); iter.hasNext();) {
 				int col = 1;
