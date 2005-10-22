@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.12 2005/09/01 14:20:37 eiki Exp $
+ * $Id: Login2.java,v 1.13 2005/10/22 20:24:11 laddi Exp $
  * Created on 7.3.2005 in project com.idega.block.login
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.servlet.filter.IWAuthenticator;
  * <p>
  * New Login component based on JSF and CSS. Will gradually replace old Login component
  * </p>
- *  Last modified: $Date: 2005/09/01 14:20:37 $ by $Author: eiki $
+ *  Last modified: $Date: 2005/10/22 20:24:11 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 
@@ -66,6 +66,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	private boolean generateContainingForm = false;
 	private boolean useSingleLineLayout = false;
 	private boolean redirectUserToPrimaryGroupHomePage = false;
+	private boolean showLabelInInput = false;
 	
 	/**
 	 *
@@ -162,6 +163,10 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			}
 			
 			TextInput login = new TextInput(LoginBusinessBean.PARAMETER_USERNAME);
+			if (showLabelInInput) {
+				login.setValue(getLocalizedString("user", "User",iwc));
+				login.setOnFocus("this.value=''");
+			}
 			Label loginLabel = new Label(getLocalizedString("user", "User",iwc) + ":", login);
 			
 			Layer loginLayer = new Layer();
@@ -171,6 +176,12 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			container.getChildren().add(loginLayer);			
 						
 			PasswordInput password = new PasswordInput(LoginBusinessBean.PARAMETER_PASSWORD);
+			if (showLabelInInput) {
+				password.setInputType(PasswordInput.INPUT_TYPE_TEXT);
+				password.setValue(getLocalizedString("password", "Password",iwc));
+				password.setOnFocus("this.value=''");
+				password.setOnFocus("this.type='password'");
+			}
 			Label passwordLabel = new Label(
 					getLocalizedString("password", "Password",iwc) + ":", password);
 			
@@ -425,6 +436,12 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	 */
 	private String getCurrentLocaleLanguage(IWContext iwc) {
 		return iwc.getLocale().getLanguage();				
+	}
+
+
+	
+	public void setShowLabelInInput(boolean showLabelInInput) {
+		this.showLabelInInput = showLabelInInput;
 	}
 
 }
