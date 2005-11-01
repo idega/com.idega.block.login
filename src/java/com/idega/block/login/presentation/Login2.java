@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.13 2005/10/22 20:24:11 laddi Exp $
+ * $Id: Login2.java,v 1.14 2005/11/01 18:54:25 eiki Exp $
  * Created on 7.3.2005 in project com.idega.block.login
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -10,13 +10,11 @@
 package com.idega.block.login.presentation;
 
 import java.io.IOException;
-
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
-
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginState;
 import com.idega.idegaweb.IWResourceBundle;
@@ -41,10 +39,10 @@ import com.idega.servlet.filter.IWAuthenticator;
  * <p>
  * New Login component based on JSF and CSS. Will gradually replace old Login component
  * </p>
- *  Last modified: $Date: 2005/10/22 20:24:11 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/11/01 18:54:25 $ by $Author: eiki $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 
@@ -67,6 +65,8 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	private boolean useSingleLineLayout = false;
 	private boolean redirectUserToPrimaryGroupHomePage = false;
 	private boolean showLabelInInput = false;
+	private String urlToRedirectToOnLogin = null;
+	private String urlToRedirectToOnLogoff = null;
 	
 	/**
 	 *
@@ -133,6 +133,11 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 				link.setOnClick(formRef+".elements['"+loginParameter+"'].value='"+logoutParamValue+"';"+formRef+".submit();return false;");
 				formSubmitter = link;
 			}			
+			
+			if(getURLToRedirectToOnLogoff()!=null){
+				submitLayer.getChildren().add(new Parameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGOFF,getURLToRedirectToOnLogoff()));
+			}
+			
 			submitLayer.getChildren().add(param);
 			submitLayer.getChildren().add(formSubmitter);			
 			
@@ -227,9 +232,13 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 				}
 				l.setOnClick(formRef+".elements['"+loginParameter+"'].value='"+loginParamValue+"';"+formRef+".submit();return false;");
 				formSubmitter = l;
-			}			
+			}
+			
 			if (redirectUserToPrimaryGroupHomePage) {
 				submitLayer.getChildren().add(new Parameter(IWAuthenticator.PARAMETER_REDIRECT_USER_TO_PRIMARY_GROUP_HOME_PAGE, "true"));
+			}
+			else if(getURLToRedirectToOnLogin()!=null){
+				submitLayer.getChildren().add(new Parameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON,getURLToRedirectToOnLogin()));
 			}
 
 			submitLayer.getChildren().add(param);
@@ -416,8 +425,8 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 		return useSingleLineLayout;
 	}
 	
-	public void setRedirectUserToPrimaryGroupHomePage(boolean forward) {
-		this.redirectUserToPrimaryGroupHomePage = forward;
+	public void setRedirectUserToPrimaryGroupHomePage(boolean redirectToHomePage) {
+		this.redirectUserToPrimaryGroupHomePage = redirectToHomePage;
 	}
 
 	public void setUseSingleLineLayout(boolean useSingleLineLayout) {
@@ -442,6 +451,22 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	
 	public void setShowLabelInInput(boolean showLabelInInput) {
 		this.showLabelInInput = showLabelInInput;
+	}
+	
+	public void setURLToRedirectToOnLogin(String url){
+		this.urlToRedirectToOnLogin=url;
+	}
+	
+	public String getURLToRedirectToOnLogin(){
+		return urlToRedirectToOnLogin;
+	}
+	
+	public void setURLToRedirectToOnLogoff(String url){
+		this.urlToRedirectToOnLogoff=url;
+	}
+	
+	public String getURLToRedirectToOnLogoff(){
+		return urlToRedirectToOnLogoff;
 	}
 
 }
