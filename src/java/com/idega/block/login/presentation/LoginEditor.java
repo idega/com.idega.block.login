@@ -18,11 +18,17 @@ import java.awt.Color;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
+import com.idega.core.business.ICApplicationBindingBusiness;
 import com.idega.core.user.data.User;
 import com.idega.core.user.data.UserHome;
 import com.idega.data.IDOLookup;
@@ -180,7 +186,7 @@ public class LoginEditor extends PresentationObjectContainer {
 	private PresentationObject doView(User user, String sUserLogin) {
 		boolean allowChangingUsername = true;
 		try {
-			String prop = iwb.getProperty(BUNDEL_PRPERTY_NAME_USERNAME_CONSTANT);
+			String prop = getPropertyValue(iwb, BUNDEL_PRPERTY_NAME_USERNAME_CONSTANT, Boolean.FALSE.toString());
 			allowChangingUsername = !prop.trim().equalsIgnoreCase("true");
 		}
 		catch (NullPointerException e) {
@@ -319,5 +325,42 @@ public class LoginEditor extends PresentationObjectContainer {
 	
 	public void setChangeLoginNextTime(boolean change){
 		this.changeNextTime = change;
+	}
+
+	/**
+	 * Gets the value for a property name ... replaces the bundle properties that were used previously
+	 * @param propertyName
+	 * @return
+	 */
+	private String getPropertyValue(IWBundle iwb, String propertyName, String defaultValue) {
+		try {
+			String value = getBindingBusiness().get(propertyName);
+			if (value != null) {
+				return value;
+			}
+			else {
+				value = iwb.getProperty(propertyName);
+				getBindingBusiness().put(propertyName, value != null ? value : defaultValue);
+			}
+		}
+		catch (RemoveException re) {
+			re.printStackTrace();
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+		catch (CreateException ce) {
+			ce.printStackTrace();
+		}
+		return defaultValue;
+	}
+	
+	private ICApplicationBindingBusiness getBindingBusiness() {
+		try {
+			return (ICApplicationBindingBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ICApplicationBindingBusiness.class);
+		}
+		catch (IBOLookupException ibe) {
+			throw new IBORuntimeException(ibe);
+		}
 	}
 }
