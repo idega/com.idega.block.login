@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.14 2005/11/01 18:54:25 eiki Exp $
+ * $Id: Login2.java,v 1.15 2005/11/02 15:18:48 eiki Exp $
  * Created on 7.3.2005 in project com.idega.block.login
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -10,6 +10,9 @@
 package com.idega.block.login.presentation;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
@@ -39,10 +42,10 @@ import com.idega.servlet.filter.IWAuthenticator;
  * <p>
  * New Login component based on JSF and CSS. Will gradually replace old Login component
  * </p>
- *  Last modified: $Date: 2005/11/01 18:54:25 $ by $Author: eiki $
+ *  Last modified: $Date: 2005/11/02 15:18:48 $ by $Author: eiki $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 
@@ -65,9 +68,10 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	private boolean useSingleLineLayout = false;
 	private boolean redirectUserToPrimaryGroupHomePage = false;
 	private boolean showLabelInInput = false;
-	private String urlToRedirectToOnLogin = null;
+	private String urlToRedirectToOnLogon = null;
 	private String urlToRedirectToOnLogoff = null;
-	
+	private Map extraLogonParameters = new HashMap();
+	private Map extraLogoffParameters = new HashMap();
 	/**
 	 *
 	 */
@@ -136,6 +140,13 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			
 			if(getURLToRedirectToOnLogoff()!=null){
 				submitLayer.getChildren().add(new Parameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGOFF,getURLToRedirectToOnLogoff()));
+			}
+			
+			if(!extraLogoffParameters.isEmpty()){
+				for (Iterator iter = extraLogoffParameters.keySet().iterator(); iter.hasNext();) {
+					String key = (String) iter.next();
+					submitLayer.getChildren().add(new Parameter(key,(String)extraLogoffParameters.get(key)));
+				}
 			}
 			
 			submitLayer.getChildren().add(param);
@@ -237,8 +248,15 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			if (redirectUserToPrimaryGroupHomePage) {
 				submitLayer.getChildren().add(new Parameter(IWAuthenticator.PARAMETER_REDIRECT_USER_TO_PRIMARY_GROUP_HOME_PAGE, "true"));
 			}
-			else if(getURLToRedirectToOnLogin()!=null){
-				submitLayer.getChildren().add(new Parameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON,getURLToRedirectToOnLogin()));
+			else if(getURLToRedirectToOnLogon()!=null){
+				submitLayer.getChildren().add(new Parameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON,getURLToRedirectToOnLogon()));
+			}
+			
+			if(!extraLogonParameters.isEmpty()){
+				for (Iterator iter = extraLogonParameters.keySet().iterator(); iter.hasNext();) {
+					String key = (String) iter.next();
+					submitLayer.getChildren().add(new Parameter(key,(String)extraLogonParameters.get(key)));
+				}
 			}
 
 			submitLayer.getChildren().add(param);
@@ -453,12 +471,12 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 		this.showLabelInInput = showLabelInInput;
 	}
 	
-	public void setURLToRedirectToOnLogin(String url){
-		this.urlToRedirectToOnLogin=url;
+	public void setURLToRedirectToOnLogon(String url){
+		this.urlToRedirectToOnLogon=url;
 	}
 	
-	public String getURLToRedirectToOnLogin(){
-		return urlToRedirectToOnLogin;
+	public String getURLToRedirectToOnLogon(){
+		return urlToRedirectToOnLogon;
 	}
 	
 	public void setURLToRedirectToOnLogoff(String url){
@@ -467,6 +485,14 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	
 	public String getURLToRedirectToOnLogoff(){
 		return urlToRedirectToOnLogoff;
+	}
+	
+	public void setExtraLogonParameter(String parameter, String value){
+		extraLogonParameters.put(parameter, value);
+	}
+	
+	public void setExtraLogoffParameter(String parameter, String value){
+		extraLogoffParameters.put(parameter, value);
 	}
 
 }

@@ -232,7 +232,7 @@
             <type>map</type>
           </key>
           <key>
-            <name>:method:1:implied:void:setURLToRedirectToOnLogin:java.lang.String:</name>
+            <name>:method:1:implied:void:setURLToRedirectToOnLogon:java.lang.String:</name>
             <value>
               <map>
                 <key>
@@ -256,7 +256,7 @@
                             <key>
                               <name>iw_method_param_desc</name>
                               <type>java.lang.String</type>
-                              <value>Login redirect URL</value>
+                              <value>Logon redirect URL</value>
                             </key>
                           </map>
                         </value>
@@ -274,12 +274,12 @@
                 <key>
                   <name>iw_method_description</name>
                   <type>java.lang.String</type>
-                  <value>Login redirect URL</value>
+                  <value>Logon redirect URL</value>
                 </key>
                 <key>
                   <name>iw_method_identifier</name>
                   <type>java.lang.String</type>
-                  <value>:method:1:implied:void:setURLToRedirectToOnLogin:java.lang.String:</value>
+                  <value>:method:1:implied:void:setURLToRedirectToOnLogon:java.lang.String:</value>
                 </key>
               </map>
             </value>
