@@ -1,5 +1,5 @@
 /*
- * $Id: LoginByUUIDLink.java,v 1.4 2005/11/03 18:22:05 eiki Exp $
+ * $Id: LoginByUUIDLink.java,v 1.5 2005/11/03 18:24:34 eiki Exp $
  * Created on Feb 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -10,6 +10,7 @@
 package com.idega.block.login.presentation;
 
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
+import com.idega.core.accesscontrol.business.NotLoggedOnException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Link;
 import com.idega.user.data.User;
@@ -17,12 +18,12 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2005/11/03 18:22:05 $ by $Author: eiki $
+ *  Last modified: $Date: 2005/11/03 18:24:34 $ by $Author: eiki $
  * 
  * Creates a link with the necessery parameters to login to another IdegaWeb system via a users UUID.
  * The receiving server must allow you to login via UUID for it to work. See LoginBusinessBean loginByUUID javadoc.
  * @author <a href="mailto:eiki@idega.com">Eirikur S. Hrafnsson</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class LoginByUUIDLink extends Link {
 
@@ -54,8 +55,13 @@ public class LoginByUUIDLink extends Link {
 	 */
 	public void print(IWContext iwc) throws Exception {
 		if(getUseCurrentUsersUUID()){
-			User user = iwc.getCurrentUser();
-			setUUID(user.getUniqueId());
+			try {
+				User user = iwc.getCurrentUser();
+				setUUID(user.getUniqueId());
+			}
+			catch (NotLoggedOnException e) {
+				//do nothing
+			}
 		}
 		super.print(iwc);
 	}
