@@ -14,6 +14,7 @@ help_headline=Web Access
 hint_submit=Answer
 iw.component.com.idega.block.login.presentation.Login.name=Login
 iw.component.com.idega.block.login.presentation.Login2.name=Login2
+iw.component.com.idega.block.login.presentation.LoginByUUIDLink.name=LoginByUUIDLink
 iw.component.com.idega.block.login.presentation.OnlineUsers.name=OnlineUsers
 iw.component.com.idega.block.login.presentation.RegisterWindow.name=RegisterWindow
 iw.component.com.idega.block.login.presentation.WelcomeMessage.name=
