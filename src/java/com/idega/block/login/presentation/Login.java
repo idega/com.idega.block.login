@@ -811,7 +811,7 @@ public class Login extends Block {
 			getMainForm().setPageToSubmitTo(loggedOffPageId);
 		}
 
-		User user = (User) getUser(iwc);
+		User user = getUser(iwc);
 
 		if (sendUserToHomePage && LoginBusinessBean.isLogOnAction(iwc)) {
 			com.idega.user.data.User newUser = Converter.convertToNewUser(user);
