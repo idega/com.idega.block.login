@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.17 2005/12/12 10:37:32 laddi Exp $
+ * $Id: Login2.java,v 1.18 2005/12/12 11:24:13 laddi Exp $
  * Created on 7.3.2005 in project com.idega.block.login
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -43,10 +43,10 @@ import com.idega.servlet.filter.IWAuthenticator;
  * <p>
  * New Login component based on JSF and CSS. Will gradually replace old Login component
  * </p>
- *  Last modified: $Date: 2005/12/12 10:37:32 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/12/12 11:24:13 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 
@@ -171,10 +171,13 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			layer = new Layer();
 			layer.setStyleClass(getStyleClass());
 			
+			String loginParameter = LoginBusinessBean.LoginStateParameter;
+			String loginParamValue = LoginBusinessBean.LOGIN_EVENT_LOGIN;
+
 			boolean enterSubmit = false;
 			if (enterSubmits) {
 				Script script = new Script();
-				script.addFunction("enterSubmit", "function enterSubmit(myfield,e) { var keycode; if (window.event) keycode = window.event.keyCode; else if (e) keycode = e.which; else return true; if (keycode == 13) { myfield.form.submit(); return false; } else return true; }");
+				script.addFunction("enterSubmit", "function enterSubmit(myfield,e) { var keycode; if (window.event) keycode = window.event.keyCode; else if (e) keycode = e.which; else return true; if (keycode == 13) { myfield.form.elements[' " + loginParameter + "'].value='" + loginParamValue+"'; myfield.form.submit(); return false; } else return true; }");
 				layer.add(script);
 				
 				enterSubmit = true;
@@ -219,10 +222,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			passwordLayer.getChildren().add(password);
 			passwordLayer.setStyleClass(STYLE_CLASS_PASSWORD);			
 			container.getChildren().add(passwordLayer);
-			
-			
-			String loginParameter = LoginBusinessBean.LoginStateParameter;
-			String loginParamValue = LoginBusinessBean.LOGIN_EVENT_LOGIN;
+						
 			Parameter param = new Parameter(loginParameter, "");
 			
 			PresentationObject formSubmitter = null;
