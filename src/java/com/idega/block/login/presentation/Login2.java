@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.16 2005/12/12 10:04:11 laddi Exp $
+ * $Id: Login2.java,v 1.17 2005/12/12 10:37:32 laddi Exp $
  * Created on 7.3.2005 in project com.idega.block.login
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -43,10 +43,10 @@ import com.idega.servlet.filter.IWAuthenticator;
  * <p>
  * New Login component based on JSF and CSS. Will gradually replace old Login component
  * </p>
- *  Last modified: $Date: 2005/12/12 10:04:11 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/12/12 10:37:32 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 
@@ -173,17 +173,11 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			
 			boolean enterSubmit = false;
 			if (enterSubmits) {
-				if (getParentPage() != null) {
-					Script script = null;
-					if (getParentPage().getAssociatedScript() != null)
-						script = getParentPage().getAssociatedScript();
-					else {
-						script = new Script();
-						getParentPage().setAssociatedScript(script);
-					}
-					script.addFunction("enterSubmit", "function enterSubmit(myfield,e) { var keycode; if (window.event) keycode = window.event.keyCode; else if (e) keycode = e.which; else return true; if (keycode == 13) { myfield.form.submit(); return false; } else return true; }");
-					enterSubmit = true;
-				}
+				Script script = new Script();
+				script.addFunction("enterSubmit", "function enterSubmit(myfield,e) { var keycode; if (window.event) keycode = window.event.keyCode; else if (e) keycode = e.which; else return true; if (keycode == 13) { myfield.form.submit(); return false; } else return true; }");
+				layer.add(script);
+				
+				enterSubmit = true;
 			}
 
 			PresentationObject container = new PresentationObjectContainer();			
