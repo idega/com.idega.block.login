@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.15 2005/11/02 15:18:48 eiki Exp $
+ * $Id: Login2.java,v 1.16 2005/12/12 10:04:11 laddi Exp $
  * Created on 7.3.2005 in project com.idega.block.login
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -26,6 +26,7 @@ import com.idega.presentation.Layer;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.PresentationObjectTransitional;
+import com.idega.presentation.Script;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Paragraph;
 import com.idega.presentation.text.Text;
@@ -42,10 +43,10 @@ import com.idega.servlet.filter.IWAuthenticator;
  * <p>
  * New Login component based on JSF and CSS. Will gradually replace old Login component
  * </p>
- *  Last modified: $Date: 2005/11/02 15:18:48 $ by $Author: eiki $
+ *  Last modified: $Date: 2005/12/12 10:04:11 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 
@@ -63,6 +64,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	private static final String STYLE_CLASS_PASSWORD = "password";
 	private static final String STYLE_CLASS_ERROR_MESSAGE = "errorMessage";	
 	
+	private boolean enterSubmits = false;
 	private boolean useSubmitLinks = false;
 	private boolean generateContainingForm = false;
 	private boolean useSingleLineLayout = false;
@@ -169,6 +171,21 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			layer = new Layer();
 			layer.setStyleClass(getStyleClass());
 			
+			boolean enterSubmit = false;
+			if (enterSubmits) {
+				if (getParentPage() != null) {
+					Script script = null;
+					if (getParentPage().getAssociatedScript() != null)
+						script = getParentPage().getAssociatedScript();
+					else {
+						script = new Script();
+						getParentPage().setAssociatedScript(script);
+					}
+					script.addFunction("enterSubmit", "function enterSubmit(myfield,e) { var keycode; if (window.event) keycode = window.event.keyCode; else if (e) keycode = e.which; else return true; if (keycode == 13) { myfield.form.submit(); return false; } else return true; }");
+					enterSubmit = true;
+				}
+			}
+
 			PresentationObject container = new PresentationObjectContainer();			
 			if (getGenerateContainingForm()) {
 				Form form = new Form();				
@@ -183,6 +200,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 				login.setValue(getLocalizedString("user", "User",iwc));
 				login.setOnFocus("this.value=''");
 			}
+			if (enterSubmit) login.setOnKeyPress("return enterSubmit(this,event)");
 			Label loginLabel = new Label(getLocalizedString("user", "User",iwc) + ":", login);
 			
 			Layer loginLayer = new Layer();
@@ -198,6 +216,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 				password.setOnFocus("this.value=''");
 				password.setOnFocus("this.type='password'");
 			}
+			if (enterSubmit) password.setOnKeyPress("return enterSubmit(this,event)");
 			Label passwordLabel = new Label(
 					getLocalizedString("password", "Password",iwc) + ":", password);
 			
@@ -493,6 +512,12 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	
 	public void setExtraLogoffParameter(String parameter, String value){
 		extraLogoffParameters.put(parameter, value);
+	}
+
+
+	
+	public void setEnterSubmits(boolean enterSubmits) {
+		this.enterSubmits = enterSubmits;
 	}
 
 }
