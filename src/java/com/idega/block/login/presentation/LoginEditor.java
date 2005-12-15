@@ -15,13 +15,10 @@ package com.idega.block.login.presentation;
 
  */
 import java.awt.Color;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
-
-import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
-
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
@@ -343,15 +340,10 @@ public class LoginEditor extends PresentationObjectContainer {
 				getBindingBusiness().put(propertyName, value != null ? value : defaultValue);
 			}
 		}
-		catch (RemoveException re) {
+		catch (IOException re) {
 			re.printStackTrace();
 		}
-		catch (RemoteException re) {
-			throw new IBORuntimeException(re);
-		}
-		catch (CreateException ce) {
-			ce.printStackTrace();
-		}
+
 		return defaultValue;
 	}
 	
