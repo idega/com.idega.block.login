@@ -15,21 +15,17 @@ package com.idega.block.login.presentation;
 
  */
 import java.awt.Color;
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import javax.ejb.FinderException;
-import com.idega.business.IBOLookup;
-import com.idega.business.IBOLookupException;
-import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
-import com.idega.core.business.ICApplicationBindingBusiness;
 import com.idega.core.user.data.User;
 import com.idega.core.user.data.UserHome;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -330,29 +326,15 @@ public class LoginEditor extends PresentationObjectContainer {
 	 * @return
 	 */
 	private String getPropertyValue(IWBundle iwb, String propertyName, String defaultValue) {
-		try {
-			String value = getBindingBusiness().get(propertyName);
-			if (value != null) {
-				return value;
-			}
-			else {
-				value = iwb.getProperty(propertyName);
-				getBindingBusiness().put(propertyName, value != null ? value : defaultValue);
-			}
+		IWMainApplicationSettings settings = getIWApplicationContext().getApplicationSettings();
+		String value = settings.getProperty(propertyName);
+		if (value != null) {
+			return value;
 		}
-		catch (IOException re) {
-			re.printStackTrace();
-		}
+		value = iwb.getProperty(propertyName);
+		value = value != null ? value : defaultValue;
+		settings.setProperty(propertyName, value);
+		return value;
+	}
 
-		return defaultValue;
-	}
-	
-	private ICApplicationBindingBusiness getBindingBusiness() {
-		try {
-			return (ICApplicationBindingBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ICApplicationBindingBusiness.class);
-		}
-		catch (IBOLookupException ibe) {
-			throw new IBORuntimeException(ibe);
-		}
-	}
 }
