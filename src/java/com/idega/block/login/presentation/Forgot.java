@@ -315,7 +315,8 @@ public class Forgot extends Block {
 		LoginContext context = null;
 		if (usr != null) {
 			try {
-				context = LoginBusinessBean.changeUserPassword(usr, LoginCreator.createPasswd(8));
+				LoginBusinessBean loginBean = LoginBusinessBean.getLoginBusinessBean(iwc);
+				context = loginBean.changeUserPassword(usr, LoginCreator.createPasswd(8));
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();

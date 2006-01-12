@@ -283,8 +283,8 @@ public class Login extends Block {
 				Collection emailCol = ((com.idega.user.data.User) user).getEmails();
 				if (emailCol != null && !emailCol.isEmpty()) {
 					Iterator emailIter = emailCol.iterator();
-
-					LoginBusinessBean.resetPassword(login, tmpPassword, true);
+					LoginBusinessBean loginBean = LoginBusinessBean.getLoginBusinessBean(iwc);
+					loginBean.resetPassword(login, tmpPassword, true);
 					
 					try {
 						LoginTable[] login_table = (LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumn(com.idega.core.accesscontrol.data.LoginTableBMPBean.getUserLoginColumnName(), login);
