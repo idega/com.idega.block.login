@@ -5,15 +5,12 @@
 package com.idega.block.login.presentation;
 
 import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import com.idega.repository.data.RefactorClassRegistry;
-import com.idega.servlet.filter.IWAuthenticator;
+import javax.ejb.FinderException;
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
@@ -21,11 +18,13 @@ import com.idega.core.accesscontrol.business.LoginState;
 import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.core.accesscontrol.data.LoginInfoHome;
 import com.idega.core.accesscontrol.data.LoginTable;
+import com.idega.core.accesscontrol.data.LoginTableHome;
 import com.idega.core.builder.business.ICBuilderConstants;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.contact.data.Email;
 import com.idega.core.user.data.User;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
@@ -47,6 +46,8 @@ import com.idega.presentation.ui.StyledButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.Window;
+import com.idega.repository.data.RefactorClassRegistry;
+import com.idega.servlet.filter.IWAuthenticator;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.util.Converter;
 import com.idega.util.SendMail;
@@ -287,8 +288,8 @@ public class Login extends Block {
 					loginBean.resetPassword(login, tmpPassword, true);
 					
 					try {
-						LoginTable[] login_table = (LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumn(com.idega.core.accesscontrol.data.LoginTableBMPBean.getUserLoginColumnName(), login);
-						LoginTable loginTable = login_table==null?null:login_table[0];
+						LoginTableHome home = (LoginTableHome) IDOLookup.getHome(LoginTable.class);
+						LoginTable loginTable = home.findByLogin(login);
 						if(loginTable!=null) {
 							LoginInfoHome loginInfoHome = (LoginInfoHome) IDOLookup.getHome(LoginInfo.class);
 							LoginInfo loginInfo = loginInfoHome.findByPrimaryKey(loginTable.getPrimaryKey());
@@ -350,15 +351,18 @@ public class Login extends Block {
 
 	private User getUserFromLogin(String login) {
 		User user = null;
-		LoginTable[] login_table = null;
+		LoginTable loginTable = null;
 		try {
-			login_table = (LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumn(com.idega.core.accesscontrol.data.LoginTableBMPBean.getUserLoginColumnName(), login);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			LoginTableHome home = (LoginTableHome) IDOLookup.getHome(LoginTable.class);
+			loginTable = home.findByLogin(login);
+		}
+		catch (IDOLookupException ile) {
+			ile.printStackTrace();
+		}
+		catch (FinderException e) {
 			e.printStackTrace();
 		}
-		if (login_table!=null && login_table.length > 0) {
-			LoginTable loginTable = login_table[0];
+		if (loginTable !=null) {
 			user = loginTable.getUser();
 		}
 		return user;
@@ -372,7 +376,6 @@ public class Login extends Block {
                     userName = LoginBusinessBean.getLoginSession(iwc).getUserLoginName(); 
                         //(String) iwc.getSessionAttribute(LoginBusinessBean.UserAttributeParameter);
                 } catch (RemoteException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
 			}
@@ -823,7 +826,7 @@ public class Login extends Block {
 		}
 		
 		if (LoginBusinessBean.isLogOnAction(iwc)) {
-			if (getParentPage() != null && LoginDBHandler.getNumberOfSuccessfulLogins((LoginDBHandler.findUserLogin(user.getID())).getID()) == 1 && firstLogOnPage != null) {
+			if (getParentPage() != null && LoginDBHandler.getNumberOfSuccessfulLogins((((Integer) LoginDBHandler.findUserLogin(user.getID()).getPrimaryKey()).intValue())) == 1 && firstLogOnPage != null) {
 				iwc.forwardToIBPage(getParentPage(), firstLogOnPage);
 			}
 		}
@@ -958,7 +961,7 @@ public class Login extends Block {
 			getMainForm().add(loginTable);
 		}
 		if (LoginBusinessBean.isLogOnAction(iwc)) {
-			LoginInfo loginInfo = LoginDBHandler.getLoginInfo((LoginDBHandler.findUserLogin(user.getID())).getID());
+			LoginInfo loginInfo = LoginDBHandler.getLoginInfo((LoginDBHandler.findUserLogin(user.getID())));
 			Script s = new Script();
 			boolean addScript = false;
 			if (loginInfo.getAllowedToChange() && loginInfo.getChangeNextTime()) {

@@ -8,14 +8,16 @@ package com.idega.block.login.presentation;
  */
 
 import java.text.MessageFormat;
-
+import javax.ejb.FinderException;
 import com.idega.block.login.exception.LoginForgotException;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginContext;
 import com.idega.core.accesscontrol.business.LoginCreator;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
+import com.idega.core.accesscontrol.data.LoginTableHome;
 import com.idega.core.contact.data.Email;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -289,13 +291,14 @@ public class Forgot extends Block {
 
 		User usr = null;
 		try {
-			LoginTable[] login = (LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumnEquals(com.idega.core.accesscontrol.data.LoginTableBMPBean.getUserLoginColumnName(), loginName);
-			if (login == null || login.length < 0) {
+			LoginTableHome home = (LoginTableHome) IDOLookup.getHome(LoginTable.class);
+			try {
+				LoginTable login = home.findByLogin(loginName);
+				usr = Converter.convertToNewUser(login.getUser());
+			}
+			catch (FinderException fe) {
 				throw new LoginForgotException(NO_LOGIN);
 			}
-
-			usr = Converter.convertToNewUser(login[0].getUser());
-
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
