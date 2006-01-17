@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.19 2005/12/12 11:43:25 laddi Exp $
+ * $Id: Login2.java,v 1.20 2006/01/17 12:48:58 gimmi Exp $
  * Created on 7.3.2005 in project com.idega.block.login
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -43,10 +43,10 @@ import com.idega.servlet.filter.IWAuthenticator;
  * <p>
  * New Login component based on JSF and CSS. Will gradually replace old Login component
  * </p>
- *  Last modified: $Date: 2005/12/12 11:43:25 $ by $Author: laddi $
+ *  Last modified: $Date: 2006/01/17 12:48:58 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 
@@ -264,6 +264,11 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			else if(getURLToRedirectToOnLogon()!=null){
 				submitLayer.getChildren().add(new Parameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON,getURLToRedirectToOnLogon()));
 			}
+			else if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON)){
+				submitLayer.getChildren().add(new Parameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON,iwc.getParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON)));
+			}
+			
+			
 			
 			if(!extraLogonParameters.isEmpty()){
 				for (Iterator iter = extraLogonParameters.keySet().iterator(); iter.hasNext();) {
