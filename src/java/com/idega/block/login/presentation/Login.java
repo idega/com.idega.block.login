@@ -72,7 +72,6 @@ public class Login extends Block {
 	private boolean showOnlyInputs = false;
 	private Link loggedOnLink;
 	private String backgroundImageUrl;
-	private String newUserImageUrl = "";
 	private String loginWidth = "";
 	private String loginHeight = "";
 	private String loginAlignment = "left";
@@ -96,10 +95,7 @@ public class Login extends Block {
 	private boolean onlyLogoutButton = false;
 	private boolean register = false;
 	private boolean forgot = false;
-	private boolean _window;
 	private int _logOnPage = -1;
-	//private int _redirectPage = -1;
-	private Map groupPageMap;
 	public static String controlParameter;
 	public final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.login";
 	public static final int LAYOUT_VERTICAL = 1;

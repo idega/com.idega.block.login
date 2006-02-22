@@ -42,7 +42,6 @@ import com.idega.util.IWColor;
 
 public class LoginEditor extends PresentationObjectContainer {
 	private User eUser = null;
-	private String sUnionId = null;
 	private String customMsg = "";
 	private String errorMsg = "";
 	public static String prmUserId = "user_id";

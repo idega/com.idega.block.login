@@ -53,8 +53,6 @@ public class Forgot extends Block {
 	protected IWResourceBundle iwrb;
 	protected IWBundle iwb;
 
-	private String errorMsg = "";
-
 	public static final int INIT = 100;
 	public static final int NORMAL = 0;
 	public static final int USER_NAME_EXISTS = 1;
@@ -68,8 +66,6 @@ public class Forgot extends Block {
 	public static final int ERROR = 10;
 	public static final int SENT = 11;
 	public static final int NO_LOGIN = 12;
-
-	private String portalname = "";
 
 	private TextFormat form;
 	
@@ -90,7 +86,6 @@ public class Forgot extends Block {
 
 	protected void control(IWContext iwc) {
 		// debugParameters(iwc);
-		portalname = iwc.getServerName();
 		form = TextFormat.getInstance();
 		int code = INIT;
 		if (iwc.isParameterSet(PARAMETER_PROCESS))

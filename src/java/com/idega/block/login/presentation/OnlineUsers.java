@@ -23,7 +23,6 @@ import com.idega.presentation.text.Text;
  */
 public class OnlineUsers extends Block {
 	
-	private boolean showNobodyText = true;
 	private boolean showPersonalID = false;
 	private boolean showLoginName = false;
 	

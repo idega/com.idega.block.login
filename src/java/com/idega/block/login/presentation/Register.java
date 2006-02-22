@@ -35,7 +35,6 @@ import com.idega.util.text.Name;
 
 public class Register extends Block {
 
-	private String errorMsg = "";
 	public static String prmUserId = "user_id";
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.login";
 	protected IWResourceBundle iwrb;
@@ -84,17 +83,6 @@ public class Register extends Block {
 			code = registerUser(realName, userEmail, userName, pass, conf);
 		}
 		return code;
-	}
-
-	private PresentationObject getSent(IWContext iwc) {
-		Table T = new Table();
-		T.add(
-			iwrb.getLocalizedString(
-				"register.sent_message",
-				"Your login and password has been sent"));
-
-		return T;
-
 	}
 
 	private PresentationObject getForm(IWContext iwc, int code) {
