@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.20 2006/01/17 12:48:58 gimmi Exp $
+ * $Id: Login2.java,v 1.21 2006/03/08 11:28:42 laddi Exp $
  * Created on 7.3.2005 in project com.idega.block.login
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -43,10 +43,10 @@ import com.idega.servlet.filter.IWAuthenticator;
  * <p>
  * New Login component based on JSF and CSS. Will gradually replace old Login component
  * </p>
- *  Last modified: $Date: 2006/01/17 12:48:58 $ by $Author: gimmi $
+ *  Last modified: $Date: 2006/03/08 11:28:42 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 
@@ -208,10 +208,8 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 						
 			PasswordInput password = new PasswordInput(LoginBusinessBean.PARAMETER_PASSWORD);
 			if (showLabelInInput) {
-				password.setInputType(PasswordInput.INPUT_TYPE_TEXT);
 				password.setValue(getLocalizedString("password", "Password",iwc));
 				password.setOnFocus("this.value=''");
-				password.setOnFocus("this.type='password'");
 			}
 			if (enterSubmit) password.setOnKeyPress("return enterSubmit(this,event)");
 			Label passwordLabel = new Label(
