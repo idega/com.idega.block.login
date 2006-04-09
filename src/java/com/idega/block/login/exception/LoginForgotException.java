@@ -39,11 +39,11 @@ public class LoginForgotException extends Exception {
 	 */
 	public LoginForgotException(int code) {
 		super();
-		_code = code;
+		this._code = code;
 	}
 	
 	public int getCode(){
-		return _code;
+		return this._code;
 	}
 
 

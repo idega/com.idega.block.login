@@ -63,22 +63,22 @@ public class LoginEditor extends PresentationObjectContainer {
 	}
 
 	public LoginEditor() {
-		LightColor = "#D7DADF";
-		MiddleColor = "#9fA9B3";
-		DarkColor = "#27334B";
-		WhiteColor = "#FFFFFF";
-		TextFontColor = "#000000";
-		HeaderFontColor = DarkColor;
-		IndexFontColor = "#000000";
+		this.LightColor = "#D7DADF";
+		this.MiddleColor = "#9fA9B3";
+		this.DarkColor = "#27334B";
+		this.WhiteColor = "#FFFFFF";
+		this.TextFontColor = "#000000";
+		this.HeaderFontColor = this.DarkColor;
+		this.IndexFontColor = "#000000";
 	}
 
 	public LoginEditor(int iUserId) {
 		this();
 		try {
-			eUser = ((com.idega.core.user.data.UserHome) com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(iUserId);
+			this.eUser = ((com.idega.core.user.data.UserHome) com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(iUserId);
 		}
 		catch (SQLException ex) {
-			eUser = null;
+			this.eUser = null;
 		}
 	}
 
@@ -88,12 +88,12 @@ public class LoginEditor extends PresentationObjectContainer {
 		// eUser = LoginBusiness.getUser(iwc);
 		/** Gimmi 04.11.2002 */
 		if (sUserId == null) {
-			eUser = iwc.getCurrentUser();
+			this.eUser = iwc.getCurrentUser();
 		}
 		else {
 			try {
 				UserHome uHome = (UserHome) IDOLookup.getHome(User.class);
-				eUser = uHome.findByPrimaryKey(new Integer(sUserId));
+				this.eUser = uHome.findByPrimaryKey(new Integer(sUserId));
 			}
 			catch (RemoteException e) {
 				e.printStackTrace(System.err);
@@ -102,17 +102,17 @@ public class LoginEditor extends PresentationObjectContainer {
 				e.printStackTrace(System.err);
 			}
 		}
-		if (eUser != null) {
+		if (this.eUser != null) {
 			String userlogin = null;
 			if (iwc.getParameter("ok") != null || iwc.getParameter("ok.x") != null) {
-				doAddTo(iwc, eUser.getID());
+				doAddTo(iwc, this.eUser.getID());
 			}
-			userlogin = getUsrLogin(eUser.getID());
+			userlogin = getUsrLogin(this.eUser.getID());
 			// add((iwrb.getLocalizedString("login","Login")));
-			add(doView(eUser, userlogin));
+			add(doView(this.eUser, userlogin));
 		}
 		else {
-			errorMsg = iwrb.getLocalizedString("non_user", "Non-user");
+			this.errorMsg = this.iwrb.getLocalizedString("non_user", "Non-user");
 		}
 		add(getMsgText(this.errorMsg));
 	}
@@ -129,10 +129,12 @@ public class LoginEditor extends PresentationObjectContainer {
 
 	private String getUsrLogin(int mbid) {
 		String userLogin = getUserLogin(mbid);
-		if (userLogin != null)
+		if (userLogin != null) {
 			return userLogin;
-		else
-			return iwrb.getLocalizedString("has_no_login", "Has no login");
+		}
+		else {
+			return this.iwrb.getLocalizedString("has_no_login", "Has no login");
+		}
 	}
 
 	private boolean doAddTo(IWContext iwc, int iUserId) {
@@ -148,11 +150,12 @@ public class LoginEditor extends PresentationObjectContainer {
 				catch (SQLException sql) {
 					sql.printStackTrace();
 					register = false;
-					errorMsg = iwrb.getLocalizedString("database_trouble", "database_trouble");
+					this.errorMsg = this.iwrb.getLocalizedString("database_trouble", "database_trouble");
 				}
 			}
-			else
-				this.errorMsg = iwrb.getLocalizedString("empty_fields", "Empty fields");
+			else {
+				this.errorMsg = this.iwrb.getLocalizedString("empty_fields", "Empty fields");
+			}
 		}
 		return register;
 	}
@@ -160,7 +163,7 @@ public class LoginEditor extends PresentationObjectContainer {
 	private PresentationObject doView(User user, String sUserLogin) {
 		boolean allowChangingUsername = true;
 		try {
-			String prop = getPropertyValue(iwb, BUNDEL_PRPERTY_NAME_USERNAME_CONSTANT, Boolean.FALSE.toString());
+			String prop = getPropertyValue(this.iwb, BUNDEL_PRPERTY_NAME_USERNAME_CONSTANT, Boolean.FALSE.toString());
 			allowChangingUsername = !prop.trim().equalsIgnoreCase("true");
 		}
 		catch (NullPointerException e) {
@@ -175,7 +178,7 @@ public class LoginEditor extends PresentationObjectContainer {
 		Form myForm = new Form();
 
 		Table T = new Table();
-		Text msgText = formatText(customMsg);
+		Text msgText = formatText(this.customMsg);
 		msgText.setFontColor(IWColor.getHexColorString(Color.blue));
 		T.add(msgText, 1, 1);
 		T.add(formatText(user.getName()), 1, 2);
@@ -193,22 +196,24 @@ public class LoginEditor extends PresentationObjectContainer {
 		this.setStyle(psw1);
 		PasswordInput psw2 = new PasswordInput("ml.psw2");
 		this.setStyle(psw2);
-		T.add(formatText(iwrb.getLocalizedString("login", "Login") + ":"), 1, 3);
+		T.add(formatText(this.iwrb.getLocalizedString("login", "Login") + ":"), 1, 3);
 		T.add(tUsrLgn, 1, 4);
-		T.add(formatText(iwrb.getLocalizedString("passwd", "Passwd") + ":"), 1, 5);
+		T.add(formatText(this.iwrb.getLocalizedString("passwd", "Passwd") + ":"), 1, 5);
 		T.add(psw1, 1, 6);
-		T.add(formatText(iwrb.getLocalizedString("confirm", "Confirm") + ":"), 1, 7);
+		T.add(formatText(this.iwrb.getLocalizedString("confirm", "Confirm") + ":"), 1, 7);
 		T.add(psw2, 1, 8);
-		SubmitButton ok = new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), "ok");
-		CloseButton close = new CloseButton(iwrb.getLocalizedImageButton("close", "Close"));
+		SubmitButton ok = new SubmitButton(this.iwrb.getLocalizedImageButton("save", "Save"), "ok");
+		CloseButton close = new CloseButton(this.iwrb.getLocalizedImageButton("close", "Close"));
 		T.add(ok, 1, 9);
 		T.add(Text.NON_BREAKING_SPACE, 1, 9);
 		T.add(close, 1, 9);
 		T.add(new HiddenInput(prmUserId, String.valueOf(user.getID())));
-		if (!"".equals(customMsg))
-			T.add(new HiddenInput("msg", customMsg));
-		if (changeNextTime)
+		if (!"".equals(this.customMsg)) {
+			T.add(new HiddenInput("msg", this.customMsg));
+		}
+		if (this.changeNextTime) {
 			T.add(new HiddenInput("chg", "true"));
+		}
 		myForm.add(T);
 		return myForm;
 	}
@@ -222,25 +227,26 @@ public class LoginEditor extends PresentationObjectContainer {
 					if (sPasswd.equals(sConfirm)) {
 						LoginDBHandler.createLogin(iUserId, sUserLogin, sPasswd);
 						returner = true;
-						errorMsg = iwrb.getLocalizedString("login_created", "Login created");
+						this.errorMsg = this.iwrb.getLocalizedString("login_created", "Login created");
 					}
 				}
 				catch (Exception ex) {
 					ex.printStackTrace();
 					returner = false;
 					// errorMsg = iwrb.getLocalizedString("creation_failed","Failed");
-					errorMsg = ex.getMessage();
+					this.errorMsg = ex.getMessage();
 				}
 			}
 			else if (logTable != null) {
 				try {
 					if (sPasswd.equals(sConfirm)) {
 						LoginDBHandler.updateLogin(iUserId, sUserLogin, sPasswd);
-						if (changeNextTime)
+						if (this.changeNextTime) {
 							LoginDBHandler.changeNextTime(logTable, false);
+						}
 
 						returner = true;
-						errorMsg = iwrb.getLocalizedString("updated", "Login updated");
+						this.errorMsg = this.iwrb.getLocalizedString("updated", "Login updated");
 					}
 				}
 				catch (Exception ex) {
@@ -248,30 +254,34 @@ public class LoginEditor extends PresentationObjectContainer {
 					returner = false;
 					// errorMsg = iwrb.getLocalizedString("update_failed","Update
 					// Failed");
-					errorMsg = ex.getMessage();
+					this.errorMsg = ex.getMessage();
 				}
 			}
 		}
-		else
-			errorMsg = iwrb.getLocalizedString("wrong_confirm", "Confirm failed");
+		else {
+			this.errorMsg = this.iwrb.getLocalizedString("wrong_confirm", "Confirm failed");
+		}
 
 		return returner;
 	}
 
 	public String getUserLogin(int iUserId) {
 		LoginTable L = LoginDBHandler.getUserLogin(iUserId);
-		if (L != null)
+		if (L != null) {
 			return L.getUserLogin();
-		else
+		}
+		else {
 			return null;
+		}
 	}
 
 	public Text formatText(String s) {
 		Text T = new Text();
 		if (s != null) {
 			T = new Text(s);
-			if (this.fontBold)
+			if (this.fontBold) {
 				T.setBold();
+			}
 			T.setFontColor(this.TextFontColor);
 			T.setFontSize(this.fontSize);
 		}
@@ -287,16 +297,18 @@ public class LoginEditor extends PresentationObjectContainer {
 	}
 
 	public void main(IWContext iwc) {
-		iwrb = getResourceBundle(iwc);
-		iwb = getBundle(iwc);
-		if (LoginBusinessBean.isLoggedOn(iwc))
+		this.iwrb = getResourceBundle(iwc);
+		this.iwb = getBundle(iwc);
+		if (LoginBusinessBean.isLoggedOn(iwc)) {
 			control(iwc);
-		else
-			add(iwrb.getLocalizedString("not logged on", "Not logged on"));
+		}
+		else {
+			add(this.iwrb.getLocalizedString("not logged on", "Not logged on"));
+		}
 	}
 
 	public void setMessage(String msg) {
-		customMsg = msg;
+		this.customMsg = msg;
 	}
 
 	public void setChangeLoginNextTime(boolean change) {

@@ -86,14 +86,17 @@ public class Forgot extends Block {
 
 	protected void control(IWContext iwc) {
 		// debugParameters(iwc);
-		form = TextFormat.getInstance();
+		this.form = TextFormat.getInstance();
 		int code = INIT;
-		if (iwc.isParameterSet(PARAMETER_PROCESS))
+		if (iwc.isParameterSet(PARAMETER_PROCESS)) {
 			code = processForm(iwc);
-		if (code == NORMAL)
+		}
+		if (code == NORMAL) {
 			add(getSent(iwc));
-		else
+		}
+		else {
 			add(getInitialState(iwc, code));
+		}
 	}
 
 	private PresentationObject getInitialState(IWContext iwc, int code) {
@@ -131,7 +134,7 @@ public class Forgot extends Block {
 
 	private PresentationObject getSent(IWContext iwc) {
 		Table T = new Table();
-		T.add(iwrb.getLocalizedString("forgotten.sent_message", "Your login and password has been sent"));
+		T.add(this.iwrb.getLocalizedString("forgotten.sent_message", "Your login and password has been sent"));
 		return T;
 	}
 
@@ -148,87 +151,87 @@ public class Forgot extends Block {
 		myForm.add(T);
 		int row = 1;
 
-		if (!_hideMessage) {
-			String manual = iwrb.getLocalizedString("forgotten.manual", "Enter your username and a new password will be sent to your registered email address");
+		if (!this._hideMessage) {
+			String manual = this.iwrb.getLocalizedString("forgotten.manual", "Enter your username and a new password will be sent to your registered email address");
 			T.mergeCells(1, row, 2, row);
-			T.add(form.format(manual), 1, row++);
+			T.add(this.form.format(manual), 1, row++);
 		}
 		
-		if (iSpaceBetween > 0) {
-			T.setHeight(row++, iSpaceBetween);
+		if (this.iSpaceBetween > 0) {
+			T.setHeight(row++, this.iSpaceBetween);
 		}
 
-		if (_loginInput) {
+		if (this._loginInput) {
 			TextInput inputUserLogin = new TextInput(PRM_USER_LOGIN);
-			if (iInputStyleClass != null) {
-				inputUserLogin.setStyleClass(iInputStyleClass);
+			if (this.iInputStyleClass != null) {
+				inputUserLogin.setStyleClass(this.iInputStyleClass);
 			}
-			if (iInputLength > 0) {
-				inputUserLogin.setLength(iInputLength);
+			if (this.iInputLength > 0) {
+				inputUserLogin.setLength(this.iInputLength);
 			}
-			String textUserLogin = iwrb.getLocalizedString("forgotten.user_login", "Login") + Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE;
-			T.add(form.format(textUserLogin), 1, row);
+			String textUserLogin = this.iwrb.getLocalizedString("forgotten.user_login", "Login") + Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE;
+			T.add(this.form.format(textUserLogin), 1, row);
 			T.add(inputUserLogin, 2, row++);
 		}
 		else {
 			TextInput inputUserEmail = new TextInput("reg_user_email");
-			if (iInputStyleClass != null) {
-				inputUserEmail.setStyleClass(iInputStyleClass);
+			if (this.iInputStyleClass != null) {
+				inputUserEmail.setStyleClass(this.iInputStyleClass);
 			}
-			if (iInputLength > 0) {
-				inputUserEmail.setLength(iInputLength);
+			if (this.iInputLength > 0) {
+				inputUserEmail.setLength(this.iInputLength);
 			}
-			String textUserEmail = iwrb.getLocalizedString("forgotten.user_email", "Email") + Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE;
+			String textUserEmail = this.iwrb.getLocalizedString("forgotten.user_email", "Email") + Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE;
 			if (iwc.isParameterSet("reg_user_email")) {
 				inputUserEmail.setContent(iwc.getParameter("reg_user_email"));
 			}
-			T.add(form.format(textUserEmail), 1, row);
+			T.add(this.form.format(textUserEmail), 1, row);
 			T.add(inputUserEmail, 2, row++);
 		}
 
-		if (iSpaceBetween > 0) {
-			T.setHeight(row++, iSpaceBetween);
+		if (this.iSpaceBetween > 0) {
+			T.setHeight(row++, this.iSpaceBetween);
 		}
 
 		if (message != null) {
 			T.mergeCells(1, row, 2, row);
-			T.add(form.format(message, "#ff0000"), 1, row++);
+			T.add(this.form.format(message, "#ff0000"), 1, row++);
 		}
 
-		if (iSpaceBetween > 0) {
-			T.setHeight(row++, iSpaceBetween);
+		if (this.iSpaceBetween > 0) {
+			T.setHeight(row++, this.iSpaceBetween);
 		}
 
 		PresentationObject ok = null;
 		PresentationObject close = null;
-		if (iUseLinksAsButtons) {
-			ok = new Link(iwrb.getLocalizedString("send", "Send"));
+		if (this.iUseLinksAsButtons) {
+			ok = new Link(this.iwrb.getLocalizedString("send", "Send"));
 			((Link) ok).setToFormSubmit(myForm);
-			close = new Link(iwrb.getLocalizedString("close", "Close"));
+			close = new Link(this.iwrb.getLocalizedString("close", "Close"));
 			((Link) close).setAsCloseLink();
 		}
-		else if (iUseGeneratedButtons) {
-			ok = new SubmitButton(iwrb.getLocalizedImageButton("send", "Send"), "send");
-			close = new CloseButton(iwrb.getLocalizedImageButton("close", "Close"));
+		else if (this.iUseGeneratedButtons) {
+			ok = new SubmitButton(this.iwrb.getLocalizedImageButton("send", "Send"), "send");
+			close = new CloseButton(this.iwrb.getLocalizedImageButton("close", "Close"));
 		}
 		else {
-			if (iSendButtonImage != null) {
-				ok = new SubmitButton(iSendButtonImage);
+			if (this.iSendButtonImage != null) {
+				ok = new SubmitButton(this.iSendButtonImage);
 			}
 			else {
-				ok = new SubmitButton(iwrb.getLocalizedString("send", "Send"));
+				ok = new SubmitButton(this.iwrb.getLocalizedString("send", "Send"));
 			}
-			if (iCloseButtonImage != null) {
-				close = new CloseButton(iCloseButtonImage);
+			if (this.iCloseButtonImage != null) {
+				close = new CloseButton(this.iCloseButtonImage);
 			}
 			else {
-				close = new CloseButton(iwrb.getLocalizedString("close", "Close"));
+				close = new CloseButton(this.iwrb.getLocalizedString("close", "Close"));
 			}
 		}
 		
-		if (iButtonStyleClass != null) {
-			ok.setStyleClass(iButtonStyleClass);
-			close.setStyleClass(iButtonStyleClass);
+		if (this.iButtonStyleClass != null) {
+			ok.setStyleClass(this.iButtonStyleClass);
+			close.setStyleClass(this.iButtonStyleClass);
 		}
 
 		T.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
@@ -251,7 +254,7 @@ public class Forgot extends Block {
 		T.setWidth(Table.HUNDRED_PERCENT);
 		T.setCellpadding(0);
 		T.setCellspacing(0);
-		T.add(iwrb.getLocalizedString("forgotten.done", "Your login and password has been sent to you."));
+		T.add(this.iwrb.getLocalizedString("forgotten.done", "Your login and password has been sent to you."));
 		table.add(T);
 		return table;
 	}
@@ -267,8 +270,9 @@ public class Forgot extends Block {
 			UserHome uhome = (UserHome) com.idega.data.IDOLookup.getHome(User.class);
 			usr = uhome.findUserFromEmail(emailAddress);
 			LoginTable login = LoginDBHandler.getUserLogin(((Integer) usr.getPrimaryKey()).intValue());
-			if (login == null)
+			if (login == null) {
 				throw new LoginForgotException(NO_USERNAME);
+			}
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -304,11 +308,12 @@ public class Forgot extends Block {
 	}
 
 	private void sendEmail(IWContext iwc, User usr, String emailAddress) throws LoginForgotException {
-		String sender = iwb.getProperty("forgotten.email_sender", "admin@idega.is");
-		String server = iwb.getProperty("forgotten.email_server", "mail.idega.is");
-		String subject = iwb.getProperty("forgotten.email_subject", "Forgotten password");
-		if (sender == null || server == null || subject == null)
+		String sender = this.iwb.getProperty("forgotten.email_sender", "admin@idega.is");
+		String server = this.iwb.getProperty("forgotten.email_server", "mail.idega.is");
+		String subject = this.iwb.getProperty("forgotten.email_subject", "Forgotten password");
+		if (sender == null || server == null || subject == null) {
 			throw new LoginForgotException(NO_SERVER);
+		}
 
 		LoginContext context = null;
 		if (usr != null) {
@@ -322,9 +327,10 @@ public class Forgot extends Block {
 			}
 
 			System.err.println(usr.getName() + " has forgotten password");
-			String letter = iwrb.getLocalizedString("forgotten.email_body", "Username : {0} \nPassword: {1} ");
-			if (letter == null)
+			String letter = this.iwrb.getLocalizedString("forgotten.email_body", "Username : {0} \nPassword: {1} ");
+			if (letter == null) {
 				throw new LoginForgotException(NO_LETTER);
+			}
 
 			if (letter != null && context != null) {
 				Object[] objs = { context.getUserName(), context.getPassword() };
@@ -349,8 +355,9 @@ public class Forgot extends Block {
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		if (emails != null && emails.size() > 0)
+		if (emails != null && emails.size() > 0) {
 			return (com.idega.core.contact.data.Email) emails.iterator().next();
+		}
 		return null;
 	}
 
@@ -358,82 +365,82 @@ public class Forgot extends Block {
 		String msg = null;
 		switch (code) {
 			case NORMAL:
-				iwrb.getLocalizedString("register.NORMAL", "NORMAL");
+				this.iwrb.getLocalizedString("register.NORMAL", "NORMAL");
 				break;
 			case USER_NAME_EXISTS:
-				msg = iwrb.getLocalizedString("register.USER_NAME_EXISTS", "USER_NAME_EXISTS");
+				msg = this.iwrb.getLocalizedString("register.USER_NAME_EXISTS", "USER_NAME_EXISTS");
 				break;
 			case ILLEGAL_USERNAME:
-				msg = iwrb.getLocalizedString("register.ILLEGAL_USERNAME", "ILLEGAL_USERNAME");
+				msg = this.iwrb.getLocalizedString("register.ILLEGAL_USERNAME", "ILLEGAL_USERNAME");
 				break;
 			case ILLEGAL_EMAIL:
-				msg = iwrb.getLocalizedString("register.ILLEGAL_EMAIL", "ILLEGAL_EMAIL");
+				msg = this.iwrb.getLocalizedString("register.ILLEGAL_EMAIL", "ILLEGAL_EMAIL");
 				break;
 			case NO_NAME:
-				msg = iwrb.getLocalizedString("register.NO_NAME", "NO_NAME");
+				msg = this.iwrb.getLocalizedString("register.NO_NAME", "NO_NAME");
 				break;
 			case NO_EMAIL:
-				msg = iwrb.getLocalizedString("register.NO_EMAIL", "NO_EMAIL");
+				msg = this.iwrb.getLocalizedString("register.NO_EMAIL", "NO_EMAIL");
 				break;
 			case NO_USERNAME:
-				msg = iwrb.getLocalizedString("register.NO_USERNAME", "NO_USER");
+				msg = this.iwrb.getLocalizedString("register.NO_USERNAME", "NO_USER");
 				break;
 			case NO_SERVER:
-				msg = iwrb.getLocalizedString("register.NO_SERVER", "NO_SERVER");
+				msg = this.iwrb.getLocalizedString("register.NO_SERVER", "NO_SERVER");
 				break;
 			case ERROR:
-				msg = iwrb.getLocalizedString("register.ERROR", "ERROR");
+				msg = this.iwrb.getLocalizedString("register.ERROR", "ERROR");
 				break;
 			case SENT:
-				msg = iwrb.getLocalizedString("register.SENT", "SENT");
+				msg = this.iwrb.getLocalizedString("register.SENT", "SENT");
 				break;
 		}
 		return msg;
 	}
 
 	public void main(IWContext iwc) {
-		iwb = getBundle(iwc);
-		iwrb = getResourceBundle(iwc);
+		this.iwb = getBundle(iwc);
+		this.iwrb = getResourceBundle(iwc);
 		control(iwc);
 	}
 
 	public void setToUseLoginInput(boolean value) {
-		_loginInput = value;
+		this._loginInput = value;
 	}
 
 	public void setToHideMessage(boolean value) {
-		_hideMessage = value;
+		this._hideMessage = value;
 	}
 	
 	public void setButtonStyleClass(String buttonStyleClass) {
-		iButtonStyleClass = buttonStyleClass;
+		this.iButtonStyleClass = buttonStyleClass;
 	}
 	
 	public void setInputStyleClass(String inputStyleClass) {
-		iInputStyleClass = inputStyleClass;
+		this.iInputStyleClass = inputStyleClass;
 	}
 	
 	public void setSpaceBetween(int spaceBetween) {
-		iSpaceBetween = spaceBetween;
+		this.iSpaceBetween = spaceBetween;
 	}
 	
 	public void setUseGeneratedButtons(boolean useGeneratedButtons) {
-		iUseGeneratedButtons = useGeneratedButtons;
+		this.iUseGeneratedButtons = useGeneratedButtons;
 	}
 	
 	public void setUseLinksAsButtons(boolean useLinksAsButtons) {
-		iUseLinksAsButtons = useLinksAsButtons;
+		this.iUseLinksAsButtons = useLinksAsButtons;
 	}
 	
 	public void setInputLength(int inputLength) {
-		iInputLength = inputLength;
+		this.iInputLength = inputLength;
 	}
 	
 	public void setCloseButtonImage(Image closeButtonImage) {
-		iCloseButtonImage = closeButtonImage;
+		this.iCloseButtonImage = closeButtonImage;
 	}
 	
 	public void setSendButtonImage(Image sendButtonImage) {
-		iSendButtonImage = sendButtonImage;
+		this.iSendButtonImage = sendButtonImage;
 	}
 }

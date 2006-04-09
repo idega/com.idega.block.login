@@ -39,19 +39,19 @@ public class Register extends Block {
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.login";
 	protected IWResourceBundle iwrb;
 	protected IWBundle iwb;
-	public final int INIT = 100;
-	public final int NORMAL = 0;
-	public final int USER_NAME_EXISTS = 1;
-	public final int ILLEGAL_USERNAME = 2;
-	public final int ILLEGAL_EMAIL = 3;
-	public final int NO_NAME = 5;
-	public final int NO_EMAIL = 6;
-	public final int NO_USERNAME = 7;
-	public final int NO_SERVER = 8;
-	public final int NO_LETTER = 9;
-	public final int ERROR = 10;
-	public final int SENT = 11;
-	public final int MISMATCH = 12;
+	public static final int INIT = 100;
+	public static final int NORMAL = 0;
+	public static final int USER_NAME_EXISTS = 1;
+	public static final int ILLEGAL_USERNAME = 2;
+	public static final int ILLEGAL_EMAIL = 3;
+	public static final int NO_NAME = 5;
+	public static final int NO_EMAIL = 6;
+	public static final int NO_USERNAME = 7;
+	public static final int NO_SERVER = 8;
+	public static final int NO_LETTER = 9;
+	public static final int ERROR = 10;
+	public static final int SENT = 11;
+	public static final int MISMATCH = 12;
 	
 	private UserBusiness userBusiness = null;
 
@@ -61,13 +61,16 @@ public class Register extends Block {
 
 	protected void control(IWContext iwc)throws RemoteException {
 		int code = INIT;
-		if (iwc.isParameterSet("send.x"))
+		if (iwc.isParameterSet("send.x")) {
 			code = processForm(iwc);
+		}
 		Table T = new Table(1, 3);
-		if (code == SENT)
+		if (code == SENT) {
 			T.add(getAnswer(), 1, 2);
-		else
+		}
+		else {
 			T.add(getForm(iwc, code), 1, 2);
+		}
 		add(T);
 	}
 
@@ -87,17 +90,17 @@ public class Register extends Block {
 
 	private PresentationObject getForm(IWContext iwc, int code) {
 		Table T = new Table(2, 9);
-		String textInfo = iwrb.getLocalizedString("register.info", "Register");
+		String textInfo = this.iwrb.getLocalizedString("register.info", "Register");
 		String textUserRealName =
-			iwrb.getLocalizedString("register.name", "Your name");
+			this.iwrb.getLocalizedString("register.name", "Your name");
 		String textUserEmail =
-			iwrb.getLocalizedString("register.email", "Email");
+			this.iwrb.getLocalizedString("register.email", "Email");
 		String textUserName =
-			iwrb.getLocalizedString("register.username", "Username");
+			this.iwrb.getLocalizedString("register.username", "Username");
 		String textPassword =
-			iwrb.getLocalizedString("register.passwd", "Password");
+			this.iwrb.getLocalizedString("register.passwd", "Password");
 		String textConfirm =
-			iwrb.getLocalizedString("register.confirm", "Confirm");
+			this.iwrb.getLocalizedString("register.confirm", "Confirm");
 		TextInput inputUserRealName = new TextInput("reg_userrealname");
 		TextInput inputUserEmail = new TextInput("reg_email");
 		TextInput inputUserName = new TextInput("reg_username");
@@ -126,16 +129,17 @@ public class Register extends Block {
 		T.add(inputConfirm, 2, 6);
 		T.mergeCells(1, 7, 2, 7);
 		String message = getMessage(code);
-		if (message != null)
+		if (message != null) {
 			T.add(message, 1, 7);
+		}
 		//System.err.println(code+" : "+message);
 		SubmitButton ok =
 			new SubmitButton(
-				iwrb.getLocalizedImageButton("send", "Send"),
+				this.iwrb.getLocalizedImageButton("send", "Send"),
 				"send");
 
 		CloseButton close =
-			new CloseButton(iwrb.getLocalizedImageButton("close", "Close"));
+			new CloseButton(this.iwrb.getLocalizedImageButton("close", "Close"));
 
 		T.add(ok, 2, 9);
 		T.add(close, 2, 9);
@@ -155,7 +159,7 @@ public class Register extends Block {
 		Table T = new Table(1, 1);
 		T.setHeight(300);
 		T.add(
-			iwrb.getLocalizedString(
+			this.iwrb.getLocalizedString(
 				"register.done",
 				"Your login and password has been sent to you."));
 		table.add(T);
@@ -172,25 +176,30 @@ public class Register extends Block {
 
 		int internal = NORMAL;
 
-		if (userRealName.length() < 2)
+		if (userRealName.length() < 2) {
 			return NO_NAME;
+		}
 
-		if (emailAddress.length() == 0)
+		if (emailAddress.length() == 0) {
 			return NO_EMAIL;
+		}
 
-		if (emailAddress.indexOf("@") == -1)
+		if (emailAddress.indexOf("@") == -1) {
 			return ILLEGAL_EMAIL;
+		}
 
-		if (userName.length() == 0)
+		if (userName.length() == 0) {
 			internal = NO_USERNAME;
-
-		else if (LoginDBHandler.isLoginInUse(userName))
+		}
+		else if (LoginDBHandler.isLoginInUse(userName)) {
 			return USER_NAME_EXISTS;
+		}
 
 		if (pass != null && conf != null) {
 
-			if (!pass.equals(conf))
+			if (!pass.equals(conf)) {
 				return MISMATCH;
+			}
 
 		}
 
@@ -198,26 +207,29 @@ public class Register extends Block {
 
 		try {
 
-			String sender = iwb.getProperty("register.email_sender");
-			String server = iwb.getProperty("register.email_server");
-			String subject = iwb.getProperty("register.email_subject");
-			if (sender == null || server == null || subject == null)
+			String sender = this.iwb.getProperty("register.email_sender");
+			String server = this.iwb.getProperty("register.email_server");
+			String subject = this.iwb.getProperty("register.email_subject");
+			if (sender == null || server == null || subject == null) {
 				return NO_SERVER;
+			}
 			String letter =
-				iwrb.getLocalizedString(
+				this.iwrb.getLocalizedString(
 					"register.email_body",
 					"Username : {1} \nPassword: {2}");
 
-			if (letter == null)
+			if (letter == null) {
 				return NO_LETTER;
+			}
 
 			Name name = new Name(userRealName);
 														//createUserWithLogin(String firstname, String middlename, String lastname, String displayname, String description, Integer gender, IWTimestamp date_of_birth, Integer primary_group, String userLogin, String password, Boolean accountEnabled, IWTimestamp modified, int daysOfValidity, Boolean passwordExpires, Boolean userAllowedToChangePassw, Boolean changeNextTime,String encryptionType) throws CreateException{
-			User iwUser = userBusiness.createUserWithLogin(name.getFirstName(),name.getMiddleName(),name.getLastName(),null,    null,                      null,                  null,                                      null,                             usr,                      pass,                    Boolean.TRUE ,                                IWTimestamp.RightNow(),5000,               Boolean.FALSE,    				Boolean.TRUE ,                                      Boolean.FALSE,                                 null);
+			User iwUser = this.userBusiness.createUserWithLogin(name.getFirstName(),name.getMiddleName(),name.getLastName(),null,    null,                      null,                  null,                                      null,                             usr,                      pass,                    Boolean.TRUE ,                                IWTimestamp.RightNow(),5000,               Boolean.FALSE,    				Boolean.TRUE ,                                      Boolean.FALSE,                                 null);
 			LoginContext user = new LoginContext(iwUser,usr,pass);
 
-			if (user == null)
+			if (user == null) {
 				return NO_USERNAME;
+			}
 
 			if (letter != null) {
 				Object[] objs = {user.getUserName(),user.getPassword()};
@@ -250,58 +262,58 @@ public class Register extends Block {
 		switch (code) {
 
 			case NORMAL :
-				iwrb.getLocalizedString("register.NORMAL", "NORMAL");
+				this.iwrb.getLocalizedString("register.NORMAL", "NORMAL");
 				break;
 
 			case USER_NAME_EXISTS :
 				msg =
-					iwrb.getLocalizedString(
+					this.iwrb.getLocalizedString(
 						"register.USER_NAME_EXISTS",
 						"USER_NAME_EXISTS");
 				break;
 
 			case ILLEGAL_USERNAME :
 				msg =
-					iwrb.getLocalizedString(
+					this.iwrb.getLocalizedString(
 						"register.ILLEGAL_USERNAME",
 						"ILLEGAL_USERNAME");
 				break;
 
 			case ILLEGAL_EMAIL :
 				msg =
-					iwrb.getLocalizedString(
+					this.iwrb.getLocalizedString(
 						"register.ILLEGAL_EMAIL",
 						"ILLEGAL_EMAIL");
 				break;
 
 			case NO_NAME :
-				msg = iwrb.getLocalizedString("register.NO_NAME", "NO_NAME");
+				msg = this.iwrb.getLocalizedString("register.NO_NAME", "NO_NAME");
 				break;
 
 			case NO_EMAIL :
-				msg = iwrb.getLocalizedString("register.NO_EMAIL", "NO_EMAIL");
+				msg = this.iwrb.getLocalizedString("register.NO_EMAIL", "NO_EMAIL");
 				break;
 
 			case NO_USERNAME :
 				msg =
-					iwrb.getLocalizedString("register.NO_USERNAME", "NO_USER");
+					this.iwrb.getLocalizedString("register.NO_USERNAME", "NO_USER");
 				break;
 
 			case NO_SERVER :
 				msg =
-					iwrb.getLocalizedString("register.NO_SERVER", "NO_SERVER");
+					this.iwrb.getLocalizedString("register.NO_SERVER", "NO_SERVER");
 				break;
 
 			case ERROR :
-				msg = iwrb.getLocalizedString("register.ERROR", "ERROR");
+				msg = this.iwrb.getLocalizedString("register.ERROR", "ERROR");
 				break;
 
 			case SENT :
-				msg = iwrb.getLocalizedString("register.SENT", "SENT");
+				msg = this.iwrb.getLocalizedString("register.SENT", "SENT");
 				break;
 
 			case MISMATCH :
-				msg = iwrb.getLocalizedString("register.MISMATCH", "MISMATCH");
+				msg = this.iwrb.getLocalizedString("register.MISMATCH", "MISMATCH");
 				break;
 		}
 		return msg;
@@ -312,9 +324,9 @@ public class Register extends Block {
 	}
 
 	public void main(IWContext iwc) throws RemoteException {
-		iwb = getBundle(iwc);
-		iwrb = getResourceBundle(iwc);
-		userBusiness = getUserBusiness(iwc);
+		this.iwb = getBundle(iwc);
+		this.iwrb = getResourceBundle(iwc);
+		this.userBusiness = getUserBusiness(iwc);
 		control(iwc);
 	}
 

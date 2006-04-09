@@ -47,22 +47,25 @@ public class WelcomeMessage extends Text {
 			try {
 				IWTimestamp stamp = new IWTimestamp();
 				String welcomeString = "";
-				if(displayWelcomeMessage) {
-				  if (stamp.getHour() < 12)
+				if(this.displayWelcomeMessage) {
+				  if (stamp.getHour() < 12) {
 						welcomeString = getResourceBundle(iwc).getLocalizedString(WELCOME_KEY_MORNING,"Good morning");
-					else if (stamp.getHour() < 18)
+					}
+					else if (stamp.getHour() < 18) {
 						welcomeString = getResourceBundle(iwc).getLocalizedString(WELCOME_KEY_AFTERNOON,"Good afternoon");
-					else
-						welcomeString = getResourceBundle(iwc).getLocalizedString(WELCOME_KEY_EVENING,"Good evening"); 
+					}
+					else {
+						welcomeString = getResourceBundle(iwc).getLocalizedString(WELCOME_KEY_EVENING,"Good evening");
+					} 
 			  }
-				if (iShowUserName) {
+				if (this.iShowUserName) {
 					User newUser = iwc.getCurrentUser();
 					welcomeString = welcomeString + " " + newUser.getName();
 				}
-				if(displayDate) {
+				if(this.displayDate) {
 					IWTimestamp s = IWTimestamp.RightNow();
 					String date = s.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.FULL);
-					if(displayWelcomeMessage) {
+					if(this.displayWelcomeMessage) {
 					  welcomeString = welcomeString + Text.BREAK + date;
 					}
 					else {
@@ -87,12 +90,12 @@ public class WelcomeMessage extends Text {
 	}
 	
 	public void setShowUserName(boolean showUserName) {
-		iShowUserName = showUserName;
+		this.iShowUserName = showUserName;
 	}
 	public void setShowDate(boolean showDate) {
-		displayDate = showDate;
+		this.displayDate = showDate;
 	}
 	public void setShowWelcomeMessage(boolean showWM) {
-	  displayWelcomeMessage = showWM;
+	  this.displayWelcomeMessage = showWM;
 	}
 }

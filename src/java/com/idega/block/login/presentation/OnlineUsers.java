@@ -53,10 +53,12 @@ public class OnlineUsers extends Block {
 				int col = 1;
 				LoggedOnInfo info = (LoggedOnInfo) iter.next();
 				table.addText(info.getUser().getName(),col++,row++);
-				if(showPersonalID)
+				if(this.showPersonalID) {
 					table.addText(info.getUser().getPersonalID(),col++,row++);
-				if(showLoginName)
+				}
+				if(this.showLoginName) {
 					table.addText(info.getLogin(),col++,row++);
+				}
 			}
 		}
 		else{

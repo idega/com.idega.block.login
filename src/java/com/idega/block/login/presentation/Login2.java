@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.21 2006/03/08 11:28:42 laddi Exp $
+ * $Id: Login2.java,v 1.22 2006/04/09 12:00:33 laddi Exp $
  * Created on 7.3.2005 in project com.idega.block.login
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -43,10 +43,10 @@ import com.idega.servlet.filter.IWAuthenticator;
  * <p>
  * New Login component based on JSF and CSS. Will gradually replace old Login component
  * </p>
- *  Last modified: $Date: 2006/03/08 11:28:42 $ by $Author: laddi $
+ *  Last modified: $Date: 2006/04/09 12:00:33 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 
@@ -144,10 +144,10 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 				submitLayer.getChildren().add(new Parameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGOFF,getURLToRedirectToOnLogoff()));
 			}
 			
-			if(!extraLogoffParameters.isEmpty()){
-				for (Iterator iter = extraLogoffParameters.keySet().iterator(); iter.hasNext();) {
+			if(!this.extraLogoffParameters.isEmpty()){
+				for (Iterator iter = this.extraLogoffParameters.keySet().iterator(); iter.hasNext();) {
 					String key = (String) iter.next();
-					submitLayer.getChildren().add(new Parameter(key,(String)extraLogoffParameters.get(key)));
+					submitLayer.getChildren().add(new Parameter(key,(String)this.extraLogoffParameters.get(key)));
 				}
 			}
 			
@@ -175,7 +175,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			String loginParamValue = LoginBusinessBean.LOGIN_EVENT_LOGIN;
 
 			boolean enterSubmit = false;
-			if (enterSubmits) {
+			if (this.enterSubmits) {
 				Script script = new Script();
 				script.addFunction("enterSubmit", "function enterSubmit(myfield,e) { var keycode; if (window.event) keycode = window.event.keyCode; else if (e) keycode = e.which; else return true; if (keycode == 13) { myfield.form.elements['" + loginParameter + "'].value='" + loginParamValue+"'; myfield.form.submit(); return false; } else return true; }");
 				layer.add(script);
@@ -193,11 +193,13 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			}
 			
 			TextInput login = new TextInput(LoginBusinessBean.PARAMETER_USERNAME);
-			if (showLabelInInput) {
+			if (this.showLabelInInput) {
 				login.setValue(getLocalizedString("user", "User",iwc));
 				login.setOnFocus("this.value=''");
 			}
-			if (enterSubmit) login.setOnKeyPress("return enterSubmit(this,event)");
+			if (enterSubmit) {
+				login.setOnKeyPress("return enterSubmit(this,event)");
+			}
 			Label loginLabel = new Label(getLocalizedString("user", "User",iwc) + ":", login);
 			
 			Layer loginLayer = new Layer();
@@ -207,11 +209,13 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			container.getChildren().add(loginLayer);			
 						
 			PasswordInput password = new PasswordInput(LoginBusinessBean.PARAMETER_PASSWORD);
-			if (showLabelInInput) {
+			if (this.showLabelInInput) {
 				password.setValue(getLocalizedString("password", "Password",iwc));
 				password.setOnFocus("this.value=''");
 			}
-			if (enterSubmit) password.setOnKeyPress("return enterSubmit(this,event)");
+			if (enterSubmit) {
+				password.setOnKeyPress("return enterSubmit(this,event)");
+			}
 			Label passwordLabel = new Label(
 					getLocalizedString("password", "Password",iwc) + ":", password);
 			
@@ -256,7 +260,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 				formSubmitter = l;
 			}
 			
-			if (redirectUserToPrimaryGroupHomePage) {
+			if (this.redirectUserToPrimaryGroupHomePage) {
 				submitLayer.getChildren().add(new Parameter(IWAuthenticator.PARAMETER_REDIRECT_USER_TO_PRIMARY_GROUP_HOME_PAGE, "true"));
 			}
 			else if(getURLToRedirectToOnLogon()!=null){
@@ -268,10 +272,10 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			
 			
 			
-			if(!extraLogonParameters.isEmpty()){
-				for (Iterator iter = extraLogonParameters.keySet().iterator(); iter.hasNext();) {
+			if(!this.extraLogonParameters.isEmpty()){
+				for (Iterator iter = this.extraLogonParameters.keySet().iterator(); iter.hasNext();) {
 					String key = (String) iter.next();
-					submitLayer.getChildren().add(new Parameter(key,(String)extraLogonParameters.get(key)));
+					submitLayer.getChildren().add(new Parameter(key,(String)this.extraLogonParameters.get(key)));
 				}
 			}
 
@@ -416,10 +420,10 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	public void restoreState(FacesContext context, Object state) {
 		Object[] value = (Object[])state;
 		super.restoreState(context, value[0]);
-		useSubmitLinks = ((Boolean)value[1]).booleanValue();		
-		generateContainingForm = ((Boolean)value[2]).booleanValue();	
-		useSingleLineLayout = ((Boolean)value[3]).booleanValue();
-		redirectUserToPrimaryGroupHomePage = ((Boolean)value[4]).booleanValue();
+		this.useSubmitLinks = ((Boolean)value[1]).booleanValue();		
+		this.generateContainingForm = ((Boolean)value[2]).booleanValue();	
+		this.useSingleLineLayout = ((Boolean)value[3]).booleanValue();
+		this.redirectUserToPrimaryGroupHomePage = ((Boolean)value[4]).booleanValue();
 		
 	}
 
@@ -429,15 +433,15 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	public Object saveState(FacesContext context) {
 		Object[] state = new Object[5];
 		state[0] = super.saveState(context);
-		state[1] = Boolean.valueOf(useSubmitLinks);		
-		state[2] = Boolean.valueOf(generateContainingForm);
-		state[3] = Boolean.valueOf(useSingleLineLayout);
-		state[4] = Boolean.valueOf(redirectUserToPrimaryGroupHomePage);
+		state[1] = Boolean.valueOf(this.useSubmitLinks);		
+		state[2] = Boolean.valueOf(this.generateContainingForm);
+		state[3] = Boolean.valueOf(this.useSingleLineLayout);
+		state[4] = Boolean.valueOf(this.redirectUserToPrimaryGroupHomePage);
 		return state;
 	}
 
 	public boolean getUseSubmitLinks() {
-		return useSubmitLinks;
+		return this.useSubmitLinks;
 	}
 	public void setUseSubmitLinks(boolean useSubmitLinks) {
 		this.useSubmitLinks = useSubmitLinks;
@@ -448,7 +452,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 
 
 	public boolean getGenerateContainingForm() {
-		return generateContainingForm;
+		return this.generateContainingForm;
 	}
 
 	public void setGenerateContainingForm(boolean generateContainingForm) {
@@ -456,7 +460,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	}
 	
 	public boolean getUseSingleLineLayout() {
-		return useSingleLineLayout;
+		return this.useSingleLineLayout;
 	}
 	
 	public void setRedirectUserToPrimaryGroupHomePage(boolean redirectToHomePage) {
@@ -492,7 +496,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	}
 	
 	public String getURLToRedirectToOnLogon(){
-		return urlToRedirectToOnLogon;
+		return this.urlToRedirectToOnLogon;
 	}
 	
 	public void setURLToRedirectToOnLogoff(String url){
@@ -500,15 +504,15 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	}
 	
 	public String getURLToRedirectToOnLogoff(){
-		return urlToRedirectToOnLogoff;
+		return this.urlToRedirectToOnLogoff;
 	}
 	
 	public void setExtraLogonParameter(String parameter, String value){
-		extraLogonParameters.put(parameter, value);
+		this.extraLogonParameters.put(parameter, value);
 	}
 	
 	public void setExtraLogoffParameter(String parameter, String value){
-		extraLogoffParameters.put(parameter, value);
+		this.extraLogoffParameters.put(parameter, value);
 	}
 
 

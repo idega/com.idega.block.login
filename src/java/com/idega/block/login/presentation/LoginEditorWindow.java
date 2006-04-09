@@ -32,17 +32,17 @@ public class LoginEditorWindow extends StyledIWAdminWindow {
 	}
 	
 	public void setMessage(String message){
-		msg = message;
+		this.msg = message;
 	}
 	
 	public void setToChangeNextTime(){
-		change = true;
+		this.change = true;
 	}
 	
 	public String getURL(IWContext iwc){
 	    Map parameters = new HashMap();
-	    parameters.put(PARAM_MESSAGE,msg);
-	    if(change){
+	    parameters.put(PARAM_MESSAGE,this.msg);
+	    if(this.change){
 	        parameters.put(PARAM_CHANGE,"true");
 	    }
 		String url = getWindowURLWithParameters(getClass(),iwc.getApplicationContext(),parameters);
@@ -55,8 +55,9 @@ public class LoginEditorWindow extends StyledIWAdminWindow {
 		if(iwc.isParameterSet(PARAM_MESSAGE)){
 			BE.setMessage(iwc.getParameter(PARAM_MESSAGE));
 		}
-		if(iwc.isParameterSet(PARAM_CHANGE))
+		if(iwc.isParameterSet(PARAM_CHANGE)) {
 			BE.setChangeLoginNextTime(true);
+		}
 		Table T = new Table(1, 1);
 		T.setAlignment(1, 1, "center");
 		T.setStyleClass(MAIN_STYLECLASS);
