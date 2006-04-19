@@ -106,7 +106,6 @@ public class Login extends Block {
 	private int LAYOUT = -1;
 	protected IWResourceBundle iwrb;
 	protected IWBundle iwb;
-	private String loginHandlerClass = LoginBusinessBean.class.getName();
 	protected boolean sendToHTTPS = false;
 	protected boolean sendUserToHomePage = false;
 	private boolean allowCookieLogin = false;
@@ -185,7 +184,6 @@ public class Login extends Block {
 			}
 		}
 
-		getMainForm().setEventListener(this.loginHandlerClass);
 		if (this.allowCookieLogin) {
 			//LoginCookieListener is swapped out for IWAuthenticator
 			//iwc.getIWMainApplication().addApplicationEventListener(LoginCookieListener.class);
@@ -1147,31 +1145,6 @@ public class Login extends Block {
 		//myForm.setEventListener(loginHandlerClass);
 		//getMainForm().setMethod("post");
 		//myForm.maintainAllParameters();
-	}
-
-	/**
-	 * Sets the login handler business class which this class sends the
-	 * login/logout event to. <br>
-	 * <br>
-	 * This Class must implement com.idega.event.IWEventHandler. <br>
-	 * The default is LoginBusiness
-	 */
-	public void setLoginHandlerClass(String className) {
-		this.loginHandlerClass = className;
-		/*
-		 * if (myForm != null) { myForm.setEventListener(className); }
-		 */
-	}
-
-	/**
-	 * Sets the login handler business class which this class sends the
-	 * login/logout event to. <br>
-	 * <br>
-	 * This Class must implement com.idega.event.IWEventHandler. <br>
-	 * The default is LoginBusiness
-	 */
-	public void setLoginHandlerClass(Class handlerClass) {
-		setLoginHandlerClass(handlerClass.getName());
 	}
 
 	public void addHelpButton() {
