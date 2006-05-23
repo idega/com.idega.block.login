@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.23 2006/04/25 14:40:08 laddi Exp $ Created on 7.3.2005
+ * $Id: Login2.java,v 1.24 2006/05/23 14:23:37 laddi Exp $ Created on 7.3.2005
  * in project com.idega.block.login
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -43,10 +43,10 @@ import com.idega.servlet.filter.IWAuthenticator;
  * New Login component based on JSF and CSS. Will gradually replace old Login
  * component
  * </p>
- * Last modified: $Date: 2006/04/25 14:40:08 $ by $Author: laddi $
+ * Last modified: $Date: 2006/05/23 14:23:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 
@@ -70,6 +70,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	private boolean useSingleLineLayout = false;
 	private boolean redirectUserToPrimaryGroupHomePage = false;
 	private boolean showLabelInInput = false;
+	private boolean sendToHttps = false;
 	private String urlToRedirectToOnLogon = null;
 	private String urlToRedirectToOnLogoff = null;
 	private Map extraLogonParameters = new HashMap();
@@ -187,6 +188,9 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			PresentationObject container = new PresentationObjectContainer();
 			if (getGenerateContainingForm()) {
 				Form form = new Form();
+				if (this.sendToHttps) {
+					form.setToSendToHTTPS(this.sendToHttps);
+				}
 				layer.getChildren().add(form);
 				container = form;
 			}
@@ -531,4 +535,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 		this.enterSubmits = enterSubmits;
 	}
 
+	public void setSendToHTTPS(boolean sendToHttps) {
+		this.sendToHttps = sendToHttps;
+	}
 }
