@@ -4,7 +4,19 @@
     <author email="tryggvi@idega.com">Tryggvi Larusson</author>
   </properties>
   <body>
-          <release version="1.1.4" date="2005-05-25">
+	<release version="3.1.0" date="2005-06-16">
+      <action dev="tryggvil" type="update">
+      	Declaration of version for including in ePlatform release 3.1
+      </action>
+      <action dev="tryggvil" type="fix">
+      	A few bugfixes for platform 3
+      </action>
+      <action dev="tryggvil" type="update">
+      	A few updates for Login2 component to have similar funcationality as Login
+      </action>    
+    </release>
+
+	<release version="1.1.4" date="2005-05-25">
       <action dev="tryggvil" type="fix" issue="x">
       	New dependency. Depends now on core 3.0.6
       </action>              
