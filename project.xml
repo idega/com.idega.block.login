@@ -5,7 +5,6 @@
   <artifactId>com.idega.block.login</artifactId>
   <name>idegaWeb Login Block</name>
   <currentVersion>3.1.0</currentVersion>
-
   <inceptionYear>2000</inceptionYear>
   <shortDescription>This is the default login module for idegaWeb</shortDescription>
   <versions>
@@ -43,6 +42,11 @@
       <id>1.1.5</id>
       <name>1.1.5</name>
       <tag>LOGIN_1_1_5</tag>
+    </version>
+    <version>
+      <id>3.1.0</id>
+      <name>3.1.0</name>
+      <tag>LOGIN_3_1_0</tag>
     </version>
   </versions>
   <branches/>
@@ -91,7 +95,7 @@
       <type>jar</type>
       <url>http://www.idega.com/</url>
       <properties>
-          <eclipse.dependency>${idegaweb.project.source.dependent}</eclipse.dependency>
+        <eclipse.dependency>${idegaweb.project.source.dependent}</eclipse.dependency>
       </properties>
     </dependency>
   </dependencies>
