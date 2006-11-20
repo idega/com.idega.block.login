@@ -1,5 +1,5 @@
 /*
- * $Id: LoginByUUIDLink.java,v 1.6 2006/04/09 12:00:32 laddi Exp $
+ * $Id: LoginByUUIDLink.java,v 1.6.2.1 2006/11/20 14:24:36 eiki Exp $
  * Created on Feb 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -18,16 +18,17 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2006/04/09 12:00:32 $ by $Author: laddi $
+ *  Last modified: $Date: 2006/11/20 14:24:36 $ by $Author: eiki $
  * 
  * Creates a link with the necessery parameters to login to another IdegaWeb system via a users UUID.
  * The receiving server must allow you to login via UUID for it to work. See LoginBusinessBean loginByUUID javadoc.
  * @author <a href="mailto:eiki@idega.com">Eirikur S. Hrafnsson</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.6.2.1 $
  */
 public class LoginByUUIDLink extends Link {
 
-	boolean useCurrentUsersUUID = false;
+	private boolean useCurrentUsersUUID = true;
+	private String uuid = null;
 	/**
 	 * 
 	 */
@@ -37,11 +38,16 @@ public class LoginByUUIDLink extends Link {
 
 	public void setUUID(String uuid){
 		if(uuid!=null){
-			addParameter(LoginBusinessBean.PARAM_LOGIN_BY_UNIQUE_ID,uuid);
+			this.uuid = uuid;
+			addParameter(LoginBusinessBean.PARAM_LOGIN_BY_UNIQUE_ID,this.uuid);
 			addParameter(LoginBusinessBean.LoginStateParameter,LoginBusinessBean.LOGIN_EVENT_LOGIN);
 		}
 	}
 	
+	/**
+	 * is true by default
+	 * @param useCurrentUsersUUID
+	 */
 	public void setToUseCurrentUsersUUID(boolean useCurrentUsersUUID){
 		this.useCurrentUsersUUID = useCurrentUsersUUID;
 	}
@@ -54,7 +60,7 @@ public class LoginByUUIDLink extends Link {
 	 * @see com.idega.presentation.PresentationObject#print(com.idega.presentation.IWContext)
 	 */
 	public void print(IWContext iwc) throws Exception {
-		if(getUseCurrentUsersUUID()){
+		if(this.uuid==null){
 			try {
 				User user = iwc.getCurrentUser();
 				setUUID(user.getUniqueId());
