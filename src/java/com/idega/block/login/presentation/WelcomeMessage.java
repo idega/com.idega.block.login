@@ -49,9 +49,9 @@ public class WelcomeMessage extends Text {
 				String welcomeString = "";
 				if(this.displayWelcomeMessage) {
 				  if (stamp.getHour() < 12) {
-						welcomeString = getResourceBundle(iwc).getLocalizedString(WELCOME_KEY_MORNING,"Good morning");
-					}
-					else if (stamp.getHour() < 18) {
+					welcomeString = getResourceBundle(iwc).getLocalizedString(WELCOME_KEY_MORNING,"Good morning");
+				}
+				else if (stamp.getHour() < 18) {
 						welcomeString = getResourceBundle(iwc).getLocalizedString(WELCOME_KEY_AFTERNOON,"Good afternoon");
 					}
 					else {

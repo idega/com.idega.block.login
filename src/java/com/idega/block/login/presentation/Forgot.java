@@ -8,16 +8,14 @@ package com.idega.block.login.presentation;
  */
 
 import java.text.MessageFormat;
-import javax.ejb.FinderException;
+
 import com.idega.block.login.exception.LoginForgotException;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginContext;
 import com.idega.core.accesscontrol.business.LoginCreator;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
-import com.idega.core.accesscontrol.data.LoginTableHome;
 import com.idega.core.contact.data.Email;
-import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -53,6 +51,8 @@ public class Forgot extends Block {
 	protected IWResourceBundle iwrb;
 	protected IWBundle iwb;
 
+	private String errorMsg = "";
+
 	public static final int INIT = 100;
 	public static final int NORMAL = 0;
 	public static final int USER_NAME_EXISTS = 1;
@@ -66,6 +66,8 @@ public class Forgot extends Block {
 	public static final int ERROR = 10;
 	public static final int SENT = 11;
 	public static final int NO_LOGIN = 12;
+
+	private String portalname = "";
 
 	private TextFormat form;
 	
@@ -86,6 +88,7 @@ public class Forgot extends Block {
 
 	protected void control(IWContext iwc) {
 		// debugParameters(iwc);
+		this.portalname = iwc.getServerName();
 		this.form = TextFormat.getInstance();
 		int code = INIT;
 		if (iwc.isParameterSet(PARAMETER_PROCESS)) {
@@ -290,14 +293,13 @@ public class Forgot extends Block {
 
 		User usr = null;
 		try {
-			LoginTableHome home = (LoginTableHome) IDOLookup.getHome(LoginTable.class);
-			try {
-				LoginTable login = home.findByLogin(loginName);
-				usr = Converter.convertToNewUser(login.getUser());
-			}
-			catch (FinderException fe) {
+			LoginTable[] login = (LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumnEquals(com.idega.core.accesscontrol.data.LoginTableBMPBean.getUserLoginColumnName(), loginName);
+			if (login == null || login.length < 0) {
 				throw new LoginForgotException(NO_LOGIN);
 			}
+
+			usr = Converter.convertToNewUser(login[0].getUser());
+
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -318,8 +320,7 @@ public class Forgot extends Block {
 		LoginContext context = null;
 		if (usr != null) {
 			try {
-				LoginBusinessBean loginBean = LoginBusinessBean.getLoginBusinessBean(iwc);
-				context = loginBean.changeUserPassword(usr, LoginCreator.createPasswd(8));
+				context = LoginBusinessBean.changeUserPassword(usr, LoginCreator.createPasswd(8));
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();

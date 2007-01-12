@@ -35,23 +35,24 @@ import com.idega.util.text.Name;
 
 public class Register extends Block {
 
+	private String errorMsg = "";
 	public static String prmUserId = "user_id";
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.login";
 	protected IWResourceBundle iwrb;
 	protected IWBundle iwb;
-	public static final int INIT = 100;
-	public static final int NORMAL = 0;
-	public static final int USER_NAME_EXISTS = 1;
-	public static final int ILLEGAL_USERNAME = 2;
-	public static final int ILLEGAL_EMAIL = 3;
-	public static final int NO_NAME = 5;
-	public static final int NO_EMAIL = 6;
-	public static final int NO_USERNAME = 7;
-	public static final int NO_SERVER = 8;
-	public static final int NO_LETTER = 9;
-	public static final int ERROR = 10;
-	public static final int SENT = 11;
-	public static final int MISMATCH = 12;
+	public final int INIT = 100;
+	public final int NORMAL = 0;
+	public final int USER_NAME_EXISTS = 1;
+	public final int ILLEGAL_USERNAME = 2;
+	public final int ILLEGAL_EMAIL = 3;
+	public final int NO_NAME = 5;
+	public final int NO_EMAIL = 6;
+	public final int NO_USERNAME = 7;
+	public final int NO_SERVER = 8;
+	public final int NO_LETTER = 9;
+	public final int ERROR = 10;
+	public final int SENT = 11;
+	public final int MISMATCH = 12;
 	
 	private UserBusiness userBusiness = null;
 
@@ -60,12 +61,12 @@ public class Register extends Block {
 	}
 
 	protected void control(IWContext iwc)throws RemoteException {
-		int code = INIT;
+		int code = this.INIT;
 		if (iwc.isParameterSet("send.x")) {
 			code = processForm(iwc);
 		}
 		Table T = new Table(1, 3);
-		if (code == SENT) {
+		if (code == this.SENT) {
 			T.add(getAnswer(), 1, 2);
 		}
 		else {
@@ -80,12 +81,23 @@ public class Register extends Block {
 		String userName = iwc.getParameter("reg_username");
 		String pass = iwc.getParameter("reg_pass");
 		String conf = iwc.getParameter("reg_pass_conf");
-		int code = NORMAL;
+		int code = this.NORMAL;
 		if (realName != null && userEmail != null && userName != null) {
 			//System.err.println("trying to register");
 			code = registerUser(realName, userEmail, userName, pass, conf);
 		}
 		return code;
+	}
+
+	private PresentationObject getSent(IWContext iwc) {
+		Table T = new Table();
+		T.add(
+			this.iwrb.getLocalizedString(
+				"register.sent_message",
+				"Your login and password has been sent"));
+
+		return T;
+
 	}
 
 	private PresentationObject getForm(IWContext iwc, int code) {
@@ -174,36 +186,36 @@ public class Register extends Block {
 		String pass,
 		String conf) throws RemoteException{
 
-		int internal = NORMAL;
+		int internal = this.NORMAL;
 
 		if (userRealName.length() < 2) {
-			return NO_NAME;
+			return this.NO_NAME;
 		}
 
 		if (emailAddress.length() == 0) {
-			return NO_EMAIL;
+			return this.NO_EMAIL;
 		}
 
 		if (emailAddress.indexOf("@") == -1) {
-			return ILLEGAL_EMAIL;
+			return this.ILLEGAL_EMAIL;
 		}
 
 		if (userName.length() == 0) {
-			internal = NO_USERNAME;
+			internal = this.NO_USERNAME;
 		}
 		else if (LoginDBHandler.isLoginInUse(userName)) {
-			return USER_NAME_EXISTS;
+			return this.USER_NAME_EXISTS;
 		}
 
 		if (pass != null && conf != null) {
 
 			if (!pass.equals(conf)) {
-				return MISMATCH;
+				return this.MISMATCH;
 			}
 
 		}
 
-		String usr = internal == NO_USERNAME ? null : userName;
+		String usr = internal == this.NO_USERNAME ? null : userName;
 
 		try {
 
@@ -211,7 +223,7 @@ public class Register extends Block {
 			String server = this.iwb.getProperty("register.email_server");
 			String subject = this.iwb.getProperty("register.email_subject");
 			if (sender == null || server == null || subject == null) {
-				return NO_SERVER;
+				return this.NO_SERVER;
 			}
 			String letter =
 				this.iwrb.getLocalizedString(
@@ -219,7 +231,7 @@ public class Register extends Block {
 					"Username : {1} \nPassword: {2}");
 
 			if (letter == null) {
-				return NO_LETTER;
+				return this.NO_LETTER;
 			}
 
 			Name name = new Name(userRealName);
@@ -228,7 +240,7 @@ public class Register extends Block {
 			LoginContext user = new LoginContext(iwUser,usr,pass);
 
 			if (user == null) {
-				return NO_USERNAME;
+				return this.NO_USERNAME;
 			}
 
 			if (letter != null) {
@@ -245,11 +257,11 @@ public class Register extends Block {
 					server,
 					subject,
 					body.toString());
-				return SENT;
+				return this.SENT;
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			return ERROR;
+			return this.ERROR;
 		}
 		return internal;
 

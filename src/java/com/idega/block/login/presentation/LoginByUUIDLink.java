@@ -1,5 +1,5 @@
 /*
- * $Id: LoginByUUIDLink.java,v 1.6 2006/04/09 12:00:32 laddi Exp $
+ * $Id: LoginByUUIDLink.java,v 1.5.2.1 2007/01/12 19:32:37 idegaweb Exp $
  * Created on Feb 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -18,12 +18,12 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2006/04/09 12:00:32 $ by $Author: laddi $
+ *  Last modified: $Date: 2007/01/12 19:32:37 $ by $Author: idegaweb $
  * 
  * Creates a link with the necessery parameters to login to another IdegaWeb system via a users UUID.
  * The receiving server must allow you to login via UUID for it to work. See LoginBusinessBean loginByUUID javadoc.
  * @author <a href="mailto:eiki@idega.com">Eirikur S. Hrafnsson</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.5.2.1 $
  */
 public class LoginByUUIDLink extends Link {
 
