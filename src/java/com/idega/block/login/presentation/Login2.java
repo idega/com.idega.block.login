@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.25 2006/11/10 11:20:16 laddi Exp $ Created on 7.3.2005
+ * $Id: Login2.java,v 1.26 2007/01/16 15:26:21 tryggvil Exp $ Created on 7.3.2005
  * in project com.idega.block.login
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -30,6 +30,7 @@ import com.idega.presentation.Script;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Paragraph;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.Label;
@@ -43,10 +44,10 @@ import com.idega.servlet.filter.IWAuthenticator;
  * New Login component based on JSF and CSS. Will gradually replace old Login
  * component
  * </p>
- * Last modified: $Date: 2006/11/10 11:20:16 $ by $Author: laddi $
+ * Last modified: $Date: 2007/01/16 15:26:21 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 
@@ -75,6 +76,8 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	private String urlToRedirectToOnLogoff = null;
 	private Map extraLogonParameters = new HashMap();
 	private Map extraLogoffParameters = new HashMap();
+	private boolean allowCookieLogin=false;
+	private boolean focusOnLoad=false;
 
 	/**
 	 * 
@@ -201,6 +204,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			}
 
 			TextInput login = new TextInput(LoginBusinessBean.PARAMETER_USERNAME);
+			login.setId(LoginBusinessBean.PARAMETER_USERNAME);
 			if (this.showLabelInInput) {
 				login.setValue(getLocalizedString("user", "User", iwc));
 				login.setOnFocus("this.value=''");
@@ -208,6 +212,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			if (enterSubmit) {
 				login.setOnKeyPress("return enterSubmit(this,event)");
 			}
+
 			Label loginLabel = new Label(getLocalizedString("user", "User", iwc) + ":", login);
 
 			Layer loginLayer = new Layer();
@@ -232,6 +237,19 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			passwordLayer.setStyleClass(STYLE_CLASS_PASSWORD);
 			container.getChildren().add(passwordLayer);
 
+			
+			if (this.allowCookieLogin) {
+
+				CheckBox cookieCheck = new CheckBox(IWAuthenticator.PARAMETER_ALLOWS_COOKIE_LOGIN);
+				Label cookieLabel = new Label(getLocalizedString("cookie.allow", "Remember me",iwc), cookieCheck);
+				
+				Layer cookieLayer = new Layer();
+				cookieLayer.getChildren().add(cookieLabel);
+				cookieLayer.getChildren().add(cookieCheck);
+				container.getChildren().add(cookieLayer);
+			}
+			
+			
 			Parameter param = new Parameter(loginParameter, "");
 
 			PresentationObject formSubmitter = null;
@@ -284,6 +302,14 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 				}
 			}
 
+			if(isFocusOnLoad()){
+				//login.setInFocusOnPageLoad(true);
+				Script script = new Script();
+				script.addScriptLine("var logininput = document.getElementById('" + login.getClientId(iwc) + "');\nlogininput.focus();");
+				layer.add(script);
+			
+			}
+			
 			submitLayer.getChildren().add(param);
 			submitLayer.getChildren().add(formSubmitter);
 
@@ -441,7 +467,8 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 		this.generateContainingForm = ((Boolean) value[2]).booleanValue();
 		this.useSingleLineLayout = ((Boolean) value[3]).booleanValue();
 		this.redirectUserToPrimaryGroupHomePage = ((Boolean) value[4]).booleanValue();
-
+		this.allowCookieLogin = ((Boolean) value[5]).booleanValue();
+		this.focusOnLoad = ((Boolean) value[6]).booleanValue();
 	}
 
 	/*
@@ -450,12 +477,14 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	 * @see com.idega.presentation.PresentationObjectContainer#saveState(javax.faces.context.FacesContext)
 	 */
 	public Object saveState(FacesContext context) {
-		Object[] state = new Object[5];
+		Object[] state = new Object[7];
 		state[0] = super.saveState(context);
 		state[1] = Boolean.valueOf(this.useSubmitLinks);
 		state[2] = Boolean.valueOf(this.generateContainingForm);
 		state[3] = Boolean.valueOf(this.useSingleLineLayout);
 		state[4] = Boolean.valueOf(this.redirectUserToPrimaryGroupHomePage);
+		state[5] = Boolean.valueOf(this.allowCookieLogin);
+		state[6] = Boolean.valueOf(this.focusOnLoad);
 		return state;
 	}
 
@@ -541,5 +570,30 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 
 	public void setSendToHTTPS(boolean sendToHttps) {
 		this.sendToHttps = sendToHttps;
+	}
+	
+	/**
+	 * <p>
+	 * If set to true then a checkbox is displayed that displays and enabled 
+	 * the cookie/remember-me function to keep a persistent login.
+	 * </p>
+	 * @param cookies
+	 */
+	public void setAllowCookieLogin(boolean cookies) {
+		this.allowCookieLogin = cookies;
+	}
+	
+	public boolean getAllowCookieLogin(){
+		return this.allowCookieLogin;
+	}
+
+	
+	public boolean isFocusOnLoad() {
+		return focusOnLoad;
+	}
+
+	
+	public void setFocusOnLoad(boolean focusOnLoad) {
+		this.focusOnLoad = focusOnLoad;
 	}
 }
