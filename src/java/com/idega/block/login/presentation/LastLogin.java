@@ -8,7 +8,6 @@ import java.rmi.RemoteException;
 import java.sql.Date;
 import java.text.DateFormat;
 
-import com.idega.block.login.business.LoginBusiness;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
