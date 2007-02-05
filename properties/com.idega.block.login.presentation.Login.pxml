@@ -1368,7 +1368,7 @@
                             <key>
                               <name>iw_method_param_desc</name>
                               <type>java.lang.String</type>
-                              <value>Forward page on login</value>
+                              <value>Forward Page</value>
                             </key>
                           </map>
                         </value>
@@ -1386,7 +1386,7 @@
                 <key>
                   <name>iw_method_description</name>
                   <type>java.lang.String</type>
-                  <value>Forward page on login</value>
+                  <value>Forward Page</value>
                 </key>
                 <key>
                   <name>iw_method_identifier</name>
