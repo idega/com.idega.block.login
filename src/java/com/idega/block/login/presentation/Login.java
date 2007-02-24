@@ -231,6 +231,9 @@ public class Login extends Block {
 		
 		if(getUrlToForwardToOnLogin()!=null){
 			getMainForm().addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON,getUrlToForwardToOnLogin());
+		} 
+		else if (sendUserToHomePage) {
+			getMainForm().addParameter(IWAuthenticator.PARAMETER_REDIRECT_USER_TO_PRIMARY_GROUP_HOME_PAGE, "true");
 		}
 		
 		add(getMainForm());
