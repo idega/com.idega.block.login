@@ -12,8 +12,10 @@ import java.util.Iterator;
 import java.util.Map;
 import javax.ejb.FinderException;
 import com.idega.business.IBOLookup;
+import com.idega.business.SpringBeanLookup;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
+import com.idega.core.accesscontrol.business.LoginSession;
 import com.idega.core.accesscontrol.business.LoginState;
 import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.core.accesscontrol.data.LoginInfoHome;
@@ -370,12 +372,8 @@ public class Login extends Block {
 		if (this.showHint) {
 			String userName = iwc.getParameter(LOGIN_PARAMETER_NAME);
 			if (userName == null) {
-				try {
-                    userName = LoginBusinessBean.getLoginSession(iwc).getUserLoginName(); 
+				userName = ((LoginSession)SpringBeanLookup.getInstance().getSpringBean(iwc.getSession(), LoginSession.class)).getUserLoginName(); 
                         //(String) iwc.getSessionAttribute(LoginBusinessBean.UserAttributeParameter);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
 			}
 			if (userName != null && userName.length() > 0) {
 				try {			
