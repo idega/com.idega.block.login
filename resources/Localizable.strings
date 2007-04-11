@@ -34,6 +34,7 @@ login_wrong=Invalid password
 login_wrong_disabled_next_time=Invalid password, access closed next time login fails
 logout_text=Logout
 no_new_messages=You have no new messages
+nobody_loggedon=nobody
 not\ logged\ on=You are not logged on.
 number_of_messages=\u00DE\u00FA \u00E1tt {0}\u00A0n\u00FD skilabo\u00F0
 online_users=Online users\:
