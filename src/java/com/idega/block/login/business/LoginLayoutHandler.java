@@ -1,5 +1,5 @@
 /*
- * $Id: LoginLayoutHandler.java,v 1.9 2007/05/21 09:56:28 valdas Exp $
+ * $Id: LoginLayoutHandler.java,v 1.10 2007/05/24 11:31:01 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -38,7 +38,7 @@ public class LoginLayoutHandler implements ICPropertyHandler {
   /**
    *
    */
-  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler) {
+  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler, String instanceId, String method) {
     DropdownMenu menu = new DropdownMenu(name);
     menu.addMenuElement("","Select:");
     menu.addMenuElement(Login.LAYOUT_VERTICAL,"Vertical");
