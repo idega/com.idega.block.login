@@ -25,7 +25,7 @@ import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.user.data.User;
 import com.idega.core.user.data.UserHome;
 import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -54,10 +54,11 @@ public class LoginEditor extends PresentationObjectContainer {
 	protected String styleAttribute = "font-size: 8pt";
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.login";
 	protected IWResourceBundle iwrb;
-	protected IWBundle iwb;
+	//protected IWBundle iwb;
 
-	private static final String BUNDEL_PRPERTY_NAME_USERNAME_CONSTANT = "cannot_change_username";
-
+	//private static final String BUNDEL_PRPERTY_NAME_USERNAME_CONSTANT = "cannot_change_username";
+	private static final String APPLICATION_PROPERTY_CANNOT_CHANGE_USERNAME = "cannot_change_username";
+	
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
@@ -163,7 +164,7 @@ public class LoginEditor extends PresentationObjectContainer {
 	private PresentationObject doView(User user, String sUserLogin) {
 		boolean allowChangingUsername = true;
 		try {
-			String prop = getPropertyValue(this.iwb, BUNDEL_PRPERTY_NAME_USERNAME_CONSTANT, Boolean.FALSE.toString());
+			String prop = getPropertyValue(getIWApplicationContext().getIWMainApplication(), APPLICATION_PROPERTY_CANNOT_CHANGE_USERNAME, Boolean.FALSE.toString());
 			allowChangingUsername = !prop.trim().equalsIgnoreCase("true");
 		}
 		catch (NullPointerException e) {
@@ -298,7 +299,6 @@ public class LoginEditor extends PresentationObjectContainer {
 
 	public void main(IWContext iwc) {
 		this.iwrb = getResourceBundle(iwc);
-		this.iwb = getBundle(iwc);
 		if (LoginBusinessBean.isLoggedOn(iwc)) {
 			control(iwc);
 		}
@@ -322,13 +322,12 @@ public class LoginEditor extends PresentationObjectContainer {
 	 * @param propertyName
 	 * @return
 	 */
-	private String getPropertyValue(IWBundle iwb, String propertyName, String defaultValue) {
-		IWMainApplicationSettings settings = getIWApplicationContext().getApplicationSettings();
+	private String getPropertyValue(IWMainApplication iwma, String propertyName, String defaultValue) {
+		IWMainApplicationSettings settings = iwma.getSettings();
 		String value = settings.getProperty(propertyName);
 		if (value != null) {
 			return value;
 		}
-		value = iwb.getProperty(propertyName);
 		value = value != null ? value : defaultValue;
 		settings.setProperty(propertyName, value);
 		return value;

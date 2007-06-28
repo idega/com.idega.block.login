@@ -101,24 +101,40 @@
             </value>
             <type>map</type>
           </key>
+          <key>
+            <name>com.idega.block.login.presentation.UserRegistration</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_property_file</name>
+                  <type>java.lang.String</type>
+                  <value>com.idega.block.login.presentation.UserRegistration.pxml</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.block.login.presentation.ForgottenPassword</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_property_file</name>
+                  <type>java.lang.String</type>
+                  <value>com.idega.block.login.presentation.ForgottenPassword.pxml</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
         </map>
       </value>
       <type>map</type>
     </key>
     <key>
-      <name>register_class</name>
-      <type>java.lang.String</type>
-      <value>is.idega.idegaweb.member.isi.block.login.presentation.Register</value>
-    </key>
-    <key>
       <name>cannot_change_username</name>
       <type>java.lang.String</type>
       <value>true</value>
-    </key>
-    <key>
-      <name>email_server</name>
-      <type>java.lang.String</type>
-      <value>mail.idega.is</value>
     </key>
   </map>
 </pxml>

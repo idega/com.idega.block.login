@@ -9,7 +9,7 @@ package com.idega.block.login.presentation;
 
 import java.text.MessageFormat;
 import javax.ejb.FinderException;
-import com.idega.block.login.exception.LoginForgotException;
+import com.idega.block.login.exception.LoginModificationException;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginContext;
 import com.idega.core.accesscontrol.business.LoginCreator;
@@ -37,7 +37,9 @@ import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.user.util.Converter;
 import com.idega.util.SendMail;
-
+/**
+ * @deprecated Replaced with ForgottenPassword
+ */
 public class Forgot extends Block {
 
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.login";
@@ -53,19 +55,19 @@ public class Forgot extends Block {
 	protected IWResourceBundle iwrb;
 	protected IWBundle iwb;
 
-	public static final int INIT = 100;
-	public static final int NORMAL = 0;
-	public static final int USER_NAME_EXISTS = 1;
-	public static final int ILLEGAL_USERNAME = 2;
-	public static final int ILLEGAL_EMAIL = 3;
-	public static final int NO_NAME = 5;
-	public static final int NO_EMAIL = 6;
-	public static final int NO_USERNAME = 7;
-	public static final int NO_SERVER = 8;
-	public static final int NO_LETTER = 9;
-	public static final int ERROR = 10;
-	public static final int SENT = 11;
-	public static final int NO_LOGIN = 12;
+	public static final int INIT = UserRegistration.INIT;
+	public static final int NORMAL = UserRegistration.NORMAL;
+	public static final int USER_NAME_EXISTS = UserRegistration.USER_NAME_EXISTS;
+	public static final int ILLEGAL_USERNAME = UserRegistration.ILLEGAL_USERNAME;
+	public static final int ILLEGAL_EMAIL = UserRegistration.ILLEGAL_EMAIL;
+	public static final int NO_NAME = UserRegistration.NO_NAME;
+	public static final int NO_EMAIL = UserRegistration.NO_EMAIL;
+	public static final int NO_USERNAME = UserRegistration.NO_USERNAME;
+	public static final int NO_SERVER = UserRegistration.NO_SERVER;
+	public static final int NO_LETTER = UserRegistration.NO_LETTER;
+	public static final int ERROR = UserRegistration.ERROR;
+	public static final int SENT = UserRegistration.SENT;
+	public static final int NO_LOGIN = UserRegistration.NO_LOGIN;
 
 	private TextFormat form;
 	
@@ -126,7 +128,7 @@ public class Forgot extends Block {
 
 			}
 		}
-		catch (LoginForgotException e) {
+		catch (LoginModificationException e) {
 			code = e.getCode();
 		}
 		return code;
@@ -259,10 +261,10 @@ public class Forgot extends Block {
 		return table;
 	}
 
-	public User lookupUserByEmail(String emailAddress) throws LoginForgotException {
+	public User lookupUserByEmail(String emailAddress) throws LoginModificationException {
 		System.err.println("Beginning lookup");
 		if (emailAddress.length() == 0) {
-			throw new LoginForgotException(NO_EMAIL);
+			throw new LoginModificationException(NO_EMAIL);
 		}
 		
 		User usr = null;
@@ -271,21 +273,21 @@ public class Forgot extends Block {
 			usr = uhome.findUserFromEmail(emailAddress);
 			LoginTable login = LoginDBHandler.getUserLogin(((Integer) usr.getPrimaryKey()).intValue());
 			if (login == null) {
-				throw new LoginForgotException(NO_USERNAME);
+				throw new LoginModificationException(NO_USERNAME);
 			}
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
-			throw new LoginForgotException(NO_NAME);
+			throw new LoginModificationException(NO_NAME);
 		}
 
 		return usr;
 	}
 
-	public User lookupUserByLogin(String loginName) throws LoginForgotException {
+	public User lookupUserByLogin(String loginName) throws LoginModificationException {
 		System.err.println("Beginning lookup");
 		if (loginName.length() == 0) {
-			throw new LoginForgotException(NO_LOGIN);
+			throw new LoginModificationException(NO_LOGIN);
 		}
 
 		User usr = null;
@@ -296,23 +298,23 @@ public class Forgot extends Block {
 				usr = Converter.convertToNewUser(login.getUser());
 			}
 			catch (FinderException fe) {
-				throw new LoginForgotException(NO_LOGIN);
+				throw new LoginModificationException(NO_LOGIN);
 			}
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
-			throw new LoginForgotException(NO_NAME);
+			throw new LoginModificationException(NO_NAME);
 		}
 
 		return usr;
 	}
 
-	private void sendEmail(IWContext iwc, User usr, String emailAddress) throws LoginForgotException {
+	private void sendEmail(IWContext iwc, User usr, String emailAddress) throws LoginModificationException {
 		String sender = this.iwb.getProperty("forgotten.email_sender", "admin@idega.is");
 		String server = this.iwb.getProperty("forgotten.email_server", "mail.idega.is");
 		String subject = this.iwb.getProperty("forgotten.email_subject", "Forgotten password");
 		if (sender == null || server == null || subject == null) {
-			throw new LoginForgotException(NO_SERVER);
+			throw new LoginModificationException(NO_SERVER);
 		}
 
 		LoginContext context = null;
@@ -323,13 +325,13 @@ public class Forgot extends Block {
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();
-				throw new LoginForgotException(ILLEGAL_USERNAME);
+				throw new LoginModificationException(ILLEGAL_USERNAME);
 			}
 
 			System.err.println(usr.getName() + " has forgotten password");
 			String letter = this.iwrb.getLocalizedString("forgotten.email_body", "Username : {0} \nPassword: {1} ");
 			if (letter == null) {
-				throw new LoginForgotException(NO_LETTER);
+				throw new LoginModificationException(NO_LETTER);
 			}
 
 			if (letter != null && context != null) {

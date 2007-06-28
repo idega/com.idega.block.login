@@ -33,6 +33,9 @@ import com.idega.util.IWTimestamp;
 import com.idega.util.SendMail;
 import com.idega.util.text.Name;
 
+/**
+ * @deprecated Replaced with UserRegistration
+ */
 public class Register extends Block {
 
 	public static String prmUserId = "user_id";

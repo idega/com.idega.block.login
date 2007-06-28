@@ -54,9 +54,10 @@ import com.idega.util.SendMail;
 import com.idega.util.StringHandler;
 
 /**
- * Title: Login - The standard login block in idegaWeb Description: Copyright:
- * Copyright (c) 2000-2001 idega.is All Rights Reserved Company: idega
- * 
+ * <p>
+ * Component to log-in to the idegaWeb application by username and password.<br/>
+ * A newer and recommended refactored version is the Login2 component
+ * </p> 
  * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson </a>, <a
  *         href="mailto:tryggvi@idega.is">Tryggvi Larusson </a>
  * @version 1.1
