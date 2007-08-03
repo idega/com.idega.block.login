@@ -1,3 +1,17 @@
+application_errors_occured=Eftirfarandi villa/villur komu upp
+changePassword.change_password=Breyta lykilor\u00F0i
+changePassword.change_password_helper_text=Vinsamlegast skr\u00E1\u00F0u inn n\u00FAverandi lykilor\u00F0 og s\u00ED\u00F0an \u00FEa\u00F0 n\u00FDja \u00FEar fyrir ne\u00F0an.<br>\r\nAthugi\u00F0 a\u00F0 n\u00FDtt lykilor\u00F0 ver\u00F0ur a\u00F0 vera minnst 8 stafir.<br>\r\nAthugi\u00F0 a\u00F0 greinarmunur er ger\u00F0ur \u00E1 st\u00F3rum og litlum st\u00F6fum.
+changePassword.current_password=N\u00FAverandi lykilor\u00F0
+changePassword.invalid_password=Rangt lykilor\u00F0
+changePassword.new_password=N\u00FDtt lykilor\u00F0
+changePassword.new_password_repeated=Endurtaka n\u00FDtt lykilor\u00F0
+changePassword.password_repeated_empty=Endurteki\u00F0 lykilor\u00F0 ver\u00F0ur a\u00F0 fyllast \u00FAt
+changePassword.password_saved=Lykilor\u00F0 vista\u00F0
+changePassword.password_saved_text=Lykilor\u00F0i\u00F0 \u00FEitt hefur veri\u00F0 vista\u00F0
+changePassword.password_too_short=Lykilor\u00F0 of stutt, leyfileg lengd minnst 8 stafir
+changePassword.password_update_failed=Ekki t\u00F3kst a\u00F0 vista lykilor\u00F0
+changePassword.passwords_not_same=N\u00FDja lykilor\u00F0i\u00F0 er ekki eins \u00ED b\u00E1\u00F0um innsl\u00E1ttarreitum
+changePassword.update=Vista
 change_password=\u00DE\u00FA ver\u00F0ur a\u00F0 breyta lykilor\u00F0i \u00FE\u00EDnu
 close=Loka
 confirm=Sta\u00F0festa
