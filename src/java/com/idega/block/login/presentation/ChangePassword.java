@@ -44,7 +44,7 @@ public class ChangePassword  extends Block {
 
 	private int MIN_PASSWORD_LENGTH = 8;
 	
-	private final static String KEY_PREFIX = "changePassowrd.";
+	private final static String KEY_PREFIX = "changePassword.";
 	private final static String KEY_CURRENT_PASSWORD = KEY_PREFIX + "current_password";
 	private final static String KEY_NEW_PASSWORD = KEY_PREFIX + "new_password";
 	private final static String KEY_NEW_PASSWORD_REPEATED = KEY_PREFIX + "new_password_repeated";
@@ -55,7 +55,8 @@ public class ChangePassword  extends Block {
 	private final static String KEY_PASSWORDS_NOT_SAME = KEY_PREFIX + "passwords_not_same";
 	private final static String KEY_PASSWORD_INVALID = KEY_PREFIX + "invalid_password";	
 	private final static String KEY_PASSWORD_TOO_SHORT = KEY_PREFIX + "password_too_short";	
-	private final static String KEY_PASSWORD_SAVED = KEY_PREFIX + "password_saved";	
+	private final static String KEY_PASSWORD_SAVED = KEY_PREFIX + "password_saved";
+	private final static String KEY_PASSWORD_SAVED_TEXT = KEY_PREFIX + "password_saved_text";
 
 	private final static String DEFAULT_CURRENT_PASSWORD = "Current password";	
 	private final static String DEFAULT_NEW_PASSWORD = "New password";	
@@ -67,11 +68,14 @@ public class ChangePassword  extends Block {
 	private final static String DEFAULT_PASSWORDS_NOT_SAME = "New passwords not the same.";		
 	private final static String DEFAULT_PASSWORD_INVALID = "Invalid password.";		
 	private final static String DEFAULT_PASSWORD_TOO_SHORT = "Password too short. Must be at least {0} letters/digits.";		
-	private final static String DEFAULT_PASSWORD_SAVED = "Your password has been saved.";	
+	private final static String DEFAULT_PASSWORD_SAVED = "Password saved";
+	private final static String DEFAULT_PASSWORD_SAVED_TEXT = "Your password has been saved.";
 
 	private User user = null;
 	private IWResourceBundle iwrb;
 		
+	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.login";
+
 	private int parseAction (final IWContext iwc) {
 		if (iwc.isParameterSet(PARAMETER_FORM_SUBMIT)) {
 			return ACTION_FORM_SUBMIT;
@@ -109,7 +113,7 @@ public class ChangePassword  extends Block {
 		header.setStyleClass("header");
 		form.add(header);
 		
-		Heading1 heading = new Heading1(this.iwrb.getLocalizedString("change_password", "Change password"));
+		Heading1 heading = new Heading1(this.iwrb.getLocalizedString(KEY_PREFIX + "change_password", "Change password"));
 		header.add(heading);
 		
 		Layer contents = new Layer(Layer.DIV);
@@ -121,7 +125,7 @@ public class ChangePassword  extends Block {
 		contents.add(section);
 		
 		Paragraph paragraph = new Paragraph();
-		paragraph.add(new Text(this.iwrb.getLocalizedString("change_password_helper_text", "Please fill in your current password and enter the new desired one.")));
+		paragraph.add(new Text(this.iwrb.getLocalizedString(KEY_PREFIX + "change_password_helper_text", "Please fill in your current password and enter the new desired one.")));
 		section.add(paragraph);
 		
 		PasswordInput currentPassword = new PasswordInput(PARAMETER_CURRENT_PASSWORD);	
@@ -242,7 +246,7 @@ public class ChangePassword  extends Block {
 			layer.add(heading);
 			
 			Paragraph paragraph = new Paragraph();
-			paragraph.add(new Text(this.iwrb.getLocalizedString(KEY_PASSWORD_SAVED + "_text", DEFAULT_PASSWORD_SAVED + " info")));
+			paragraph.add(new Text(this.iwrb.getLocalizedString(KEY_PASSWORD_SAVED_TEXT, DEFAULT_PASSWORD_SAVED_TEXT)));
 			layer.add(paragraph);
 			
 			ICPage userHomePage = null;
@@ -308,5 +312,9 @@ public class ChangePassword  extends Block {
 		}
 		
 		add(layer);
+	}
+
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
 	}
 }
