@@ -26,6 +26,7 @@ has_no_login=Has no login
 help=Help
 help_headline=Web Access
 hint_submit=Answer
+iw.component.com.idega.block.login.presentation.ChangePassword.name=ChangePassword
 iw.component.com.idega.block.login.presentation.Forgot.name=Forgot
 iw.component.com.idega.block.login.presentation.ForgottenPassword.name=ForgottenPassword
 iw.component.com.idega.block.login.presentation.Login.name=Login
