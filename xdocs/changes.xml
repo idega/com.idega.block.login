@@ -5,6 +5,12 @@
   </properties>
   <body>
   
+	<release version="3.1.5" date="2007-08-03">
+      <action dev="sigtryggur" type="update">
+      	Added ChangePassword component
+      </action>
+    </release>
+	
 	<release version="3.1.4" date="2007-06-28">
       <action dev="tryggvil" type="update">
       	Added UserRegistration component, that replaces the older Register component and 
