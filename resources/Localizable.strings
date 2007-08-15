@@ -60,6 +60,7 @@ passwd=Password
 password=Password
 register.NO_EMAIL=NO_EMAIL
 register.NO_NAME=NO_NAME
+register.NO_USER_WITH_EMAIL=NO_USER_WITH_EMAIL
 register.confirm=Confirm
 register.done=Your login and password has been sent to you.
 register.email=Email

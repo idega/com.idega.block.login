@@ -54,6 +54,7 @@ passwd=Lykilor\u00F0
 password=Lykilor\u00F0
 register.NO_EMAIL=Netfang vantar
 register.NO_NAME=Nafn vantar
+register.NO_USER_WITH_EMAIL=Enginn einstaklingur fannst skr\u00E1\u00F0ur me\u00F0 \u00FEetta netfang
 register.confirm=Sta\u00F0festa lykilor\u00F0\: 
 register.done=N\u00FDtt a\u00F0gangsor\u00F0 hefur veri\u00F0 sent \u00E1 netfangi\u00F0 \u00FEitt.
 register.email=Netfang\: 
