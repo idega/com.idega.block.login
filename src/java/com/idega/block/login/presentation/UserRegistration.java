@@ -44,10 +44,10 @@ import com.idega.util.text.Name;
  * Component to register as a new user in the system.<br/> 
  * This is a refactoring of the older Register component.
  * </p>
- * Last modified: $Date: 2007/06/28 14:38:31 $ by $Author: tryggvil $
+ * Last modified: $Date: 2007/08/15 13:42:58 $ by $Author: sigtryggur $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  */
 public class UserRegistration extends Block {
 	
@@ -78,6 +78,7 @@ public class UserRegistration extends Block {
 	public static final int SENT = 11;
 	public static final int NO_LOGIN = 12;
 	public static final int MISMATCH = 13;
+	public static final int NO_USER_WITH_EMAIL = 14;
 
 	private UserBusiness userBusiness = null;
 
@@ -148,7 +149,11 @@ public class UserRegistration extends Block {
 			User usr;
 			try {
 				usr = lookupUserByEmail(userEmail);
-				sendNewLoginEmailToUser(iwc, usr, userEmail);
+				if (usr != null) {
+					sendNewLoginEmailToUser(iwc, usr, userEmail);
+				} else {
+					code = NO_USER_WITH_EMAIL;
+				}
 			}
 			catch (LoginModificationException e) {
 				e.printStackTrace();
@@ -334,6 +339,9 @@ public class UserRegistration extends Block {
 			case MISMATCH:
 				msg = this.iwrb.getLocalizedString("register.MISMATCH", "MISMATCH");
 				break;
+			case NO_USER_WITH_EMAIL:
+				msg = this.iwrb.getLocalizedString("register.NO_USER_WITH_EMAIL", "NO_USER_WITH_EMAIL");
+				break;
 		}
 		return msg;
 	}
@@ -456,6 +464,9 @@ public class UserRegistration extends Block {
 					throw new LoginModificationException(NO_USERNAME);
 				}
 			}
+		}
+		catch (FinderException ex) {
+			//nothing found
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
