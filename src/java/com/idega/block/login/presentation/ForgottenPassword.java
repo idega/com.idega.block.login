@@ -16,20 +16,20 @@ import com.idega.user.data.User;
  * Component to re-send a new login/password to a user registered with email.<br>
  * This is a refactoring of the older Forgot component.
  * </p>
- *  Last modified: $Date: 2007/06/28 14:38:31 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2007/09/26 08:05:16 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  */
 public class ForgottenPassword extends UserRegistration {
 
 	private boolean _loginInput = false;
 	private boolean _hideMessage = false;
 	
-	public static final String DEFAULT_STYLE_CLASS = "ForgottenPassword";
+	public static final String STYLE_CLASS = "ForgottenPassword";
 	
 	public ForgottenPassword() {
-		setStyleClass(DEFAULT_STYLE_CLASS);
+		setStyleClass(STYLE_CLASS);
 		setLookupUserByEmail(true);
 		setAllowNoPreviousLogin(false);
 	}
