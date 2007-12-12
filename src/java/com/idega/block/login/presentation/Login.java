@@ -372,7 +372,7 @@ public class Login extends Block {
 		if (this.showHint) {
 			String userName = iwc.getParameter(LOGIN_PARAMETER_NAME);
 			if (userName == null) {
-				userName = ((LoginSession)SpringBeanLookup.getInstance().getSpringBean(iwc.getSession(), LoginSession.class)).getUserLoginName(); 
+				userName = SpringBeanLookup.getInstance().getSpringBean(iwc.getSession(), LoginSession.class).getUserLoginName(); 
                         //(String) iwc.getSessionAttribute(LoginBusinessBean.UserAttributeParameter);
 			}
 			if (userName != null && userName.length() > 0) {
