@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
   	<groupId>com.idega.block.platform</groupId>
@@ -10,7 +10,7 @@
   <groupId>com.idega.block.platform</groupId>
   <artifactId>com.idega.block.login</artifactId>
   <name>idegaWeb Login Block</name>
-  <version>4.0.0-SNAPSHOT</version>
+  <version>4.0.0</version>
   <inceptionYear>2000</inceptionYear>
   <description>This is the default login module for idegaWeb</description>
   <scm>
@@ -20,6 +20,7 @@
     -->
     <connection>scm:cvs:ext:${user.name}@code.idega.com:/idega/cvs:${groupId}/${artifactId}/</connection>
     <developerConnection>scm:cvs:ext:${user.name}@code.idega.com:/idega/cvs:${groupId}/${artifactId}/</developerConnection>
+    <tag>com_idega_block_login-4_0_0</tag>
   </scm>
 
   <developers>
@@ -28,35 +29,35 @@
       <name>Tryggvi Larusson</name>
       <email>tryggvi@idega.is</email>
       <organization>idega software</organization>
-      <roles/>
+      <roles />
     </developer>
     <developer>
       <id>palli</id>
       <name>Pall Helgason</name>
       <email>palli@idega.is</email>
       <organization>idega software</organization>
-      <roles/>
+      <roles />
     </developer>
     <developer>
       <id>eiki</id>
       <name>Eirikur Sveinn Hrafnsson</name>
       <email>eiki@idega.is</email>
       <organization>idega software</organization>
-      <roles/>
+      <roles />
     </developer>
     <developer>
       <id>laddi</id>
       <name>Thorhallur Helgason</name>
       <email>laddi@idega.is</email>
       <organization>idega software</organization>
-      <roles/>
+      <roles />
     </developer>
     <developer>
       <id>dainis</id>
       <name>Dainis Brjuhoveckis</name>
       <email>dainis.brjuhoveckis@idega.lv</email>
       <organization>idega baltic</organization>
-      <roles/>
+      <roles />
     </developer>
   </developers>
   <dependencies>
