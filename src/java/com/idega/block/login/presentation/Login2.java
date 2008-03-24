@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.27 2007/11/01 17:43:09 laddi Exp $ Created on 7.3.2005
+ * $Id: Login2.java,v 1.28 2008/03/24 17:21:31 civilis Exp $ Created on 7.3.2005
  * in project com.idega.block.login
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -11,13 +11,19 @@ package com.idega.block.login.presentation;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
+
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.el.ValueBinding;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
+import javax.faces.event.FacesEvent;
+import javax.faces.event.FacesListener;
+import javax.faces.event.PhaseId;
+
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginState;
 import com.idega.idegaweb.IWResourceBundle;
@@ -44,12 +50,14 @@ import com.idega.servlet.filter.IWAuthenticator;
  * New Login component based on JSF and CSS. Will gradually replace old Login
  * component
  * </p>
- * Last modified: $Date: 2007/11/01 17:43:09 $ by $Author: laddi $
+ * Last modified: $Date: 2008/03/24 17:21:31 $ by $Author: civilis $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.27 $
+ * @version $Revision: 1.28 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
+	
+	public static final String COMPONENT_TYPE = "com.idega.Login";
 
 	public static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.login";
 	protected static final String FACET_LOGGED_IN = "login_loggedin";
@@ -74,8 +82,8 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	private boolean sendToHttps = false;
 	private String urlToRedirectToOnLogon = null;
 	private String urlToRedirectToOnLogoff = null;
-	private Map extraLogonParameters = new HashMap();
-	private Map extraLogoffParameters = new HashMap();
+	private Map<String, String> extraLogonParameters = new HashMap<String, String>();
+	private Map<String, String> extraLogoffParameters = new HashMap<String, String>();
 	private boolean allowCookieLogin=false;
 	private boolean focusOnLoad=false;
 
@@ -151,11 +159,8 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 				submitLayer.getChildren().add(new Parameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGOFF, getURLToRedirectToOnLogoff()));
 			}
 
-			if (!this.extraLogoffParameters.isEmpty()) {
-				for (Iterator iter = this.extraLogoffParameters.keySet().iterator(); iter.hasNext();) {
-					String key = (String) iter.next();
-					submitLayer.getChildren().add(new Parameter(key, (String) this.extraLogoffParameters.get(key)));
-				}
+			for (Entry<String, String> entry : extraLogoffParameters.entrySet()) {
+				submitLayer.getChildren().add(new Parameter(entry.getKey(), entry.getValue()));
 			}
 
 			submitLayer.getChildren().add(param);
@@ -296,11 +301,8 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 				submitLayer.getChildren().add(new Parameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON, iwc.getParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON)));
 			}
 
-			if (!this.extraLogonParameters.isEmpty()) {
-				for (Iterator iter = this.extraLogonParameters.keySet().iterator(); iter.hasNext();) {
-					String key = (String) iter.next();
-					submitLayer.getChildren().add(new Parameter(key, (String) this.extraLogonParameters.get(key)));
-				}
+			for (Entry<String, String> entry : extraLogonParameters.entrySet()) {
+				submitLayer.getChildren().add(new Parameter(entry.getKey(), entry.getValue()));
 			}
 
 			if(isFocusOnLoad()){
@@ -393,15 +395,94 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
+	
+	protected void fireLoggedInEvent(FacesContext ctx, LoginEvent event) {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.idega.presentation.PresentationObjectTransitional#encodeChildren(javax.faces.context.FacesContext)
-	 */
+//		this looks like hack, and most probably, it is
+		
+		ValueBinding vb = getValueBinding("loginListener");
+		
+		if(vb != null) {
+		
+			String exp = vb.getExpressionString();
+			
+			if(exp != null) {
+			
+				addLoginListener((LoginListener)ctx.getApplication().createValueBinding(exp).getValue(ctx));
+				
+				event.setPhaseId(PhaseId.APPLY_REQUEST_VALUES);
+				queueEvent(event);
+			}
+		}
+	}
+	
+	public interface LoginListener extends FacesListener {
+		
+		public abstract void loginSuccess();
+		
+		public abstract void loginFailed();
+	}
+	
+	public class LoginEvent extends FacesEvent {
+
+		private static final long serialVersionUID = -3583814876573661160L;
+		
+		private Boolean loginSuccess;
+		private Boolean loginFailed;
+
+		public LoginEvent(UIComponent component) {
+	        super(component);
+	    }
+		@Override
+		public boolean isAppropriateListener(FacesListener faceslistener) {
+			return faceslistener instanceof LoginListener;
+		}
+
+		@Override
+		public void processListener(FacesListener faceslistener) {
+			
+			if(faceslistener instanceof LoginListener) {
+				
+				LoginListener listener = (LoginListener)faceslistener;
+			
+				if(getLoginSuccess())
+					listener.loginSuccess();
+				else if(getLoginFailed())
+					listener.loginFailed();
+			}
+		}
+		Boolean getLoginSuccess() {
+			return loginSuccess == null ? false : loginSuccess;
+		}
+		void setLoginSuccess(Boolean loginSuccess) {
+			this.loginSuccess = loginSuccess;
+		}
+		Boolean getLoginFailed() {
+			return loginFailed == null ? false : loginFailed;
+		}
+		void setLoginFailed(Boolean loginFailed) {
+			this.loginFailed = loginFailed;
+		}
+	}
+	
+	@Override
+	public void decode(FacesContext fc) {
+		super.decode(fc);
+		
+		final IWContext iwc = IWContext.getIWContext(fc);
+		
+		if (iwc.isLoggedOn()) {
+			LoginEvent event = new LoginEvent(this);
+			event.setLoginSuccess(true);
+			fireLoggedInEvent(fc, event);
+		}
+	}
+
+	@Override
 	public void encodeChildren(FacesContext context) throws IOException {
 
 		super.encodeChildren(context);
+		
 		IWContext iwc = IWContext.getIWContext(context);
 		if (iwc.isLoggedOn()) {
 			UIComponent loggedInPart = getLoggedInPart(iwc);
@@ -455,12 +536,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 		 */
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.idega.presentation.PresentationObjectContainer#restoreState(javax.faces.context.FacesContext,
-	 *      java.lang.Object)
-	 */
+	@Override
 	public void restoreState(FacesContext context, Object state) {
 		Object[] value = (Object[]) state;
 		super.restoreState(context, value[0]);
@@ -472,11 +548,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 		this.focusOnLoad = ((Boolean) value[6]).booleanValue();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.idega.presentation.PresentationObjectContainer#saveState(javax.faces.context.FacesContext)
-	 */
+	@Override
 	public Object saveState(FacesContext context) {
 		Object[] state = new Object[7];
 		state[0] = super.saveState(context);
@@ -596,5 +668,14 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	
 	public void setFocusOnLoad(boolean focusOnLoad) {
 		this.focusOnLoad = focusOnLoad;
+	}
+	
+	public void addLoginListener(LoginListener loginLitener) {
+
+		if(!listenerAdded()) {
+		
+			addFacesListener(loginLitener);
+			listenerAdded(true);
+		}
 	}
 }
