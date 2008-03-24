@@ -9,8 +9,19 @@ package com.idega.block.login.presentation;
  * @version 1.0
  */
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.text.MessageFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.event.FacesEvent;
+import javax.faces.event.FacesListener;
+import javax.faces.event.PhaseId;
+
+import org.apache.commons.validator.EmailValidator;
 
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginContext;
@@ -29,11 +40,14 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
+import com.idega.util.CoreConstants;
 import com.idega.util.IWTimestamp;
 import com.idega.util.SendMail;
 import com.idega.util.text.Name;
 
 public class Register extends Block {
+	
+	public static final String COMPONENT_TYPE = "com.idega.Register";
 
 	public static String prmUserId = "user_id";
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.login";
@@ -52,26 +66,58 @@ public class Register extends Block {
 	public static final int ERROR = 10;
 	public static final int SENT = 11;
 	public static final int MISMATCH = 12;
+	private boolean generateContainingForm = true;
+	private boolean displayCloseButton = true;
+	private Integer code;
 	
-	private UserBusiness userBusiness = null;
-
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
 
-	protected void control(IWContext iwc)throws RemoteException {
-		int code = INIT;
-		if (iwc.isParameterSet("send.x")) {
-			code = processForm(iwc);
-		}
+	protected UIComponent getComponent(IWContext iwc)throws RemoteException {
+		int code = getCode();
 		Table T = new Table(1, 3);
 		if (code == SENT) {
-			T.add(getAnswer(), 1, 2);
-		}
-		else {
+			T.add(getAnswer(iwc), 1, 2);
+		} else {
 			T.add(getForm(iwc, code), 1, 2);
 		}
-		add(T);
+		
+		return T;
+	}
+	
+	@Override
+	public void decode(FacesContext fc) {
+		super.decode(fc);
+		
+		IWContext iwc = IWContext.getIWContext(fc);
+		
+		int code = INIT;
+		if (iwc.isParameterSet("send.x")) {
+			try {
+				code = processForm(iwc);
+			} catch (RemoteException e) {
+				Logger.getLogger(getClassName()).log(Level.WARNING, "Exception while processing form", e);
+			}
+		}
+		if (code == SENT) {
+			
+			RegisterEvent event = new RegisterEvent(this);
+			event.setRegisterSuccess(true);
+			fireRegisterEvent(fc, event);
+		}
+		
+		setCode(code);
+	}
+	
+	protected void fireRegisterEvent(FacesContext ctx, RegisterEvent event) {
+
+//		this looks like hack, and most probably, it is
+		String exp = getValueBinding("registerListener").getExpressionString();
+		addRegisterListener((RegisterListener)ctx.getApplication().createValueBinding(exp).getValue(ctx));
+		
+		event.setPhaseId(PhaseId.APPLY_REQUEST_VALUES);
+		queueEvent(event);
 	}
 
 	private int processForm(IWContext iwc)throws RemoteException {
@@ -83,24 +129,33 @@ public class Register extends Block {
 		int code = NORMAL;
 		if (realName != null && userEmail != null && userName != null) {
 			//System.err.println("trying to register");
-			code = registerUser(realName, userEmail, userName, pass, conf);
+			code = registerUser(iwc, realName, userEmail, userName, pass, conf);
 		}
 		return code;
 	}
-
+	
+	protected IWResourceBundle getIWRB(IWContext iwc) {
+		
+		if(iwrb == null)
+			iwrb = getResourceBundle(iwc);
+		
+		return iwrb;
+	}
+	
 	private PresentationObject getForm(IWContext iwc, int code) {
 		Table T = new Table(2, 9);
-		String textInfo = this.iwrb.getLocalizedString("register.info", "Register");
+		IWResourceBundle iwrb = getIWRB(iwc);
+		String textInfo = iwrb.getLocalizedString("register.info", "Register");
 		String textUserRealName =
-			this.iwrb.getLocalizedString("register.name", "Your name");
+			iwrb.getLocalizedString("register.name", "Your name");
 		String textUserEmail =
-			this.iwrb.getLocalizedString("register.email", "Email");
+			iwrb.getLocalizedString("register.email", "Email");
 		String textUserName =
-			this.iwrb.getLocalizedString("register.username", "Username");
+			iwrb.getLocalizedString("register.username", "Username");
 		String textPassword =
-			this.iwrb.getLocalizedString("register.passwd", "Password");
+			iwrb.getLocalizedString("register.passwd", "Password");
 		String textConfirm =
-			this.iwrb.getLocalizedString("register.confirm", "Confirm");
+			iwrb.getLocalizedString("register.confirm", "Confirm");
 		TextInput inputUserRealName = new TextInput("reg_userrealname");
 		TextInput inputUserEmail = new TextInput("reg_email");
 		TextInput inputUserName = new TextInput("reg_username");
@@ -128,27 +183,36 @@ public class Register extends Block {
 		T.add(textConfirm, 1, 6);
 		T.add(inputConfirm, 2, 6);
 		T.mergeCells(1, 7, 2, 7);
-		String message = getMessage(code);
+		String message = getMessage(iwc, code);
 		if (message != null) {
 			T.add(message, 1, 7);
 		}
 		//System.err.println(code+" : "+message);
 		SubmitButton ok =
 			new SubmitButton(
-				this.iwrb.getLocalizedImageButton("send", "Send"),
+				iwrb.getLocalizedImageButton("send", "Send"),
 				"send");
 
-		CloseButton close =
-			new CloseButton(this.iwrb.getLocalizedImageButton("close", "Close"));
-
 		T.add(ok, 2, 9);
-		T.add(close, 2, 9);
-		Form myForm = new Form();
-		myForm.add(T);
-		return myForm;
+		
+		if(isDisplayCloseButton()) {
+		
+			CloseButton close = new CloseButton(iwrb.getLocalizedImageButton("close", "Close"));
+			T.add(close, 2, 9);
+		}
+		
+		if(isGenerateContainingForm()) {
+			
+			Form myForm = new Form();
+			myForm.add(T);
+			return myForm;
+			
+		} else {
+			return T;
+		}
 	}
-
-	public PresentationObject getAnswer() {
+	
+	public PresentationObject getAnswer(IWContext iwc) {
 		Table table = new Table(1,1);
 		table.setCellpaddingAndCellspacing(0);
 		table.setHeight(Table.HUNDRED_PERCENT);
@@ -159,7 +223,7 @@ public class Register extends Block {
 		Table T = new Table(1, 1);
 		T.setHeight(300);
 		T.add(
-			this.iwrb.getLocalizedString(
+				getIWRB(iwc).getLocalizedString(
 				"register.done",
 				"Your login and password has been sent to you."));
 		table.add(T);
@@ -167,7 +231,7 @@ public class Register extends Block {
 		return table;
 	}
 
-	public int registerUser(
+	public int registerUser(IWContext iwc,
 		String userRealName,
 		String emailAddress,
 		String userName,
@@ -184,7 +248,8 @@ public class Register extends Block {
 			return NO_EMAIL;
 		}
 
-		if (emailAddress.indexOf("@") == -1) {
+		
+		if (!EmailValidator.getInstance().isValid(emailAddress)) {
 			return ILLEGAL_EMAIL;
 		}
 
@@ -206,15 +271,14 @@ public class Register extends Block {
 		String usr = internal == NO_USERNAME ? null : userName;
 
 		try {
-
-			String sender = this.iwb.getProperty("register.email_sender");
-			String server = this.iwb.getProperty("register.email_server");
-			String subject = this.iwb.getProperty("register.email_subject");
+			String sender = iwc.getApplicationSettings().getProperty("register.email_sender");
+			String server = iwc.getApplicationSettings().getProperty("register.email_server");
+			String subject = iwc.getApplicationSettings().getProperty("register.email_subject");
 			if (sender == null || server == null || subject == null) {
 				return NO_SERVER;
 			}
 			String letter =
-				this.iwrb.getLocalizedString(
+				getIWRB(iwc).getLocalizedString(
 					"register.email_body",
 					"Username : {1} \nPassword: {2}");
 
@@ -224,7 +288,7 @@ public class Register extends Block {
 
 			Name name = new Name(userRealName);
 														//createUserWithLogin(String firstname, String middlename, String lastname, String displayname, String description, Integer gender, IWTimestamp date_of_birth, Integer primary_group, String userLogin, String password, Boolean accountEnabled, IWTimestamp modified, int daysOfValidity, Boolean passwordExpires, Boolean userAllowedToChangePassw, Boolean changeNextTime,String encryptionType) throws CreateException{
-			User iwUser = this.userBusiness.createUserWithLogin(name.getFirstName(),name.getMiddleName(),name.getLastName(),null,    null,                      null,                  null,                                      null,                             usr,                      pass,                    Boolean.TRUE ,                                IWTimestamp.RightNow(),5000,               Boolean.FALSE,    				Boolean.TRUE ,                                      Boolean.FALSE,                                 null);
+			User iwUser = getUserBusiness(iwc).createUserWithLogin(name.getFirstName(),name.getMiddleName(),name.getLastName(),null,    null,                      null,                  null,                                      null,                             usr,                      pass,                    Boolean.TRUE ,                                IWTimestamp.RightNow(),5000,               Boolean.FALSE,    				Boolean.TRUE ,                                      Boolean.FALSE,                                 null);
 			LoginContext user = new LoginContext(iwUser,usr,pass);
 
 			if (user == null) {
@@ -240,8 +304,8 @@ public class Register extends Block {
 				SendMail.send(
 					sender,
 					emailAddress,
-					"",
-					"",
+					CoreConstants.EMPTY,
+					CoreConstants.EMPTY,
 					server,
 					subject,
 					body.toString());
@@ -255,65 +319,66 @@ public class Register extends Block {
 
 	}
 
-	public String getMessage(int code) {
+	public String getMessage(IWContext iwc, int code) {
 
 		String msg = null;
+		IWResourceBundle iwrb = getIWRB(iwc);
 
 		switch (code) {
 
 			case NORMAL :
-				this.iwrb.getLocalizedString("register.NORMAL", "NORMAL");
+				iwrb.getLocalizedString("register.NORMAL", "NORMAL");
 				break;
 
 			case USER_NAME_EXISTS :
 				msg =
-					this.iwrb.getLocalizedString(
+					iwrb.getLocalizedString(
 						"register.USER_NAME_EXISTS",
 						"USER_NAME_EXISTS");
 				break;
 
 			case ILLEGAL_USERNAME :
 				msg =
-					this.iwrb.getLocalizedString(
+					iwrb.getLocalizedString(
 						"register.ILLEGAL_USERNAME",
 						"ILLEGAL_USERNAME");
 				break;
 
 			case ILLEGAL_EMAIL :
 				msg =
-					this.iwrb.getLocalizedString(
+					iwrb.getLocalizedString(
 						"register.ILLEGAL_EMAIL",
 						"ILLEGAL_EMAIL");
 				break;
 
 			case NO_NAME :
-				msg = this.iwrb.getLocalizedString("register.NO_NAME", "NO_NAME");
+				msg = iwrb.getLocalizedString("register.NO_NAME", "NO_NAME");
 				break;
 
 			case NO_EMAIL :
-				msg = this.iwrb.getLocalizedString("register.NO_EMAIL", "NO_EMAIL");
+				msg = iwrb.getLocalizedString("register.NO_EMAIL", "NO_EMAIL");
 				break;
 
 			case NO_USERNAME :
 				msg =
-					this.iwrb.getLocalizedString("register.NO_USERNAME", "NO_USER");
+					iwrb.getLocalizedString("register.NO_USERNAME", "NO_USER");
 				break;
 
 			case NO_SERVER :
 				msg =
-					this.iwrb.getLocalizedString("register.NO_SERVER", "NO_SERVER");
+					iwrb.getLocalizedString("register.NO_SERVER", "NO_SERVER");
 				break;
 
 			case ERROR :
-				msg = this.iwrb.getLocalizedString("register.ERROR", "ERROR");
+				msg = iwrb.getLocalizedString("register.ERROR", "ERROR");
 				break;
 
 			case SENT :
-				msg = this.iwrb.getLocalizedString("register.SENT", "SENT");
+				msg = iwrb.getLocalizedString("register.SENT", "SENT");
 				break;
 
 			case MISMATCH :
-				msg = this.iwrb.getLocalizedString("register.MISMATCH", "MISMATCH");
+				msg = iwrb.getLocalizedString("register.MISMATCH", "MISMATCH");
 				break;
 		}
 		return msg;
@@ -323,11 +388,106 @@ public class Register extends Block {
 		return (UserBusiness) IBOLookup.getServiceInstance(iwac,UserBusiness.class);
 	}
 
-	public void main(IWContext iwc) throws RemoteException {
-		this.iwb = getBundle(iwc);
-		this.iwrb = getResourceBundle(iwc);
-		this.userBusiness = getUserBusiness(iwc);
-		control(iwc);
+	public void main(IWContext iwc) throws RemoteException { }
+	
+	@Override
+	public void encodeChildren(FacesContext context) throws IOException {
+		super.encodeChildren(context);
+		
+		System.out.println("encode chi");
+		
+		IWContext iwc = IWContext.getIWContext(context);
+		UIComponent c = getComponent(iwc);
+		renderChild(context, c);
+	}
+	
+	public interface RegisterListener extends FacesListener {
+		
+		public abstract void registerSuccess();
+	}
+	
+	public class RegisterEvent extends FacesEvent {
+
+		private static final long serialVersionUID = 4244895460153563070L;
+		private Boolean registerSuccess;
+
+		public RegisterEvent(UIComponent component) {
+	        super(component);
+	    }
+		@Override
+		public boolean isAppropriateListener(FacesListener faceslistener) {
+			return faceslistener instanceof RegisterListener;
+		}
+
+		@Override
+		public void processListener(FacesListener faceslistener) {
+			
+			if(faceslistener instanceof RegisterListener) {
+				
+				RegisterListener listener = (RegisterListener)faceslistener;
+			
+				if(getRegisterSuccess())
+					listener.registerSuccess();
+			}
+		}
+		Boolean getRegisterSuccess() {
+			return registerSuccess;
+		}
+		void setRegisterSuccess(Boolean registerSuccess) {
+			this.registerSuccess = registerSuccess;
+		}
+	}
+	
+	public void addRegisterListener(RegisterListener listener) {
+
+		if(!listenerAdded()) {
+		
+			addFacesListener(listener);
+			listenerAdded(true);
+		}
 	}
 
+	public boolean isGenerateContainingForm() {
+		return generateContainingForm;
+	}
+
+	public void setGenerateContainingForm(boolean generateContainingForm) {
+		this.generateContainingForm = generateContainingForm;
+	}
+	
+	@Override
+	public void restoreState(FacesContext context, Object state) {
+		Object[] value = (Object[]) state;
+		super.restoreState(context, value[0]);
+		generateContainingForm = (Boolean) value[1];
+		displayCloseButton = (Boolean) value[2];
+		code = (Integer)value[3];
+	}
+
+	@Override
+	public Object saveState(FacesContext context) {
+		Object[] state = new Object[4];
+		state[0] = super.saveState(context);
+		state[1] = generateContainingForm;
+		state[2] = displayCloseButton;
+		state[3] = code;
+		
+		return state;
+	}
+
+	public Integer getCode() {
+		return code == null ? INIT : code;
+	}
+
+	public void setCode(Integer code) {
+		this.code = code;
+	}
+
+	public boolean isDisplayCloseButton() {
+		return displayCloseButton;
+	}
+
+	public void setDisplayCloseButton(boolean displayCloseButton) {
+		this.displayCloseButton = displayCloseButton;
+	}
 }
