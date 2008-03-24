@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE facelet-taglib PUBLIC
+  "-//Sun Microsystems, Inc.//DTD Facelet Taglib 1.0//EN"
+  "http://java.sun.com/dtd/facelet-taglib_1_0.dtd">
+  
+<facelet-taglib>
+
+	<namespace>http://xmlns.idega.com/com.idega.block.login</namespace>
+	
+    <tag>
+        <tag-name>login</tag-name>
+        <component>
+            <component-type>com.idega.Login</component-type>
+        </component>
+    </tag>
+    <tag>
+        <tag-name>register</tag-name>
+        <component>
+            <component-type>com.idega.Register</component-type>
+        </component>
+    </tag>
+</facelet-taglib>
