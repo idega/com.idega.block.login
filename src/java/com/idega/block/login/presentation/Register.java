@@ -35,6 +35,8 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
+import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -112,12 +114,15 @@ public class Register extends Block {
 	
 	protected void fireRegisterEvent(FacesContext ctx, RegisterEvent event) {
 
-//		this looks like hack, and most probably, it is
-		String exp = getValueBinding("registerListener").getExpressionString();
-		addRegisterListener((RegisterListener)ctx.getApplication().createValueBinding(exp).getValue(ctx));
+		RegisterListener registerListener = (RegisterListener)getValueBindingByAttributeExp(ctx, "registerListener");
 		
-		event.setPhaseId(PhaseId.APPLY_REQUEST_VALUES);
-		queueEvent(event);
+		if(registerListener != null) {
+		
+			addRegisterListener(registerListener);
+			
+			event.setPhaseId(PhaseId.APPLY_REQUEST_VALUES);
+			queueEvent(event);
+		}
 	}
 
 	private int processForm(IWContext iwc)throws RemoteException {
@@ -187,13 +192,8 @@ public class Register extends Block {
 		if (message != null) {
 			T.add(message, 1, 7);
 		}
-		//System.err.println(code+" : "+message);
-		SubmitButton ok =
-			new SubmitButton(
-				iwrb.getLocalizedImageButton("send", "Send"),
-				"send");
-
-		T.add(ok, 2, 9);
+		
+		UIComponent sendButton;
 		
 		if(isDisplayCloseButton()) {
 		
@@ -203,11 +203,32 @@ public class Register extends Block {
 		
 		if(isGenerateContainingForm()) {
 			
+			sendButton =
+				new SubmitButton(
+					iwrb.getLocalizedImageButton("send", "Send"),
+					"send");
+			
+		} else {
+			
+			Parameter param = new Parameter("send.x", "");
+			T.add(param);
+			
+			GenericButton gbutton = new GenericButton("send", iwrb.getLocalizedString("send", "Send"));
+			gbutton.setOnClick("this.form.elements['send.x'].value='1';this.form.submit();");
+	//		gbutton.setOnClick("this.form.submit();");
+			sendButton = gbutton;
+		}
+		
+		T.add(sendButton, 2, 9);
+		
+		if(isGenerateContainingForm()) {
+			
 			Form myForm = new Form();
 			myForm.add(T);
 			return myForm;
 			
 		} else {
+			
 			return T;
 		}
 	}
@@ -388,13 +409,14 @@ public class Register extends Block {
 		return (UserBusiness) IBOLookup.getServiceInstance(iwac,UserBusiness.class);
 	}
 
-	public void main(IWContext iwc) throws RemoteException { }
+	public void main(IWContext iwc) throws RemoteException { 
+		
+		
+	}
 	
 	@Override
 	public void encodeChildren(FacesContext context) throws IOException {
 		super.encodeChildren(context);
-		
-		System.out.println("encode chi");
 		
 		IWContext iwc = IWContext.getIWContext(context);
 		UIComponent c = getComponent(iwc);
