@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.28 2008/03/24 17:21:31 civilis Exp $ Created on 7.3.2005
+ * $Id: Login2.java,v 1.29 2008/04/06 14:30:27 civilis Exp $ Created on 7.3.2005
  * in project com.idega.block.login
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -16,13 +16,9 @@ import java.util.Map.Entry;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
-import javax.faces.el.ValueBinding;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
-import javax.faces.event.FacesEvent;
-import javax.faces.event.FacesListener;
-import javax.faces.event.PhaseId;
 
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginState;
@@ -50,10 +46,10 @@ import com.idega.servlet.filter.IWAuthenticator;
  * New Login component based on JSF and CSS. Will gradually replace old Login
  * component
  * </p>
- * Last modified: $Date: 2008/03/24 17:21:31 $ by $Author: civilis $
+ * Last modified: $Date: 2008/04/06 14:30:27 $ by $Author: civilis $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.28 $
+ * @version $Revision: 1.29 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 	
@@ -197,6 +193,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 
 			PresentationObject container = new PresentationObjectContainer();
 			if (getGenerateContainingForm()) {
+				
 				Form form = new Form();
 				if (this.sendToHttps) {
 					form.setToSendToHTTPS(this.sendToHttps);
@@ -396,88 +393,6 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 		return IW_BUNDLE_IDENTIFIER;
 	}
 	
-	protected void fireLoggedInEvent(FacesContext ctx, LoginEvent event) {
-
-//		this looks like hack, and most probably, it is
-		
-		ValueBinding vb = getValueBinding("loginListener");
-		
-		if(vb != null) {
-		
-			String exp = vb.getExpressionString();
-			
-			if(exp != null) {
-			
-				addLoginListener((LoginListener)ctx.getApplication().createValueBinding(exp).getValue(ctx));
-				
-				event.setPhaseId(PhaseId.APPLY_REQUEST_VALUES);
-				queueEvent(event);
-			}
-		}
-	}
-	
-	public interface LoginListener extends FacesListener {
-		
-		public abstract void loginSuccess();
-		
-		public abstract void loginFailed();
-	}
-	
-	public class LoginEvent extends FacesEvent {
-
-		private static final long serialVersionUID = -3583814876573661160L;
-		
-		private Boolean loginSuccess;
-		private Boolean loginFailed;
-
-		public LoginEvent(UIComponent component) {
-	        super(component);
-	    }
-		@Override
-		public boolean isAppropriateListener(FacesListener faceslistener) {
-			return faceslistener instanceof LoginListener;
-		}
-
-		@Override
-		public void processListener(FacesListener faceslistener) {
-			
-			if(faceslistener instanceof LoginListener) {
-				
-				LoginListener listener = (LoginListener)faceslistener;
-			
-				if(getLoginSuccess())
-					listener.loginSuccess();
-				else if(getLoginFailed())
-					listener.loginFailed();
-			}
-		}
-		Boolean getLoginSuccess() {
-			return loginSuccess == null ? false : loginSuccess;
-		}
-		void setLoginSuccess(Boolean loginSuccess) {
-			this.loginSuccess = loginSuccess;
-		}
-		Boolean getLoginFailed() {
-			return loginFailed == null ? false : loginFailed;
-		}
-		void setLoginFailed(Boolean loginFailed) {
-			this.loginFailed = loginFailed;
-		}
-	}
-	
-	@Override
-	public void decode(FacesContext fc) {
-		super.decode(fc);
-		
-		final IWContext iwc = IWContext.getIWContext(fc);
-		
-		if (iwc.isLoggedOn()) {
-			LoginEvent event = new LoginEvent(this);
-			event.setLoginSuccess(true);
-			fireLoggedInEvent(fc, event);
-		}
-	}
-
 	@Override
 	public void encodeChildren(FacesContext context) throws IOException {
 
@@ -618,7 +533,8 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	}
 
 	public String getURLToRedirectToOnLogon() {
-		return this.urlToRedirectToOnLogon;
+		
+		return urlToRedirectToOnLogon;
 	}
 
 	public void setURLToRedirectToOnLogoff(String url) {
@@ -664,18 +580,8 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	public boolean isFocusOnLoad() {
 		return focusOnLoad;
 	}
-
 	
 	public void setFocusOnLoad(boolean focusOnLoad) {
 		this.focusOnLoad = focusOnLoad;
-	}
-	
-	public void addLoginListener(LoginListener loginLitener) {
-
-		if(!listenerAdded()) {
-		
-			addFacesListener(loginLitener);
-			listenerAdded(true);
-		}
 	}
 }
