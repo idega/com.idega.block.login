@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.24.2.1 2006/10/30 07:43:46 laddi Exp $ Created on 7.3.2005
+ * $Id: Login2.java,v 1.24.2.2 2008/05/07 10:57:07 laddi Exp $ Created on 7.3.2005
  * in project com.idega.block.login
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -10,14 +10,18 @@
 package com.idega.block.login.presentation;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
+
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginState;
 import com.idega.idegaweb.IWResourceBundle;
@@ -43,10 +47,10 @@ import com.idega.servlet.filter.IWAuthenticator;
  * New Login component based on JSF and CSS. Will gradually replace old Login
  * component
  * </p>
- * Last modified: $Date: 2006/10/30 07:43:46 $ by $Author: laddi $
+ * Last modified: $Date: 2008/05/07 10:57:07 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.24.2.1 $
+ * @version $Revision: 1.24.2.2 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 
@@ -274,7 +278,12 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 				submitLayer.getChildren().add(new Parameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON, getURLToRedirectToOnLogon()));
 			}
 			else if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON)) {
-				submitLayer.getChildren().add(new Parameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON, iwc.getParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON)));
+				try {
+					submitLayer.getChildren().add(new Parameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON, URLEncoder.encode(iwc.getParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON), System.getProperty("file.encoding"))));
+				}
+				catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
 			}
 
 			if (!this.extraLogonParameters.isEmpty()) {
@@ -303,7 +312,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			layer = new Layer();
 			layer.setStyleClass(getStyleClass());
 			layer.setStyleClass("loginFailed");
-			
+
 			PresentationObject container = new PresentationObjectContainer();
 			if (getGenerateContainingForm()) {
 				Form form = new Form();

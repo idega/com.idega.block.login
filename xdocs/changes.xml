@@ -5,6 +5,12 @@
   </properties>
   <body>
   
+	<release version="3.1.6" date="2008-05-07">
+      <action dev="laddi" type="update">
+      	Added URLEncoding to logon redirect URI to preserve parameters.
+      </action>
+    </release>
+	
 	<release version="3.1.5" date="2007-08-03">
       <action dev="sigtryggur" type="update">
       	Added ChangePassword component
