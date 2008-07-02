@@ -1,16 +1,16 @@
 package com.idega.block.login.business;
 
-import com.idega.business.SpringBeanLookup;
 import com.idega.core.accesscontrol.business.AuthenticationListener;
 import com.idega.core.accesscontrol.business.ServletFilterChainInterruptException;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
+import com.idega.util.expression.ELUtil;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
- * Last modified: $Date: 2008/05/30 15:02:45 $ by $Author: civilis $
+ * Last modified: $Date: 2008/07/02 19:24:29 $ by $Author: civilis $
  *
  */
 public class UserLoggedInListener implements AuthenticationListener {
@@ -29,6 +29,6 @@ public class UserLoggedInListener implements AuthenticationListener {
 		UserLoggedInEvent ev = new UserLoggedInEvent(loggedInUser);
 		ev.setIWC(iwc);
 		
-		SpringBeanLookup.getInstance().publishEvent(iwc.getServletContext(), ev);
+		ELUtil.getInstance().publishEvent(ev);
 	}
 }

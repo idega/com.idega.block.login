@@ -10,9 +10,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import javax.ejb.FinderException;
+
 import com.idega.business.IBOLookup;
-import com.idega.business.SpringBeanLookup;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.business.LoginSession;
@@ -54,6 +55,7 @@ import com.idega.user.business.UserBusiness;
 import com.idega.user.util.Converter;
 import com.idega.util.SendMail;
 import com.idega.util.StringHandler;
+import com.idega.util.expression.ELUtil;
 
 /**
  * Title: Login - The standard login block in idegaWeb Description: Copyright:
@@ -372,7 +374,7 @@ public class Login extends Block {
 		if (this.showHint) {
 			String userName = iwc.getParameter(LOGIN_PARAMETER_NAME);
 			if (userName == null) {
-				userName = SpringBeanLookup.getInstance().getSpringBean(iwc.getSession(), LoginSession.class).getUserLoginName(); 
+				userName = ELUtil.getInstance().getBean(LoginSession.class).getUserLoginName(); 
                         //(String) iwc.getSessionAttribute(LoginBusinessBean.UserAttributeParameter);
 			}
 			if (userName != null && userName.length() > 0) {
