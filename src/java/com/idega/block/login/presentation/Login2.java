@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.29 2008/04/06 14:30:27 civilis Exp $ Created on 7.3.2005
+ * $Id: Login2.java,v 1.30 2008/09/25 08:56:05 anton Exp $ Created on 7.3.2005
  * in project com.idega.block.login
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -21,7 +21,9 @@ import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
 
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
+import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.business.LoginState;
+import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
@@ -40,16 +42,17 @@ import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.TextInput;
 import com.idega.servlet.filter.IWAuthenticator;
+import com.idega.user.data.User;
 
 /**
  * <p>
  * New Login component based on JSF and CSS. Will gradually replace old Login
  * component
  * </p>
- * Last modified: $Date: 2008/04/06 14:30:27 $ by $Author: civilis $
+ * Last modified: $Date: 2008/09/25 08:56:05 $ by $Author: anton $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.29 $
+ * @version $Revision: 1.30 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 	
@@ -83,6 +86,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	private boolean allowCookieLogin=false;
 	private boolean focusOnLoad=false;
 
+	protected IWResourceBundle iwrb;
 	/**
 	 * 
 	 */
@@ -91,7 +95,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 		setTransient(false);
 	}
 
-	protected UIComponent getLoggedInPart(IWContext iwc) {
+	protected UIComponent getLoggedInPart(IWContext iwc, Script script) {
 
 		Layer layer = (Layer) getFacet(FACET_LOGGED_IN);
 
@@ -100,6 +104,8 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			layer = new Layer();
 			layer.setStyleClass(getStyleClass());
 			layer.setStyleClass("loggedIn");
+			
+			layer.add(script);
 
 			PresentationObject container = new PresentationObjectContainer();
 			if (getGenerateContainingForm()) {
@@ -389,6 +395,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 		return layer;
 	}
 
+	@Override
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
@@ -399,8 +406,20 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 		super.encodeChildren(context);
 		
 		IWContext iwc = IWContext.getIWContext(context);
+		this.iwrb = getResourceBundle(iwc);
 		if (iwc.isLoggedOn()) {
-			UIComponent loggedInPart = getLoggedInPart(iwc);
+			User currentUser = iwc.getCurrentUser();
+			LoginInfo loginInfo = LoginDBHandler.getLoginInfo((LoginDBHandler.getUserLogin(currentUser)));
+
+			Script s = new Script();
+			if (loginInfo.getAllowedToChange() && loginInfo.getChangeNextTime()) {
+				LoginEditorWindow window = new LoginEditorWindow();
+				window.setMessage(this.iwrb.getLocalizedString("change_password", "You need to change your password"));
+				window.setToChangeNextTime();
+				s.addMethod("wop", window.getCallingScriptString(iwc));
+			}
+			
+			UIComponent loggedInPart = getLoggedInPart(iwc, s);
 			renderChild(context, loggedInPart);
 		}
 		else {
