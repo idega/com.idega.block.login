@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.31 2008/09/30 12:01:29 anton Exp $ Created on 7.3.2005
+ * $Id: Login2.java,v 1.32 2008/09/30 12:17:39 anton Exp $ Created on 7.3.2005
  * in project com.idega.block.login
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -57,10 +57,10 @@ import com.idega.util.expression.ELUtil;
  * New Login component based on JSF and CSS. Will gradually replace old Login
  * component
  * </p>
- * Last modified: $Date: 2008/09/30 12:01:29 $ by $Author: anton $
+ * Last modified: $Date: 2008/09/30 12:17:39 $ by $Author: anton $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.31 $
+ * @version $Revision: 1.32 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 	
@@ -428,7 +428,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			LoginInfo loginInfo = LoginDBHandler.getLoginInfo((LoginDBHandler.getUserLogin(currentUser)));
 
 			Script s = null;
-			if (1==1 || (loginInfo.getAllowedToChange() && loginInfo.getChangeNextTime() && !iwc.isSuperAdmin())){
+			if (/*1==1 || */(loginInfo.getAllowedToChange() && loginInfo.getChangeNextTime() && !iwc.isSuperAdmin())){
 				s = new Script();
 
 				StringBuffer changePassScript = new StringBuffer("changeUserPassword('")
