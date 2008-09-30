@@ -20,3 +20,4 @@ welcome_message.evening=Good evening
 welcome_message.morning=Good morning
 without_hyphen=Social-security number must be written without a hyphen
 write_ssn=Type social-security number in user input
+verify_password=Verify password

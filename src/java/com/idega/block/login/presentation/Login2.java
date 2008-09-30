@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.30 2008/09/25 08:56:05 anton Exp $ Created on 7.3.2005
+ * $Id: Login2.java,v 1.31 2008/09/30 12:01:29 anton Exp $ Created on 7.3.2005
  * in project com.idega.block.login
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -10,7 +10,10 @@
 package com.idega.block.login.presentation;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -20,10 +23,12 @@ import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
 
+import com.idega.block.web2.business.Web2Business;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.business.LoginState;
 import com.idega.core.accesscontrol.data.LoginInfo;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
@@ -43,16 +48,19 @@ import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.TextInput;
 import com.idega.servlet.filter.IWAuthenticator;
 import com.idega.user.data.User;
+import com.idega.util.CoreConstants;
+import com.idega.util.PresentationUtil;
+import com.idega.util.expression.ELUtil;
 
 /**
  * <p>
  * New Login component based on JSF and CSS. Will gradually replace old Login
  * component
  * </p>
- * Last modified: $Date: 2008/09/25 08:56:05 $ by $Author: anton $
+ * Last modified: $Date: 2008/09/30 12:01:29 $ by $Author: anton $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.30 $
+ * @version $Revision: 1.31 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 	
@@ -71,7 +79,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	private static final String STYLE_CLASS_USERNAME = "username";
 	private static final String STYLE_CLASS_PASSWORD = "password";
 	private static final String STYLE_CLASS_ERROR_MESSAGE = "errorMessage";
-
+	
 	private boolean enterSubmits = false;
 	private boolean useSubmitLinks = false;
 	private boolean generateContainingForm = false;
@@ -85,6 +93,9 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	private Map<String, String> extraLogoffParameters = new HashMap<String, String>();
 	private boolean allowCookieLogin=false;
 	private boolean focusOnLoad=false;
+	
+	public static final String LOGIN_SCRIPT = "javascript/LoginHelper.js";
+	public static final String USER_BUSINESS_DWR_SCRIPT = "/dwr/interface/UserBusiness.js";
 
 	protected IWResourceBundle iwrb;
 	/**
@@ -96,7 +107,10 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	}
 
 	protected UIComponent getLoggedInPart(IWContext iwc, Script script) {
-
+		if(script != null) {
+			addLoginScriptsAndStyles(iwc);
+		}
+		
 		Layer layer = (Layer) getFacet(FACET_LOGGED_IN);
 
 		if (layer == null) {
@@ -405,18 +419,23 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 
 		super.encodeChildren(context);
 		
+		
 		IWContext iwc = IWContext.getIWContext(context);
 		this.iwrb = getResourceBundle(iwc);
+		
 		if (iwc.isLoggedOn()) {
 			User currentUser = iwc.getCurrentUser();
 			LoginInfo loginInfo = LoginDBHandler.getLoginInfo((LoginDBHandler.getUserLogin(currentUser)));
 
-			Script s = new Script();
-			if (loginInfo.getAllowedToChange() && loginInfo.getChangeNextTime()) {
-				LoginEditorWindow window = new LoginEditorWindow();
-				window.setMessage(this.iwrb.getLocalizedString("change_password", "You need to change your password"));
-				window.setToChangeNextTime();
-				s.addMethod("wop", window.getCallingScriptString(iwc));
+			Script s = null;
+			if (1==1 || (loginInfo.getAllowedToChange() && loginInfo.getChangeNextTime() && !iwc.isSuperAdmin())){
+				s = new Script();
+
+				StringBuffer changePassScript = new StringBuffer("changeUserPassword('")
+					.append(getUriToObject(UserPasswordChanger.class.getName()))
+					.append("');");
+				
+				s.addScriptLine(changePassScript.toString());
 			}
 			
 			UIComponent loggedInPart = getLoggedInPart(iwc, s);
@@ -455,6 +474,30 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 		}
 
 	}
+	
+	private void addLoginScriptsAndStyles(IWContext iwc) {
+		List<String> scripts = new ArrayList<String>();
+		List<String> css = new ArrayList<String>();
+		
+		Web2Business web2 = ELUtil.getInstance().getBean(Web2Business.class);
+		try {
+			scripts.add(web2.getBundleURIToMootoolsLib()); //Mootools
+			scripts.add(web2.getMoodalboxScriptFilePath(true));	//	MOOdalBox
+			scripts.add(CoreConstants.DWR_ENGINE_SCRIPT);
+			scripts.add(USER_BUSINESS_DWR_SCRIPT);
+			scripts.add(getBundle(iwc).getVirtualPathWithFileNameString(LOGIN_SCRIPT));
+			css.add(web2.getMoodalboxStyleFilePath());
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+
+		PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, scripts);
+		PresentationUtil.addStyleSheetsToHeader(iwc, css);
+	}
+	
+//	private IWBundle getBundle(String bundleIdentifier){
+//		return IWMainApplication.getDefaultIWMainApplication().getBundle(bundleIdentifier);
+//	}
 
 	/*
 	 * (non-Javadoc)
@@ -602,5 +645,14 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	
 	public void setFocusOnLoad(boolean focusOnLoad) {
 		this.focusOnLoad = focusOnLoad;
+	}
+	
+	private String getUriToObject(String className) {
+		if (className == null) {
+			return null;
+		}
+		StringBuffer uri = new StringBuffer("/servlet/ObjectInstanciator?").append(IWMainApplication.classToInstanciateParameter);
+		uri.append("=").append(className);
+		return uri.toString();
 	}
 }

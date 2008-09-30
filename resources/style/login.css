@@ -55,7 +55,58 @@
 	margin-left: 0.6em;
 }
 
+/* User password change window styles */
 
+.passwords input {
+	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif !important;
+	font-size: 14px !important;
+	background-color: #cef3cf;
+	border: 1px #b5e1b7 solid !important;
+	border-right-color: #80b082 !important;
+	border-bottom-color: #6e9870 !important;
+	border-left-color: #a9dcac !important;
+	padding: 4px 12px;
+}
+
+#passwordChanger .webfaceFormItem {
+	padding-left: 25px !important;
+	overflow: hidden !important;
+	margin-bottom: 15px !important;
+}
+
+#passwordChanger .webfaceFormItem span#header {
+	color:#042025;
+	font-family:"Lucida Grande","Lucida Sans","Lucida Sans Unicode",Arial,Helvetica,sans-serif;
+	font-size:20px;
+	margin:0 0 68px;
+}
+
+#passwordChanger .webfaceFormItem span#message {
+	color:#FF0000;
+	font-family:"Lucida Grande","Lucida Sans","Lucida Sans Unicode",Arial,Helvetica,sans-serif;
+	font-size:12px;
+	margin:0 0 68px;
+}
+
+#passwordChanger .webfaceFormItem label {
+	font-weight: bold;
+	font-size: 12px;
+}
+
+#passwordChanger .webfaceFormItem input {
+	border: 1px #a8a8a8 solid !important;
+	background-color: #fff;
+	width: 200px;
+}
+
+#passwordChanger .webfaceButtonLayer {
+	padding-left: 25px !important;
+}
+
+#passwordChanger .webfaceButtonLayer input {
+	font-size: 14px !important;
+	padding: 4px 12px;
+}
 
 /* 
 For reference
