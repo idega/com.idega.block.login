@@ -3,7 +3,6 @@ package com.idega.block.login.presentation;
 import java.io.IOException;
 
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -20,14 +19,11 @@ import com.idega.util.CoreConstants;
  * @author <a href="anton@idega.com">Anton Makarov</a>
  * @version Revision: 1.0 
  *
- * Last modified: Sep 26, 2008 by Author: Anton 
+ * Last modified: Oct 1, 2008 by Author: Anton 
  *
  */
 
 public class UserPasswordChanger extends Block {
-	
-	private static final String STYLE_CLASS_PASSWORD = "password";
-	private static final String STYLE_CLASS_SUBMIT = "submit";
 
 	private static final String HEADER_ID = "header";	
 	private static final String ERROR_MESSAGE_ID = "message";
@@ -45,11 +41,6 @@ public class UserPasswordChanger extends Block {
 	private void initializeLocalVariables(IWContext iwc) {
 		bundle = getBundle(iwc);
 		iwrb = bundle.getResourceBundle(iwc);
-//		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, getBundle(Login2.IW_BUNDLE_IDENTIFIER).getVirtualPathWithFileNameString(Login2.LOGIN_SCRIPT));
-	}
-	
-	private IWBundle getBundle(String bundleIdentifier){
-		return IWMainApplication.getDefaultIWMainApplication().getBundle(bundleIdentifier);
 	}
 	
 	@Override
@@ -63,10 +54,6 @@ public class UserPasswordChanger extends Block {
 		String styleName = "webfaceFormItem";
 		
 		// Header
-//		Script alert = new Script();
-//		alert.addMethod("show", "alert('modalbox opening');");
-//		container.add(alert);
-		
 		Layer headerContainer = new Layer();
 		container.add(headerContainer);
 		headerContainer.setStyleClass(styleName);
@@ -119,9 +106,5 @@ public class UserPasswordChanger extends Block {
 			
 		saveButton.setOnClick(onClickScript.toString());
 		buttonsContainer.add(saveButton);
-	}
-	
-	private String getCurrentLocaleLanguage(IWContext iwc) {
-		return iwc.getLocale().getLanguage();
 	}
 }
