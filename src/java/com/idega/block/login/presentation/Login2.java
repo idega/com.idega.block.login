@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.32 2008/09/30 12:17:39 anton Exp $ Created on 7.3.2005
+ * $Id: Login2.java,v 1.33 2008/10/02 10:48:49 anton Exp $ Created on 7.3.2005
  * in project com.idega.block.login
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -57,10 +57,10 @@ import com.idega.util.expression.ELUtil;
  * New Login component based on JSF and CSS. Will gradually replace old Login
  * component
  * </p>
- * Last modified: $Date: 2008/09/30 12:17:39 $ by $Author: anton $
+ * Last modified: $Date: 2008/10/02 10:48:49 $ by $Author: anton $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.32 $
+ * @version $Revision: 1.33 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 	
@@ -431,11 +431,11 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			if (/*1==1 || */(loginInfo.getAllowedToChange() && loginInfo.getChangeNextTime() && !iwc.isSuperAdmin())){
 				s = new Script();
 
-				StringBuffer changePassScript = new StringBuffer("changeUserPassword('")
-					.append(getUriToObject(UserPasswordChanger.class.getName()))
-					.append("');");
+//				StringBuffer changePassScript = new StringBuffer("changeUserPassword('")
+//					.append(getUriToObject(UserPasswordChanger.class.getName()))
+//					.append("');");
 				
-				s.addScriptLine(changePassScript.toString());
+//				s.addScriptLine(changePassScript.toString());
 			}
 			
 			UIComponent loggedInPart = getLoggedInPart(iwc, s);
@@ -490,8 +490,16 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
+		
+		StringBuffer changePassScript = new StringBuffer("changeUserPassword('")
+		.append(getUriToObject(UserPasswordChanger.class.getName()))
+		.append("');");
 
-		PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, scripts);
+		String action = PresentationUtil.getJavaScriptLinesLoadedLazily(scripts, changePassScript.toString());
+		PresentationUtil.addJavaScriptActionToBody(iwc, action);
+		
+		
+//		PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, scripts);
 		PresentationUtil.addStyleSheetsToHeader(iwc, css);
 	}
 	

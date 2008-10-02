@@ -1,6 +1,7 @@
 function changeUserPassword(link){
 	var width = Math.round(window.getWidth() * 0.25);
-	var height = Math.round(window.getHeight() * 0.3);
+	var height = Math.round(window.getHeight() * 0.2);
+
 	MOOdalBox.init({resizeDuration: 0, evalScripts: true, animateCaption: false, defContentsWidth: width, defContentsHeight: height});
 	
 	MOOdalBox.open(link, '', '');
