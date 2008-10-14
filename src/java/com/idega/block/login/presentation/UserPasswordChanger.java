@@ -76,7 +76,7 @@ public class UserPasswordChanger extends Block {
 		PasswordInput passwordInput = new PasswordInput("password", CoreConstants.EMPTY);
 		passwordInput.setID("password");
 
-		Label passwordLabel = new Label(iwrb.getLocalizedString("password", "Password"), passwordInput);
+		Label passwordLabel = new Label(iwrb.getLocalizedString("new_password", "New password"), passwordInput);
 		passwordContainer.add(passwordLabel);
 		passwordContainer.add(passwordInput);
 		
