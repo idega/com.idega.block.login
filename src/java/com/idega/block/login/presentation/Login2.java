@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.33 2008/10/02 10:48:49 anton Exp $ Created on 7.3.2005
+ * $Id: Login2.java,v 1.34 2008/10/14 09:12:03 anton Exp $ Created on 7.3.2005
  * in project com.idega.block.login
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -57,10 +57,10 @@ import com.idega.util.expression.ELUtil;
  * New Login component based on JSF and CSS. Will gradually replace old Login
  * component
  * </p>
- * Last modified: $Date: 2008/10/02 10:48:49 $ by $Author: anton $
+ * Last modified: $Date: 2008/10/14 09:12:03 $ by $Author: anton $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.33 $
+ * @version $Revision: 1.34 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 	
@@ -245,13 +245,13 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 
 			PasswordInput password = new PasswordInput(LoginBusinessBean.PARAMETER_PASSWORD);
 			if (this.showLabelInInput) {
-				password.setValue(getLocalizedString("password", "Password", iwc));
+				password.setValue(getLocalizedString("passwd", "Password", iwc));
 				password.setOnFocus("this.value=''");
 			}
 			if (enterSubmit) {
 				password.setOnKeyPress("return enterSubmit(this,event)");
 			}
-			Label passwordLabel = new Label(getLocalizedString("password", "Password", iwc) + ":", password);
+			Label passwordLabel = new Label(getLocalizedString("passwd", "Password", iwc) + ":", password);
 
 			Layer passwordLayer = new Layer();
 			passwordLayer.getChildren().add(passwordLabel);
