@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.35 2008/10/20 11:54:29 laddi Exp $ Created on 7.3.2005
+ * $Id: Login2.java,v 1.36 2008/10/20 12:56:42 laddi Exp $ Created on 7.3.2005
  * in project com.idega.block.login
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -58,10 +58,10 @@ import com.idega.util.expression.ELUtil;
  * New Login component based on JSF and CSS. Will gradually replace old Login
  * component
  * </p>
- * Last modified: $Date: 2008/10/20 11:54:29 $ by $Author: laddi $
+ * Last modified: $Date: 2008/10/20 12:56:42 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.35 $
+ * @version $Revision: 1.36 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 	
@@ -424,6 +424,9 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 		IWContext iwc = IWContext.getIWContext(context);
 		this.iwrb = getResourceBundle(iwc);
 		
+		IWBundle iwb = getBundle(iwc);
+		PresentationUtil.addStyleSheetToHeader(iwc, iwb.getVirtualPathWithFileNameString("style/login.css"));
+
 		if (iwc.isLoggedOn()) {
 			User currentUser = iwc.getCurrentUser();
 			LoginInfo loginInfo = LoginDBHandler.getLoginInfo((LoginDBHandler.getUserLogin(currentUser)));
@@ -480,7 +483,6 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 		List<String> scripts = new ArrayList<String>();
 		List<String> css = new ArrayList<String>();
 		
-		IWBundle iwb = getBundle(iwc);
 		Web2Business web2 = ELUtil.getInstance().getBean(Web2Business.class);
 		try {
 			scripts.add(web2.getBundleURIToMootoolsLib()); //Mootools
@@ -489,7 +491,6 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			scripts.add(USER_BUSINESS_DWR_SCRIPT);
 			scripts.add(getBundle(iwc).getVirtualPathWithFileNameString(LOGIN_SCRIPT));
 			css.add(web2.getMoodalboxStyleFilePath());
-			css.add(iwb.getVirtualPathWithFileNameString("style/media.css"));
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
