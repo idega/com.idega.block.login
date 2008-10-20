@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.34 2008/10/14 09:12:03 anton Exp $ Created on 7.3.2005
+ * $Id: Login2.java,v 1.35 2008/10/20 11:54:29 laddi Exp $ Created on 7.3.2005
  * in project com.idega.block.login
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -28,6 +28,7 @@ import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.business.LoginState;
 import com.idega.core.accesscontrol.data.LoginInfo;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -57,10 +58,10 @@ import com.idega.util.expression.ELUtil;
  * New Login component based on JSF and CSS. Will gradually replace old Login
  * component
  * </p>
- * Last modified: $Date: 2008/10/14 09:12:03 $ by $Author: anton $
+ * Last modified: $Date: 2008/10/20 11:54:29 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.34 $
+ * @version $Revision: 1.35 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 	
@@ -479,6 +480,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 		List<String> scripts = new ArrayList<String>();
 		List<String> css = new ArrayList<String>();
 		
+		IWBundle iwb = getBundle(iwc);
 		Web2Business web2 = ELUtil.getInstance().getBean(Web2Business.class);
 		try {
 			scripts.add(web2.getBundleURIToMootoolsLib()); //Mootools
@@ -487,6 +489,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 			scripts.add(USER_BUSINESS_DWR_SCRIPT);
 			scripts.add(getBundle(iwc).getVirtualPathWithFileNameString(LOGIN_SCRIPT));
 			css.add(web2.getMoodalboxStyleFilePath());
+			css.add(iwb.getVirtualPathWithFileNameString("style/media.css"));
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
