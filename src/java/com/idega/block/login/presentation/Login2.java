@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.36 2008/10/20 12:56:42 laddi Exp $ Created on 7.3.2005
+ * $Id: Login2.java,v 1.37 2008/10/22 10:59:08 valdas Exp $ Created on 7.3.2005
  * in project com.idega.block.login
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -28,7 +28,6 @@ import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.business.LoginState;
 import com.idega.core.accesscontrol.data.LoginInfo;
-import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -58,10 +57,10 @@ import com.idega.util.expression.ELUtil;
  * New Login component based on JSF and CSS. Will gradually replace old Login
  * component
  * </p>
- * Last modified: $Date: 2008/10/20 12:56:42 $ by $Author: laddi $
+ * Last modified: $Date: 2008/10/22 10:59:08 $ by $Author: valdas $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.36 $
+ * @version $Revision: 1.37 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 	
@@ -98,7 +97,6 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	public static final String LOGIN_SCRIPT = "javascript/LoginHelper.js";
 	public static final String USER_BUSINESS_DWR_SCRIPT = "/dwr/interface/UserBusiness.js";
 
-	protected IWResourceBundle iwrb;
 	/**
 	 * 
 	 */
@@ -422,10 +420,13 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 		
 		
 		IWContext iwc = IWContext.getIWContext(context);
-		this.iwrb = getResourceBundle(iwc);
 		
-		IWBundle iwb = getBundle(iwc);
-		PresentationUtil.addStyleSheetToHeader(iwc, iwb.getVirtualPathWithFileNameString("style/login.css"));
+		String cssFile = getBundle(iwc).getVirtualPathWithFileNameString("style/login.css");
+		if (!PresentationUtil.addStyleSheetToHeader(iwc, cssFile)) {
+			Layer cssContainer = new Layer();
+			cssContainer.add(PresentationUtil.getStyleSheetSourceLine(cssFile));
+			renderChild(context, cssContainer);
+		}
 
 		if (iwc.isLoggedOn()) {
 			User currentUser = iwc.getCurrentUser();
