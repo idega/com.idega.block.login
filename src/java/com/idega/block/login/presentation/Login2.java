@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.38 2008/11/10 12:09:04 anton Exp $ Created on 7.3.2005
+ * $Id: Login2.java,v 1.39 2008/11/12 14:49:01 laddi Exp $ Created on 7.3.2005
  * in project com.idega.block.login
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -57,10 +57,10 @@ import com.idega.util.expression.ELUtil;
  * New Login component based on JSF and CSS. Will gradually replace old Login
  * component
  * </p>
- * Last modified: $Date: 2008/11/10 12:09:04 $ by $Author: anton $
+ * Last modified: $Date: 2008/11/12 14:49:01 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.38 $
+ * @version $Revision: 1.39 $
  */
 public class Login2 extends PresentationObjectTransitional implements ActionListener {
 	
@@ -82,7 +82,7 @@ public class Login2 extends PresentationObjectTransitional implements ActionList
 	
 	private boolean enterSubmits = false;
 	private boolean useSubmitLinks = false;
-	private boolean generateContainingForm = false;
+	private boolean generateContainingForm = true;
 	private boolean useSingleLineLayout = false;
 	private boolean redirectUserToPrimaryGroupHomePage = false;
 	private boolean showLabelInInput = false;
