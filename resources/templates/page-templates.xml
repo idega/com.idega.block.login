@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page-templates>
+	<page name="Login" type="login" iconfile="idegaweb/bundles/com.idega.block.login.bundle/resources/images/pageIcons/login.gif" templatefile="idegaweb/bundles/com.idega.block.login.bundle/resources/pages/login_template.xml"></page>
+</page-templates>
