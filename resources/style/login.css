@@ -1,25 +1,28 @@
 .login {	
-	max-width: 20em;
 }
 
-.login div {	
+.login div {
+	margin-bottom: 6px;
 }
 
 .login label {
 	width: 6em; 
 	display: block; 
 	float: left;
-	text-align: right; 
 	margin-right: 0.4em;
-	margin-left: 0.4em;
 }
 
 .login p {    
-    margin: 0;
+	margin: 0;
 }
 
 .login div.submit {
-	text-align: center;	
+	margin-top: 12px;
+}
+
+.login div.submit input {
+	border: 1px #a0a0a0 solid;
+	padding: 3px 5px;
 }
 
 
