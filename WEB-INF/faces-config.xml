@@ -32,12 +32,62 @@
 ]
 >
 <faces-config>
-  <component>
-    <component-type>com.idega.Login</component-type>
-    <component-class>com.idega.block.login.presentation.Login2</component-class>
-  </component>
-  <component>
-    <component-type>com.idega.Register</component-type>
-    <component-class>com.idega.block.login.presentation.Register</component-class>
-  </component>
+	<component>
+		<component-type>com.idega.Login</component-type>
+		<component-class>com.idega.block.login.presentation.Login2</component-class>
+		<property>
+			<display-name>Style class</display-name>
+			<property-name>styleClass</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+		<property>
+			<display-name>Allow cookie login</display-name>
+			<property-name>allowCookieLogin</property-name>
+			<property-class>boolean</property-class>
+		</property>
+		<property>
+			<display-name>Redirect user to home page</display-name>
+			<property-name>redirectUserToPrimaryGroupHomePage</property-name>
+			<property-class>boolean</property-class>
+		</property>
+		<property>
+			<display-name>Send to HTTPS</display-name>
+			<property-name>sendToHTTPS</property-name>
+			<property-class>boolean</property-class>
+		</property>
+		<property>
+			<display-name>Use submit links</display-name>
+			<property-name>useSubmitLinks</property-name>
+			<property-class>boolean</property-class>
+		</property>
+		<property>
+			<display-name>URL to redirect to on log on</display-name>
+			<property-name>URLToRedirectToOnLogon</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+		<property>
+			<display-name>URL to redirect to on log off</display-name>
+			<property-name>URLToRedirectToOnLogoff</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+		<property>
+			<display-name>Logged out facelet path</display-name>
+			<property-name>unAuthenticatedFaceletPath</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+		<property>
+			<display-name>Logged in facelet path</display-name>
+			<property-name>authenticatedFaceletPath</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+		<property>
+			<display-name>Login failed facelet path</display-name>
+			<property-name>authenticationFailedFaceletPath</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+	</component>
+	<component>
+		<component-type>com.idega.Register</component-type>
+		<component-class>com.idega.block.login.presentation.Register</component-class>
+	</component>
 </faces-config>

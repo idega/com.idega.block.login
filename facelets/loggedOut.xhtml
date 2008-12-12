@@ -1,0 +1,43 @@
+<html
+		xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:t="http://myfaces.apache.org/tomahawk"
+		xmlns:f="http://java.sun.com/jsf/core"
+>
+<ui:component>
+	<div class="#{loginBean.styleClass} loggedOut">
+		<form class="loginForm" action="#{loginBean.action}" method="post">
+			<div class="username">
+				<label for="username">
+					<h:outputText value="#{localizedStrings['com.idega.block.login']['user']}" />
+				</label>
+				<input type="text" id="username" name="login" />
+			</div>
+			<div class="password">
+				<label for="password">
+					<h:outputText value="#{localizedStrings['com.idega.block.login']['passwd']}" />
+				</label>
+				<input type="password" id="password" name="password" />
+			</div>
+			<t:div styleClass="allowLogin" rendered="#{loginBean.allowCookieLogin}">
+				<input type="checkbox" id="allowCookieLogin" name="icusallows" value="true" />
+				<label for="allowCookieLogin">
+					<h:outputText value="#{localizedStrings['com.idega.block.login']['cookie.allow']}" />
+				</label>
+			</t:div>
+			<div class="submit #{loginBean.localeStyle}">
+				<f:verbatim rendered="#{!loginBean.useSubmitLinks}">
+					<input type="submit" value="#{localizedStrings['com.idega.block.login']['login_text']}" />
+				</f:verbatim>
+				<t:htmlTag rendered="#{loginBean.useSubmitLinks}" value="a" styleClass="loginButton">
+					<span><t:outputText value="#{localizedStrings['com.idega.block.login']['login_text']}" /></span>
+				</t:htmlTag>
+			</div>
+			
+			<ui:repeat value="#{loginBean.hiddenParameters}" var="parameter">
+				<input type="hidden" name="#{parameter.parameter}" value="#{parameter.value}" />
+			</ui:repeat>
+		</form>
+	</div>
+</ui:component>
+</html>

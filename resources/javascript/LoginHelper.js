@@ -26,4 +26,3 @@ function validateAndSavePassword(msgId, validateErrorMsg, saveErrorMsg) {
 		UserBusiness.changeUserPassword(password, function(str) { passwordChangeValidation(str, msgId, saveErrorMsg); });  
 	}
 }
-	

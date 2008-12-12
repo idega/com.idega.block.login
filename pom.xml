@@ -66,5 +66,9 @@
       <groupId>com.idega.block.platform</groupId>
       <artifactId>com.idega.core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.idega.block.platform</groupId>
+      <artifactId>com.idega.facelets</artifactId>
+    </dependency>
   </dependencies>
 </project>
