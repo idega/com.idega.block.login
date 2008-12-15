@@ -147,6 +147,7 @@ public class Login extends Block {
 		setDefaultValues();
 	}
 
+	@Override
 	public void main(IWContext iwc) throws Exception {
 		this.iwb = getBundle(iwc);
 		this.iwrb = getResourceBundle(iwc);
@@ -1133,6 +1134,7 @@ public class Login extends Block {
 		return LoginBusinessBean.internalGetState(iwc);
 	}
 
+	@Override
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
@@ -1216,10 +1218,12 @@ public class Login extends Block {
 		this.color = color;
 	}
 
+	@Override
 	public void setHeight(String height) {
 		this.loginHeight = height;
 	}
 
+	@Override
 	public void setWidth(String width) {
 		this.loginWidth = width;
 	}
@@ -1326,6 +1330,7 @@ public class Login extends Block {
 	 * redirect page"); _redirectPage = page; }
 	 */
 
+	@Override
 	public Object clone() {
 		Login obj = null;
 		try {
@@ -1380,6 +1385,7 @@ public class Login extends Block {
 	/**
 	 * @see com.idega.presentation.Block#getStyleNames()
 	 */
+	@Override
 	public Map getStyleNames() {
 		Map styleMap = new HashMap();
 		styleMap.put(this._linkStyleClass, "");
@@ -1428,6 +1434,7 @@ public class Login extends Block {
 	 * @param pageID
 	 * @deprecated replaced with setLogInPageID(int pageID)
 	 */
+	@Deprecated
 	public void setPopupPageID(int pageID) {
 		setLogInPageID(pageID);
 	}
@@ -1449,6 +1456,7 @@ public class Login extends Block {
 		return (UserBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(), UserBusiness.class);
 	}
 
+	@Override
 	public void empty() {
 		super.empty();
 		this.myForm = null;
