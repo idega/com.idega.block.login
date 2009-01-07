@@ -111,6 +111,10 @@
 	padding: 4px 12px;
 }
 
+div.loginButtonInContainer input {
+	cursor: pointer;
+}
+
 /* 
 For reference
 

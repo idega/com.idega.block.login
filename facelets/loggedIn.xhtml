@@ -12,8 +12,8 @@
 				<f:verbatim rendered="#{!loginBean.useSubmitLinks}">
 					<input type="submit" value="#{localizedStrings['com.idega.block.login']['logout_text']}" />
 				</f:verbatim>
-				<t:htmlTag rendered="#{loginBean.useSubmitLinks}" value="a" styleClass="loginButton">
-					<span><t:outputText value="#{localizedStrings['com.idega.block.login']['logout_text']}" /></span>
+				<t:htmlTag rendered="#{loginBean.useSubmitLinks}" value="div" styleClass="loginButton loginButtonInContainer">
+					<input type="button" value="#{localizedStrings['com.idega.block.login']['logout_text']}" onclick="changeWindowLocationHrefAndCheckParameters('login_state=logoff', false);" />
 				</t:htmlTag>
 			</div>
 			
