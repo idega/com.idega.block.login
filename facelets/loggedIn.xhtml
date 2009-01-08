@@ -11,15 +11,15 @@
 			<div class="submit #{loginBean.localeStyle}">
 				<f:verbatim rendered="#{!loginBean.useSubmitLinks}">
 					<input type="submit" value="#{localizedStrings['com.idega.block.login']['logout_text']}" />
+				
+					<ui:repeat value="#{loginBean.hiddenParameters}" var="parameter">
+						<input type="hidden" name="#{parameter.parameter}" value="#{parameter.value}" />
+					</ui:repeat>
 				</f:verbatim>
 				<t:htmlTag rendered="#{loginBean.useSubmitLinks}" value="div" styleClass="loginButton loginButtonInContainer">
 					<input type="button" value="#{localizedStrings['com.idega.block.login']['logout_text']}" onclick="changeWindowLocationHrefAndCheckParameters('login_state=logoff', false);" />
 				</t:htmlTag>
 			</div>
-			
-			<ui:repeat value="#{loginBean.hiddenParameters}" var="parameter">
-				<input type="hidden" name="#{parameter.parameter}" value="#{parameter.value}" />
-			</ui:repeat>
 		</form>
 	</div>
 </ui:component>
