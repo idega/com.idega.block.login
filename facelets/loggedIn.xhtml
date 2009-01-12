@@ -9,16 +9,16 @@
 		<form class="loginForm" action="#{loginBean.action}" method="post">
 			<p class="currentUser"><h:outputText value="#{loginBean.output}"/></p>
 			<div class="submit #{loginBean.localeStyle}">
-				<f:verbatim rendered="#{!loginBean.useSubmitLinks}">
+				<t:div rendered="#{!loginBean.useSubmitLinks}">
 					<input type="submit" value="#{localizedStrings['com.idega.block.login']['logout_text']}" />
 				
 					<ui:repeat value="#{loginBean.hiddenParameters}" var="parameter">
 						<input type="hidden" name="#{parameter.parameter}" value="#{parameter.value}" />
 					</ui:repeat>
-				</f:verbatim>
-				<t:htmlTag rendered="#{loginBean.useSubmitLinks}" value="div" styleClass="loginButton loginButtonInContainer">
+				</t:div>
+				<t:div rendered="#{loginBean.useSubmitLinks}" styleClass="loginButton loginButtonInContainer">
 					<input type="button" value="#{localizedStrings['com.idega.block.login']['logout_text']}" onclick="changeWindowLocationHrefAndCheckParameters('login_state=logoff', false);" />
-				</t:htmlTag>
+				</t:div>
 			</div>
 		</form>
 	</div>

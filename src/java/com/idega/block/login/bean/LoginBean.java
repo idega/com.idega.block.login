@@ -4,13 +4,14 @@
 package com.idega.block.login.bean;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
+import com.idega.util.ArrayUtil;
 
 @Service("loginBean")
 @Scope("request")
@@ -21,7 +22,7 @@ public class LoginBean {
 	private boolean allowCookieLogin = false;
 	private String styleClass = null;
 	private String action = null;
-	private Map parameters = new HashMap();
+	private Map<String, String> parameters = new HashMap<String, String>();
 	private String defaultOutput;
 	private String localeStyle;
 
@@ -105,16 +106,11 @@ public class LoginBean {
 	}
 
 	public Parameter[] getHiddenParameters() {
-		Collection coll = new ArrayList();
-
-		Iterator iterator = parameters.keySet().iterator();
-		while (iterator.hasNext()) {
-			String parameter = (String) iterator.next();
-			String value = (String) parameters.get(parameter);
-			coll.add(new Parameter(parameter, value));
+		List<Parameter> parametersList = new ArrayList<Parameter>(parameters.size());
+		for (String parameter: this.parameters.keySet()) {
+			parametersList.add(new Parameter(parameter, parameters.get(parameter)));
 		}
-
-		return (Parameter[]) coll.toArray(new Parameter[coll.size()]);
+		return ArrayUtil.convertListToArray(parametersList);
 	}
 
 	public class Parameter {
