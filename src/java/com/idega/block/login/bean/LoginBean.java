@@ -4,7 +4,9 @@
 package com.idega.block.login.bean;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +14,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.idega.util.ArrayUtil;
+import com.idega.util.CoreConstants;
 
 @Service("loginBean")
 @Scope("request")
@@ -111,6 +114,26 @@ public class LoginBean {
 			parametersList.add(new Parameter(parameter, parameters.get(parameter)));
 		}
 		return ArrayUtil.convertListToArray(parametersList);
+	}
+	
+	public String getUriByHiddenParameters() {
+		Parameter[] parameters = getHiddenParameters();
+		if (ArrayUtil.isEmpty(parameters)) {
+			return CoreConstants.EMPTY;
+		}
+		
+		Parameter param = null;
+		StringBuilder uri = new StringBuilder();
+		for (Iterator<Parameter> paramsIter = Arrays.asList(parameters).iterator(); paramsIter.hasNext();) {
+			param = paramsIter.next();
+			
+			uri.append(param.getParameter()).append(CoreConstants.EQ).append(param.getValue());
+			if (paramsIter.hasNext()) {
+				uri.append(CoreConstants.AMP);
+			}
+		}
+		
+		return uri.toString();
 	}
 
 	public class Parameter {

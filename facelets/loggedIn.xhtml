@@ -17,7 +17,7 @@
 					</ui:repeat>
 				</t:div>
 				<t:div rendered="#{loginBean.useSubmitLinks}" styleClass="loginButton loginButtonInContainer">
-					<input type="button" value="#{localizedStrings['com.idega.block.login']['logout_text']}" onclick="changeWindowLocationHrefAndCheckParameters('login_state=logoff', false);" />
+					<input type="button" value="#{localizedStrings['com.idega.block.login']['logout_text']}" onclick="changeWindowLocationHrefAndCheckParameters('#{loginBean.uriByHiddenParameters}', false);" />
 				</t:div>
 			</div>
 		</form>
