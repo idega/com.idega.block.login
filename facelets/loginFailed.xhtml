@@ -5,7 +5,7 @@
 		xmlns:f="http://java.sun.com/jsf/core"
 >
 <ui:component>
-	<div class="#{loginBean.styleClass} loginFailed">
+	<div class="#{loginBean.styleClass} loginFailed loginForm">
 		<form class="loginForm" action="#{loginBean.action}" method="post">
 			<p class="errorMessage"><h:outputText value="#{loginBean.output}"/></p>
 			<div class="submit #{loginBean.localeStyle}">

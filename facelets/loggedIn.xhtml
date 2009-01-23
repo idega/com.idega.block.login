@@ -5,21 +5,21 @@
 		xmlns:f="http://java.sun.com/jsf/core"
 >
 <ui:component>
-	<div class="#{loginBean.styleClass} loggedIn">
+	<div class="#{loginBean.styleClass} loggedIn loginForm">
 		<form class="loginForm" action="#{loginBean.action}" method="post">
 			<p class="currentUser"><h:outputText value="#{loginBean.output}"/></p>
-			<div class="submit #{loginBean.localeStyle}">
-				<t:div rendered="#{!loginBean.useSubmitLinks}">
-					<input type="submit" value="#{localizedStrings['com.idega.block.login']['logout_text']}" />
-				
-					<ui:repeat value="#{loginBean.hiddenParameters}" var="parameter">
-						<input type="hidden" name="#{parameter.parameter}" value="#{parameter.value}" />
-					</ui:repeat>
-				</t:div>
-				<t:div rendered="#{loginBean.useSubmitLinks}" styleClass="loginButton loginButtonInContainer">
-					<input type="button" value="#{localizedStrings['com.idega.block.login']['logout_text']}" onclick="changeWindowLocationHrefAndCheckParameters('#{loginBean.uriByHiddenParameters}', false);" />
-				</t:div>
-			</div>
+			<t:div styleClass="submit #{loginBean.localeStyle}" rendered="#{!loginBean.useSubmitLinks}">
+				<input type="submit" value="#{localizedStrings['com.idega.block.login']['logout_text']}" />
+			</t:div>
+			<t:div styleClass="submit #{loginBean.localeStyle}" rendered="#{loginBean.useSubmitLinks}">
+				<a href="#">
+					<span><t:outputText value="#{localizedStrings['com.idega.block.login']['logout_text']}" /></span>
+				</a>
+			</t:div>
+
+			<ui:repeat value="#{loginBean.hiddenParameters}" var="parameter">
+				<input type="hidden" name="#{parameter.parameter}" value="#{parameter.value}" />
+			</ui:repeat>
 		</form>
 	</div>
 </ui:component>
