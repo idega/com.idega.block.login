@@ -11,12 +11,11 @@ jQuery(document).ready(function() {
 		}
 	});
 	
-	var state = jQuery(".loginForm input[@name=login_state]").val();
-	jQuery(".loginForm input[@name=login_state]").val("");
+	var state = jQuery(".loginForm input[name=login_state]").val();
+	jQuery(".loginForm input[name=login_state]").val("");
 
 	jQuery(".loginForm a, .loginForm div.submit input").click(function() {
-		alert(state);
-		jQuery(".loginForm input[@name=login_state]").val(state);
+		jQuery(".loginForm input[name=login_state]").val(state);
 	});
 
 	jQuery(".loginForm a").click(function() {
