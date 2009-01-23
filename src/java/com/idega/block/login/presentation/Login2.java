@@ -1,5 +1,5 @@
 /*
- * $Id: Login2.java,v 1.40 2008/12/12 11:15:44 laddi Exp $ Created on 7.3.2005
+ * $Id: Login2.java,v 1.41 2009/01/23 15:18:26 laddi Exp $ Created on 7.3.2005
  * in project com.idega.block.login
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -31,7 +31,6 @@ import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.facelets.ui.FaceletComponent;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWBaseComponent;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
@@ -46,10 +45,10 @@ import com.idega.util.expression.ELUtil;
  * New Login component based on JSF and CSS. Will gradually replace old Login
  * component
  * </p>
- * Last modified: $Date: 2008/12/12 11:15:44 $ by $Author: laddi $
+ * Last modified: $Date: 2009/01/23 15:18:26 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.40 $
+ * @version $Revision: 1.41 $
  */
 public class Login2 extends IWBaseComponent implements ActionListener {
 	
@@ -200,29 +199,35 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 				add(getLoggedOutPart(context, bean));
 			}
 			else {
-				IWResourceBundle iwrb = getBundle(context, getBundleIdentifier()).getResourceBundle(iwc);
-
-				UIComponent loginFailedPart = null;
-
-				if (state.equals(LoginState.Failed)) {
-					loginFailedPart = getLoginFailedPart(context, bean, iwrb.getLocalizedString("login_failed", "Login failed"));
-				}
-				else if (state.equals(LoginState.NoUser)) {
-					loginFailedPart = getLoginFailedPart(context, bean, iwrb.getLocalizedString("login_no_user", "Invalid user"));
-				}
-				else if (state.equals(LoginState.WrongPassword)) {
-					loginFailedPart = getLoginFailedPart(context, bean, iwrb.getLocalizedString("login_wrong", "Invalid password"));
-				}
-				else if (state.equals(LoginState.Expired)) {
-					loginFailedPart = getLoginFailedPart(context, bean, iwrb.getLocalizedString("login_expired", "Login expired"));
-				}
-				else if (state.equals(LoginState.FailedDisabledNextTime)) {
-					loginFailedPart = getLoginFailedPart(context, bean, iwrb.getLocalizedString("login_wrong_disabled_next_time", "Invalid password, access closed next time login fails"));
-				}
+				UIComponent loginFailedPart = getLoginFailedPart(context, bean, getLoginFailedByState(context, state));
 
 				// TODO: what about wml, see Login block
 				add(loginFailedPart);
 			}
+		}
+	}
+	
+	private String getLoginFailedByState(FacesContext context, LoginState state) {
+		IWContext iwc = IWContext.getIWContext(context);
+		IWResourceBundle iwrb = getBundle(context, getBundleIdentifier()).getResourceBundle(iwc);
+
+		if (state.equals(LoginState.Failed)) {
+			return iwrb.getLocalizedString("login_failed", "Login failed");
+		}
+		else if (state.equals(LoginState.NoUser)) {
+			return iwrb.getLocalizedString("login_no_user", "Invalid user");
+		}
+		else if (state.equals(LoginState.WrongPassword)) {
+			return iwrb.getLocalizedString("login_wrong", "Invalid password");
+		}
+		else if (state.equals(LoginState.Expired)) {
+			return iwrb.getLocalizedString("login_expired", "Login expired");
+		}
+		else if (state.equals(LoginState.FailedDisabledNextTime)) {
+			return iwrb.getLocalizedString("login_wrong_disabled_next_time", "Invalid password, access closed next time login fails");
+		}
+		else {
+			return iwrb.getLocalizedString("login_failed", "Login failed");
 		}
 	}
 	
@@ -272,11 +277,64 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		this.redirectUserToPrimaryGroupHomePage = ((Boolean) value[4]).booleanValue();
 		this.allowCookieLogin = ((Boolean) value[5]).booleanValue();
 		this.sendToHttps = ((Boolean) value[6]).booleanValue();
+		this.authenticatedFaceletPath = (String) value[7];
+		this.unAuthenticatedFaceletPath = (String) value[8];
+		this.authenticationFailedFaceletPath = (String) value[9];
+		this.urlToRedirectToOnLogon = (String) value[10];
+		this.urlToRedirectToOnLogoff = (String) value[11];
+		this.styleClass = (String) value[12];
+		this.extraLogonParameters = (Map) value[13];
+		this.extraLogoffParameters = (Map) value[14];
+		
+		IWContext iwc = IWContext.getIWContext(context);
+		LoginBean bean = getBeanInstance("loginBean");
+		bean.setUseSubmitLinks(useSubmitLinks);
+		bean.setStyleClass(getStyleClass());
+		bean.setLocaleStyle(getCurrentLocaleLanguage(iwc));
+		
+		if (iwc.isLoggedOn()) {
+			bean.addParameter(LoginBusinessBean.LoginStateParameter, LoginBusinessBean.LOGIN_EVENT_LOGOFF);
+			bean.setOutput(iwc.getCurrentUser().getName());
+			if (getURLToRedirectToOnLogoff() != null) {
+				bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGOFF, getURLToRedirectToOnLogoff());
+			}
+	
+			for (Entry<String, String> entry : extraLogoffParameters.entrySet()) {
+				bean.addParameter(entry.getKey(), entry.getValue());
+			}
+		}
+		else {
+			LoginState loginState = LoginBusinessBean.internalGetState(iwc);
+			if (loginState.equals(LoginState.LoggedOut) || loginState.equals(LoginState.NoState)) {
+				bean.setAllowCookieLogin(allowCookieLogin);
+				bean.setAction(iwc.getRequestURI(sendToHttps));
+				bean.addParameter(LoginBusinessBean.LoginStateParameter, LoginBusinessBean.LOGIN_EVENT_LOGIN);
+				if (this.redirectUserToPrimaryGroupHomePage) {
+					bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_USER_TO_PRIMARY_GROUP_HOME_PAGE, Boolean.TRUE.toString());
+				}
+				else if (getURLToRedirectToOnLogon() != null) {
+					bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON, getURLToRedirectToOnLogon());
+				}
+				else if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON)) {
+					bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON, iwc.getParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON));
+				}
+				for (Entry<String, String> entry : extraLogonParameters.entrySet()) {
+					bean.addParameter(entry.getKey(), entry.getValue());
+				}
+			}
+			else {
+				bean.addParameter(LoginBusinessBean.LoginStateParameter, LoginBusinessBean.LOGIN_EVENT_TRYAGAIN);
+				bean.setOutput(getLoginFailedByState(context, loginState));
+				if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON)) {
+					bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON, iwc.getParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON));
+				}
+			}
+		}
 	}
 
 	@Override
 	public Object saveState(FacesContext context) {
-		Object[] state = new Object[7];
+		Object[] state = new Object[15];
 		state[0] = super.saveState(context);
 		state[1] = Boolean.valueOf(this.useSubmitLinks);
 		state[2] = Boolean.valueOf(this.generateContainingForm);
@@ -284,6 +342,14 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		state[4] = Boolean.valueOf(this.redirectUserToPrimaryGroupHomePage);
 		state[5] = Boolean.valueOf(this.allowCookieLogin);
 		state[6] = Boolean.valueOf(this.sendToHttps);
+		state[7] = this.authenticatedFaceletPath;
+		state[8] = this.unAuthenticatedFaceletPath;
+		state[9] = this.authenticationFailedFaceletPath;
+		state[10] = this.urlToRedirectToOnLogon;
+		state[11] = this.urlToRedirectToOnLogoff;
+		state[12] = this.styleClass;
+		state[13] = this.extraLogonParameters;
+		state[14] = this.extraLogoffParameters;
 		return state;
 	}
 
@@ -399,14 +465,6 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		StringBuffer uri = new StringBuffer("/servlet/ObjectInstanciator?").append(IWMainApplication.classToInstanciateParameter);
 		uri.append("=").append(className);
 		return uri.toString();
-	}
-	
-	private String getLocalizedString(String key, String defaultValue, IWUserContext iwuc) {
-		IWResourceBundle bundle = getBundle(iwuc, getBundleIdentifier()).getResourceBundle(iwuc.getCurrentLocale());
-		if (bundle != null) {
-			return bundle.getLocalizedString(key, defaultValue);
-		}
-		return null;
 	}
 	
 	public void setStyleClass(String styleClass) {

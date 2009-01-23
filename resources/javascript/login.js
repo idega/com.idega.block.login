@@ -11,14 +11,7 @@ jQuery(document).ready(function() {
 		}
 	});
 	
-	var state = jQuery(".loginForm input[name=login_state]").val();
-	jQuery(".loginForm input[name=login_state]").val("");
-
-	jQuery(".loginForm a, .loginForm div.submit input").click(function() {
-		jQuery(".loginForm input[name=login_state]").val(state);
-	});
-
-	jQuery(".loginForm a").click(function() {
+	jQuery("form.loginForm a").click(function() {
 		jQuery(this).parents('form').submit();
 		return false;
 	});
