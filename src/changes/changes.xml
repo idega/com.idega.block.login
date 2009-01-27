@@ -1,0 +1,103 @@
+    <document>
+  <properties>
+    <title>Login changes</title>
+    <author email='tryggvi@idega.com'>Tryggvi Larusson</author>
+  </properties>
+  <body>
+  
+	<release date='2009-01-27' description='First 4.1.x Release' version='4.1.0'>
+          <action type='add' dev='tryggvil'>First 4.1.x Release</action>
+        </release>
+        <release date='2008-05-07' version='3.1.6'>
+      <action type='update' dev='laddi'>
+      	Added URLEncoding to logon redirect URI to preserve parameters.
+      </action>
+    </release>
+	
+	<release date='2007-08-03' version='3.1.5'>
+      <action type='update' dev='sigtryggur'>
+      	Added ChangePassword component
+      </action>
+    </release>
+	
+	<release date='2007-06-28' version='3.1.4'>
+      <action type='update' dev='tryggvil'>
+      	Added UserRegistration component, that replaces the older Register component and 
+      	can register a user by email
+      </action>
+      <action type='update' dev='tryggvil'>
+      	Added new ForgottenPassword component, that replaces the older Forgot component.
+      </action>
+    </release>
+  
+  	<release date='2007-02-24' version='3.1.3'>
+      <action type='fix' dev='gimmi'>
+		fixed so that sendUserToHomePage actually does something
+      </action>
+    </release>
+  
+  	<release date='2006-11-15' version='3.1.2'>
+      <action type='update' dev='eiki'>
+      	LoginByUUIDLink will now use the currentUsers uuid by default
+      </action>
+    </release>
+    
+	<release date='2006-10-30' version='3.1.1'>
+      <action type='update' dev='laddi'>
+      	Added distinctive style classes for each possible state (loggedIn, loggedOut, loginFailed).
+      </action>
+    </release>
+
+	<release date='2005-06-16' version='3.1.0'>
+      <action type='update' dev='tryggvil'>
+      	Declaration of version for including in ePlatform release 3.1
+      </action>
+      <action type='fix' dev='tryggvil'>
+      	A few bugfixes for platform 3
+      </action>
+      <action type='update' dev='tryggvil'>
+      	A few updates for Login2 component to have similar funcationality as Login
+      </action>    
+    </release>
+
+	<release date='2005-05-25' version='1.1.4'>
+      <action type='fix' issue='x' dev='tryggvil'>
+      	New dependency. Depends now on core 3.0.6
+      </action>              
+    </release> 
+        <release date='2005-05-25' version='1.1.4'>
+      <action type='fix' issue='x' dev='tryggvil'>
+      	New dependency. Depends now on core 3.0.5
+      </action>              
+    </release> 
+      <release date='2005-04-06' version='1.1.3'>
+      <action type='fix' issue='x' dev='tryggvil'>
+      	New dependency. Depends now on core 3.0.4
+      </action>              
+    </release>  
+    <release date='2005-04-01' version='1.1.2'>
+      <action type='fix' issue='x' dev='tryggvil'>
+      	New dependency. Depends now on core 3.0.2
+      </action>              
+    </release>  
+      <release date='2005-03-10' version='1.1.1'>
+      <action type='fix' issue='x' dev='tryggvil'>
+        Bugfix of Login2 component to use GenericButton instead of SubmitButton to work inside Workspace environmen.
+      </action>              
+    </release>
+
+    <release date='2005-03-10' version='1.1.0'>
+      <action type='update' dev='tryggvil'>
+        Declaration of version for use in new systems based on JSF.
+      </action>              
+    </release>
+
+    <release date='2004-07-09' version='1.0'>
+      <action type='update' dev='tryggvil'>
+        Declaration of version for use in old style systems.
+      </action>              
+    </release>
+
+  </body>
+</document>
+
