@@ -25,14 +25,14 @@
 					<h:outputText value="#{localizedStrings['com.idega.block.login']['cookie.allow']}" />
 				</label>
 			</t:div>
-			<div class="submit #{loginBean.localeStyle}">
-				<f:verbatim rendered="#{!loginBean.useSubmitLinks}">
-					<input type="submit" value="#{localizedStrings['com.idega.block.login']['login_text']}" />
-				</f:verbatim>
-				<t:htmlTag rendered="#{loginBean.useSubmitLinks}" value="a" styleClass="loginButton">
+			<t:div styleClass="submit #{loginBean.localeStyle}" rendered="#{!loginBean.useSubmitLinks}">
+				<input type="submit" value="#{localizedStrings['com.idega.block.login']['login_text']}" />
+			</t:div>
+			<t:div styleClass="submit #{loginBean.localeStyle}" rendered="#{loginBean.useSubmitLinks}">
+				<a href="#" class="loginButton">
 					<span><t:outputText value="#{localizedStrings['com.idega.block.login']['login_text']}" /></span>
-				</t:htmlTag>
-			</div>
+				</a>
+			</t:div>
 			
 			<ui:repeat value="#{loginBean.hiddenParameters}" var="parameter">
 				<input type="hidden" name="#{parameter.parameter}" value="#{parameter.value}" />
