@@ -12,7 +12,7 @@ jQuery(document).ready(function() {
 	});
 	
 	jQuery("form.loginForm a").click(function() {
-		jQuery(this).parents('form').submit();
+		jQuery("form.loginForm").submit();
 		return false;
 	});
 });
