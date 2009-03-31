@@ -11,6 +11,7 @@ forgotten.email_body=Username \: {0} \nPassword\: {1}
 forgotten.manual=Please write in your username and you will get a new password sent in email.
 forgotten.sent_message=Your login and password has been sent
 forgotten.user_email=E-mail address
+forgotten_password=Forgotten password
 has_no_login=Has no login
 help=Help
 help_headline=Web Access
