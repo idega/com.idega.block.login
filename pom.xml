@@ -54,13 +54,6 @@
       <organization>idega software</organization>
       <roles />
     </developer>
-    <developer>
-      <id>dainis</id>
-      <name>Dainis Brjuhoveckis</name>
-      <email>dainis.brjuhoveckis@idega.lv</email>
-      <organization>idega baltic</organization>
-      <roles />
-    </developer>
   </developers>
   <dependencies>
     <dependency>
@@ -69,7 +62,7 @@
     </dependency>
     <dependency>
       <groupId>com.idega.block.platform</groupId>
-      <artifactId>com.idega.facelets</artifactId>
+      <artifactId>com.idega.faces</artifactId>
     </dependency>
   </dependencies>
 </project>
