@@ -119,7 +119,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 			bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON, getURLToRedirectToOnLogon());
 		}
 		else if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON)) {
-			bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON, iwc.getParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON));
+			bean.addParametersFromRequestToHiddenParameters(iwc.getRequest());
 		}
 		for (Entry<String, String> entry : extraLogonParameters.entrySet()) {
 			bean.addParameter(entry.getKey(), entry.getValue());
@@ -137,7 +137,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		bean.addParameter(LoginBusinessBean.LoginStateParameter, LoginBusinessBean.LOGIN_EVENT_TRYAGAIN);
 		bean.setOutput(message);
 		if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON)) {
-			bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON, iwc.getParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON));
+			bean.addParametersFromRequestToHiddenParameters(iwc.getRequest());
 		}
 
 		FaceletComponent facelet = (FaceletComponent) iwc.getApplication().createComponent(FaceletComponent.COMPONENT_TYPE);
@@ -316,7 +316,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 					bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON, getURLToRedirectToOnLogon());
 				}
 				else if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON)) {
-					bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON, iwc.getParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON));
+					bean.addParametersFromRequestToHiddenParameters(iwc.getRequest());
 				}
 				for (Entry<String, String> entry : extraLogonParameters.entrySet()) {
 					bean.addParameter(entry.getKey(), entry.getValue());

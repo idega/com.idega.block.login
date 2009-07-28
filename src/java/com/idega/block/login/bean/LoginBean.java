@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -183,5 +186,24 @@ public class LoginBean {
 	 */
 	public void setLocaleStyle(String localeStyle) {
 		this.localeStyle = localeStyle;
+	}
+	
+	public void addParametersFromRequestToHiddenParameters(HttpServletRequest request) {
+		StringBuilder parametersString = new StringBuilder();
+		Map parameters = request.getParameterMap();
+
+		if (parameters != null && !parameters.isEmpty()) {
+			Set<String> parametersSet = parameters.keySet();
+			for (Iterator iterator = parametersSet.iterator(); iterator.hasNext();) {
+				String key = (String) iterator.next();
+				String[] values = request.getParameterValues(key);
+				if (values != null && values.length > 0) {
+					for (int j = 0; j < values.length; j++) {
+						this.addParameter(key,values[j]);
+					}
+				}
+			}
+		}
+
 	}
 }
