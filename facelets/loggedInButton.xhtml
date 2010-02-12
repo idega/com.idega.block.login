@@ -1,0 +1,23 @@
+<html
+		xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:t="http://myfaces.apache.org/tomahawk"
+		xmlns:f="http://java.sun.com/jsf/core"
+>
+<ui:component>
+	<form class="logoutForm" action="#{loginBean.action}" method="post">
+		<t:div styleClass="submit #{loginBean.localeStyle}" rendered="#{!loginBean.useSubmitLinks}">
+			<input type="submit" value="#{localizedStrings['com.idega.block.login']['logout_text']}" />
+		</t:div>
+		<t:div styleClass="submit #{loginBean.localeStyle}" rendered="#{loginBean.useSubmitLinks}">
+			<a href="#" onclick="changeWindowLocationHrefAndCheckParameters('#{loginBean.uriByHiddenParameters}', false);">
+				<span><t:outputText value="#{localizedStrings['com.idega.block.login']['logout_text']}" /></span>
+			</a>
+		</t:div>
+
+		<ui:repeat value="#{loginBean.hiddenParameters}" var="parameter">
+			<input type="hidden" name="#{parameter.parameter}" value="#{parameter.value}" />
+		</ui:repeat>
+	</form>
+</ui:component>
+</html>

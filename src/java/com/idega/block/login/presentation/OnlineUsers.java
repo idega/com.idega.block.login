@@ -4,75 +4,127 @@
  */
 package com.idega.block.login.presentation;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.faces.context.FacesContext;
+
+import com.idega.block.login.bean.LoggedInUser;
+import com.idega.block.login.bean.LoginBean;
 import com.idega.core.accesscontrol.business.LoggedOnInfo;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
+import com.idega.facelets.ui.FaceletComponent;
+import com.idega.presentation.IWBaseComponent;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Table;
-import com.idega.presentation.text.Text;
+import com.idega.user.data.User;
+import com.idega.util.PersonalIDFormatter;
+import com.idega.util.text.Name;
 
-/**
- * OnlineUsers
- * @author aron 
- * @version 1.0
- */
-public class OnlineUsers extends Block {
+public class OnlineUsers extends IWBaseComponent {
+	
+	public static final String COMPONENT_TYPE = "com.idega.OnlineUsers";
+
+	public static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.login";
+
+	private String faceletPath = null;
+	private String styleClass = "onlineUsers";
 	
 	private boolean showPersonalID = false;
 	private boolean showLoginName = false;
 	
-	/* (non-Javadoc)
-	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
-	 */
-	public void main(IWContext iwc) throws Exception {
-		add(getLoggedInUsers(iwc));
-	}
-	
-	
-	
-	
-	public PresentationObject getLoggedInUsers(IWContext iwc){
-		IWResourceBundle iwrb = getResourceBundle(iwc);
-		Table table = new Table();
-		int row = 1;
-		Text tUsers = new Text(iwrb.getLocalizedString("online_users","Online users:"));
-		Collection usersLoggedIn = LoginBusinessBean.getLoggedOnInfoCollection(iwc);
-		if(usersLoggedIn!=null && !usersLoggedIn.isEmpty()){
-		    tUsers.addToText(" ");
-		    tUsers.addToText(String.valueOf(usersLoggedIn.size()));
-		}
-		tUsers.setBold();
-		table.add(tUsers,1,row++);
-		if(usersLoggedIn!=null && !usersLoggedIn.isEmpty()){
-			for (Iterator iter = usersLoggedIn.iterator(); iter.hasNext();) {
-				int col = 1;
-				LoggedOnInfo info = (LoggedOnInfo) iter.next();
-				table.addText(info.getUser().getName(),col++,row++);
-				if(this.showPersonalID) {
-					table.addText(info.getUser().getPersonalID(),col++,row++);
-				}
-				if(this.showLoginName) {
-					table.addText(info.getLogin(),col++,row++);
-				}
-			}
-		}
-		else{
-			Text tNone = new Text(iwrb.getLocalizedString("nobody_loggedon","nobody"));
-			table.add(tNone,1,row);
-		}
-		table.mergeCells(1,1,table.getColumns(),1);
-		
-		return table;
-	}
-	/* (non-Javadoc)
-	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
-	 */
 	public String getBundleIdentifier() {
-		return Login.IW_BUNDLE_IDENTIFIER;
+		return IW_BUNDLE_IDENTIFIER;
+	}
+
+	@Override
+	public void restoreState(FacesContext ctx, Object state) {
+		Object values[] = (Object[]) state;
+		super.restoreState(ctx, values[0]);
+		
+		this.faceletPath = (String) values[1];
+		this.styleClass = (String) values[2];
+		this.showPersonalID = ((Boolean) values[3]).booleanValue();
+		this.showLoginName = ((Boolean) values[4]).booleanValue();
+	}
+
+	@Override
+	public Object saveState(FacesContext ctx) {
+		Object values[] = new Object[5];
+		values[0] = super.saveState(ctx);
+		values[1] = this.faceletPath;
+		values[2] = this.styleClass;
+		values[3] = Boolean.valueOf(this.showPersonalID);
+		values[4] = Boolean.valueOf(this.showLoginName);
+		
+		return values;
+	}
+
+	@Override
+	public void initializeComponent(FacesContext context) {
+		IWContext iwc = IWContext.getIWContext(context);
+
+		if (getFaceletPath() == null) {
+			setFaceletPath(getBundle(context, getBundleIdentifier()).getFaceletURI("onlineUsers.xhtml"));
+		}
+
+		LoginBean bean = getBeanInstance("loginBean");
+		bean.setStyleClass(getStyleClass());
+		bean.setShowLogin(isShowLoginName());
+		bean.setShowPersonalID(isShowPersonalID());
+
+		Collection<LoggedInUser> users = new ArrayList<LoggedInUser>();
+		Collection<LoggedOnInfo> loginInfo = LoginBusinessBean.getLoggedOnInfoCollection(iwc);
+		
+		Iterator<LoggedOnInfo> it = loginInfo.iterator();
+		while (it.hasNext()) {
+			LoggedOnInfo info = it.next();
+			User user = info.getUser();
+			
+			LoggedInUser loggedInUser = new LoggedInUser();
+			loggedInUser.setName(new Name(user.getFirstName(), user.getMiddleName(), user.getLastName()).getName(iwc.getCurrentLocale()));
+			loggedInUser.setPersonalID(user.getPersonalID() != null ? PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale()) : "-");
+			loggedInUser.setLogin(info.getLogin());
+			
+			users.add(loggedInUser);
+		}
+		
+		bean.setLoggedIn(users);
+		
+		FaceletComponent facelet = (FaceletComponent) iwc.getApplication().createComponent(FaceletComponent.COMPONENT_TYPE);
+		facelet.setFaceletURI(getFaceletPath());
+		add(facelet);
+	}	
+	
+	private String getFaceletPath() {
+		return faceletPath;
+	}
+
+	public void setFaceletPath(String faceletPath) {
+		this.faceletPath = faceletPath;
+	}
+
+	private String getStyleClass() {
+		return styleClass;
+	}
+
+	public void setStyleClass(String styleClass) {
+		this.styleClass = styleClass;
+	}
+
+	private boolean isShowPersonalID() {
+		return showPersonalID;
+	}
+
+	public void setShowPersonalID(boolean showPersonalID) {
+		this.showPersonalID = showPersonalID;
+	}
+
+	private boolean isShowLoginName() {
+		return showLoginName;
+	}
+
+	public void setShowLoginName(boolean showLoginName) {
+		this.showLoginName = showLoginName;
 	}
 }

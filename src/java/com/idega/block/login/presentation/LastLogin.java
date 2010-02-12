@@ -10,7 +10,6 @@ import java.text.DateFormat;
 
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Text;
 
@@ -19,7 +18,7 @@ import com.idega.presentation.text.Text;
  * @author aron 
  * @version 1.0
  */
-public class LastLogin extends Block {
+public class LastLogin extends Text {
 	
 	private String style = "";
 	
@@ -27,22 +26,21 @@ public class LastLogin extends Block {
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
 	 */
 	public void main(IWContext iwc) throws Exception {
-		if(iwc.isLoggedOn()){
+		if (iwc.isLoggedOn()) {
 			try {
 				IWResourceBundle iwrb = getResourceBundle(iwc);
-				String text = iwrb.getLocalizedString("last_login_text","Last login");
-				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,iwc.getCurrentLocale());
+				String text = iwrb.getLocalizedString("last_login_text", "Last login");
+				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, iwc.getCurrentLocale());
 				Date last = LoginBusinessBean.getLastLoginByUser(new Integer(iwc.getUserId()));
-				Text txt = new Text(text+" "+df.format(last));
-				txt.setStyleAttribute(this.style);
-				add(txt);
-			} catch (RemoteException e) {
+
+				super.setText(text + " " + df.format(last));
+				super.setStyleAttribute(this.style);
+			}
+			catch (RemoteException e) {
 				e.printStackTrace();
 			}
 		}
 	}
-	
-	
 	
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
@@ -50,6 +48,7 @@ public class LastLogin extends Block {
 	public String getBundleIdentifier() {
 		return Login.IW_BUNDLE_IDENTIFIER;
 	}
+
 	/**
 	 * @param style The style to set.
 	 */

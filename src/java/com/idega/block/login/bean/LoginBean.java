@@ -5,6 +5,7 @@ package com.idega.block.login.bean;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -31,6 +32,10 @@ public class LoginBean {
 	private Map<String, String> parameters = new HashMap<String, String>();
 	private String defaultOutput;
 	private String localeStyle;
+	
+	private Collection<LoggedInUser> loggedIn;
+	private boolean showPersonalID = false;
+	private boolean showLogin = false;
 
 	/**
 	 * @return the useSubmitLinks
@@ -189,7 +194,6 @@ public class LoginBean {
 	}
 	
 	public void addParametersFromRequestToHiddenParameters(HttpServletRequest request) {
-		StringBuilder parametersString = new StringBuilder();
 		Map parameters = request.getParameterMap();
 
 		if (parameters != null && !parameters.isEmpty()) {
@@ -205,5 +209,29 @@ public class LoginBean {
 			}
 		}
 
+	}
+
+	public Collection<LoggedInUser> getLoggedIn() {
+		return loggedIn;
+	}
+
+	public void setLoggedIn(Collection<LoggedInUser> loggedIn) {
+		this.loggedIn = loggedIn;
+	}
+
+	public boolean isShowPersonalID() {
+		return showPersonalID;
+	}
+
+	public void setShowPersonalID(boolean showPersonalID) {
+		this.showPersonalID = showPersonalID;
+	}
+
+	public boolean isShowLogin() {
+		return showLogin;
+	}
+
+	public void setShowLogin(boolean showLogin) {
+		this.showLogin = showLogin;
 	}
 }

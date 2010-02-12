@@ -1,0 +1,23 @@
+<html
+		xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:t="http://myfaces.apache.org/tomahawk"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:c="http://java.sun.com/jstl/core"
+>
+<ui:component>
+	<ul class="#{loginBean.styleClass}">
+		<ui:repeat value="#{loginBean.loggedIn}" var="item">
+			<li>
+				<span class="user"><h:outputText value="#{item.name}" /></span>
+				<c:if test="#{loginBean.showPersonalID}">
+					<span class="personalID"><h:outputText value="#{item.personalID}" /></span>
+				</c:if>
+				<c:if test="#{loginBean.showLogin}">
+					<span class="login"><h:outputText value="#{item.login}" /></span>
+				</c:if>
+			</li>
+		</ui:repeat>
+	</ul>
+</ui:component>
+</html>
