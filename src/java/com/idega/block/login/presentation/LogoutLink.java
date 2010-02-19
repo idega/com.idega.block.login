@@ -4,6 +4,11 @@ import javax.faces.context.FacesContext;
 
 public class LogoutLink extends Login2 {
 
+	public LogoutLink() {
+		super();
+		setUseSubmitLinks(true);
+	}
+	
 	@Override
 	public void initializeComponent(FacesContext context) {
 		setUnAuthenticatedFaceletPath(getBundle(context, getBundleIdentifier()).getFaceletURI("loggedOutEmpty.xhtml"));
