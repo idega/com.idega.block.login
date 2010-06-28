@@ -17,7 +17,7 @@ import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.facelets.ui.FaceletComponent;
 import com.idega.presentation.IWBaseComponent;
 import com.idega.presentation.IWContext;
-import com.idega.user.data.User;
+import com.idega.user.data.bean.User;
 import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 
