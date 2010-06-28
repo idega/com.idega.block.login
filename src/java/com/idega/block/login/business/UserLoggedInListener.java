@@ -3,7 +3,7 @@ package com.idega.block.login.business;
 import com.idega.core.accesscontrol.business.AuthenticationListener;
 import com.idega.core.accesscontrol.business.ServletFilterChainInterruptException;
 import com.idega.presentation.IWContext;
-import com.idega.user.data.User;
+import com.idega.user.data.bean.User;
 import com.idega.util.expression.ELUtil;
 
 /**
