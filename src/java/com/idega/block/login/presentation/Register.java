@@ -24,7 +24,6 @@ import javax.faces.event.PhaseId;
 import org.apache.commons.validator.EmailValidator;
 
 import com.idega.business.IBOLookup;
-import com.idega.core.accesscontrol.business.LoginContext;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
@@ -41,7 +40,6 @@ import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
-import com.idega.user.data.User;
 import com.idega.util.CoreConstants;
 import com.idega.util.IWTimestamp;
 import com.idega.util.SendMail;
@@ -72,6 +70,7 @@ public class Register extends Block {
 	private boolean displayCloseButton = true;
 	private Integer code;
 	
+	@Override
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
@@ -252,7 +251,6 @@ public class Register extends Block {
 		return table;
 	}
 
-	@SuppressWarnings("unused")
 	public int registerUser(IWContext iwc,
 		String userRealName,
 		String emailAddress,
@@ -309,32 +307,27 @@ public class Register extends Block {
 			}
 
 			Name name = new Name(userRealName);
-														//createUserWithLogin(String firstname, String middlename, String lastname, String displayname, String description, Integer gender, IWTimestamp date_of_birth, Integer primary_group, String userLogin, String password, Boolean accountEnabled, IWTimestamp modified, int daysOfValidity, Boolean passwordExpires, Boolean userAllowedToChangePassw, Boolean changeNextTime,String encryptionType) throws CreateException{
-			User iwUser = getUserBusiness(iwc).createUserWithLogin(name.getFirstName(),name.getMiddleName(),name.getLastName(),null,    null,                      null,                  null,                                      null,                             usr,                      pass,                    Boolean.TRUE ,                                IWTimestamp.RightNow(),5000,               Boolean.FALSE,    				Boolean.TRUE ,                                      Boolean.FALSE,                                 null);
-			LoginContext user = new LoginContext(iwUser,usr,pass);
+			//createUserWithLogin(String firstname, String middlename, String lastname, String displayname, String description, Integer gender, IWTimestamp date_of_birth, Integer primary_group, String userLogin, String password, Boolean accountEnabled, IWTimestamp modified, int daysOfValidity, Boolean passwordExpires, Boolean userAllowedToChangePassw, Boolean changeNextTime,String encryptionType) throws CreateException{
+			getUserBusiness(iwc).createUserWithLogin(name.getFirstName(),name.getMiddleName(),name.getLastName(),null,    null,                      null,                  null,                                      null,                             usr,                      pass,                    Boolean.TRUE ,                                IWTimestamp.RightNow(),5000,               Boolean.FALSE,    				Boolean.TRUE ,                                      Boolean.FALSE,                                 null);
 
-			if (letter != null) {
-				Object[] objs = {user.getUserName(),user.getPassword()};
-				String body = MessageFormat.format(letter,objs);
+			Object[] objs = {usr,pass};
+			String body = MessageFormat.format(letter,objs);
 
-				// body.append();
+			// body.append();
 
-				SendMail.send(
-					sender,
-					emailAddress,
-					CoreConstants.EMPTY,
-					CoreConstants.EMPTY,
-					server,
-					subject,
-					body.toString());
-				return SENT;
-			}
+			SendMail.send(
+				sender,
+				emailAddress,
+				CoreConstants.EMPTY,
+				CoreConstants.EMPTY,
+				server,
+				subject,
+				body.toString());
+			return SENT;
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return ERROR;
 		}
-		return internal;
-
 	}
 
 	public String getMessage(IWContext iwc, int code) {
@@ -406,6 +399,7 @@ public class Register extends Block {
 		return (UserBusiness) IBOLookup.getServiceInstance(iwac,UserBusiness.class);
 	}
 
+	@Override
 	public void main(IWContext iwc) throws RemoteException { 
 		
 		
