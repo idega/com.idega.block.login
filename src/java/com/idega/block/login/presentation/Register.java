@@ -252,6 +252,7 @@ public class Register extends Block {
 		return table;
 	}
 
+	@SuppressWarnings("unused")
 	public int registerUser(IWContext iwc,
 		String userRealName,
 		String emailAddress,
@@ -311,10 +312,6 @@ public class Register extends Block {
 														//createUserWithLogin(String firstname, String middlename, String lastname, String displayname, String description, Integer gender, IWTimestamp date_of_birth, Integer primary_group, String userLogin, String password, Boolean accountEnabled, IWTimestamp modified, int daysOfValidity, Boolean passwordExpires, Boolean userAllowedToChangePassw, Boolean changeNextTime,String encryptionType) throws CreateException{
 			User iwUser = getUserBusiness(iwc).createUserWithLogin(name.getFirstName(),name.getMiddleName(),name.getLastName(),null,    null,                      null,                  null,                                      null,                             usr,                      pass,                    Boolean.TRUE ,                                IWTimestamp.RightNow(),5000,               Boolean.FALSE,    				Boolean.TRUE ,                                      Boolean.FALSE,                                 null);
 			LoginContext user = new LoginContext(iwUser,usr,pass);
-
-			if (user == null) {
-				return NO_USERNAME;
-			}
 
 			if (letter != null) {
 				Object[] objs = {user.getUserName(),user.getPassword()};
