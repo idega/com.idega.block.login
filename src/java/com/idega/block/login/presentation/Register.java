@@ -252,7 +252,6 @@ public class Register extends Block {
 		return table;
 	}
 
-	@SuppressWarnings("unused")
 	public int registerUser(IWContext iwc,
 		String userRealName,
 		String emailAddress,
