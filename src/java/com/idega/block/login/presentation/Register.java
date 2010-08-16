@@ -252,6 +252,7 @@ public class Register extends Block {
 		return table;
 	}
 
+	@SuppressWarnings("unused")
 	public int registerUser(IWContext iwc,
 		String userRealName,
 		String emailAddress,
@@ -332,8 +333,8 @@ public class Register extends Block {
 			ex.printStackTrace();
 			return ERROR;
 		}
-		return internal;
 
+		return internal;
 	}
 
 	public String getMessage(IWContext iwc, int code) {
