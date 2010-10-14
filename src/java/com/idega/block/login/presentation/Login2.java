@@ -134,11 +134,11 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	protected UIComponent getLoginFailedPart(FacesContext context, LoginBean bean, String message) {
 		IWContext iwc = IWContext.getIWContext(context);
 		
-		bean.addParameter(LoginBusinessBean.LoginStateParameter, LoginBusinessBean.LOGIN_EVENT_TRYAGAIN);
-		bean.setOutput(message);
 		if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON)) {
 			bean.addParametersFromRequestToHiddenParameters(iwc.getRequest());
 		}
+		bean.addParameter(LoginBusinessBean.LoginStateParameter, LoginBusinessBean.LOGIN_EVENT_TRYAGAIN);
+		bean.setOutput(message);
 
 		FaceletComponent facelet = (FaceletComponent) iwc.getApplication().createComponent(FaceletComponent.COMPONENT_TYPE);
 		facelet.setFaceletURI(authenticationFailedFaceletPath);	

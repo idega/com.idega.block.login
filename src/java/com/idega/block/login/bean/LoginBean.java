@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.util.ArrayUtil;
 import com.idega.util.CoreConstants;
 
@@ -124,6 +125,10 @@ public class LoginBean {
 		return ArrayUtil.convertListToArray(parametersList);
 	}
 	
+	public String removeParameter(String parameter){
+		return parameters.remove(parameter);
+	}
+	
 	public String getUriByHiddenParameters() {
 		Parameter[] parameters = getHiddenParameters();
 		if (ArrayUtil.isEmpty(parameters)) {
@@ -193,22 +198,36 @@ public class LoginBean {
 		this.localeStyle = localeStyle;
 	}
 	
+	/**
+	 * Adds all parameters from the request to hidden input, except internal login 
+	 * parameters for state, password, user name and unique id
+	 * @param request
+	 */
 	public void addParametersFromRequestToHiddenParameters(HttpServletRequest request) {
 		Map parameters = request.getParameterMap();
+		ArrayList<String> excludeParam = new ArrayList<String>();
+		excludeParam.add(LoginBusinessBean.PARAMETER_USERNAME);
+		excludeParam.add(LoginBusinessBean.PARAMETER_PASSWORD);
+		excludeParam.add(LoginBusinessBean.PARAMETER_PASSWORD2);//whatever that is...
+		excludeParam.add(LoginBusinessBean.LoginStateParameter);
+		excludeParam.add(LoginBusinessBean.PARAM_LOGIN_BY_UNIQUE_ID);
+		
 
 		if (parameters != null && !parameters.isEmpty()) {
 			Set<String> parametersSet = parameters.keySet();
 			for (Iterator iterator = parametersSet.iterator(); iterator.hasNext();) {
 				String key = (String) iterator.next();
-				String[] values = request.getParameterValues(key);
-				if (values != null && values.length > 0) {
-					for (int j = 0; j < values.length; j++) {
-						this.addParameter(key,values[j]);
+				if(!excludeParam.contains(key)){
+					String[] values = request.getParameterValues(key);
+					if (values != null && values.length > 0) {
+						for (int j = 0; j < values.length; j++) {
+							this.addParameter(key,values[j]);
+						}
 					}
 				}
 			}
 		}
-
+		
 	}
 
 	public Collection<LoggedInUser> getLoggedIn() {
