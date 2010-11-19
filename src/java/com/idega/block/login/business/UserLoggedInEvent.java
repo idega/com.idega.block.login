@@ -1,9 +1,11 @@
 package com.idega.block.login.business;
 
+import java.util.logging.Logger;
+
 import org.springframework.context.ApplicationEvent;
 
 import com.idega.presentation.IWContext;
-import com.idega.user.data.User;
+import com.idega.user.data.bean.User;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
@@ -28,7 +30,12 @@ public class UserLoggedInEvent extends ApplicationEvent {
 
 	public UserLoggedInEvent(Object source) {
 		super(source);
-		this.loggedInUsr = (User)source;
+
+		if (source instanceof User) {
+			this.loggedInUsr = (User)source;
+		} else {
+			Logger.getLogger(UserLoggedInEvent.class.getName()).warning("Source (" + source + ") is not instance of " + User.class.getName());
+		}
 	}
 
 	public User getLoggedInUsr() {
