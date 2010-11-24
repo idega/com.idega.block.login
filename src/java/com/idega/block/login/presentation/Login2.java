@@ -66,6 +66,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	private boolean sendToHttps = false;
 	private String urlToRedirectToOnLogon = null;
 	private String urlToRedirectToOnLogoff = null;
+	private String urlToRedirectToOnLogonFailed = null;
 	private Map<String, String> extraLogonParameters = new HashMap<String, String>();
 	private Map<String, String> extraLogoffParameters = new HashMap<String, String>();
 	private boolean allowCookieLogin = false;
@@ -109,6 +110,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	protected UIComponent getLoggedOutPart(FacesContext context, LoginBean bean) {
 		IWContext iwc = IWContext.getIWContext(context);
 		
+		boolean hiddenParamAdded = false;
 		bean.setAllowCookieLogin(allowCookieLogin);
 		bean.setAction(iwc.getRequestURI(sendToHttps));
 		bean.addParameter(LoginBusinessBean.LoginStateParameter, LoginBusinessBean.LOGIN_EVENT_LOGIN);
@@ -120,7 +122,19 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		}
 		else if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON)) {
 			bean.addParametersFromRequestToHiddenParameters(iwc.getRequest());
+			hiddenParamAdded = true;
 		}
+		
+		//Redirect if login fails
+		if (getURLToRedirectToOnLogonFailed() != null) {
+			bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON_FAILED, getURLToRedirectToOnLogonFailed());
+		}
+		else if (!hiddenParamAdded && iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON_FAILED)) {
+			bean.addParametersFromRequestToHiddenParameters(iwc.getRequest());
+			hiddenParamAdded = true;
+		}
+		
+		
 		for (Entry<String, String> entry : extraLogonParameters.entrySet()) {
 			bean.addParameter(entry.getKey(), entry.getValue());
 		}
@@ -134,12 +148,15 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	protected UIComponent getLoginFailedPart(FacesContext context, LoginBean bean, String message) {
 		IWContext iwc = IWContext.getIWContext(context);
 		
-		if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON)) {
+		if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON) || iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON_FAILED)) {
 			bean.addParametersFromRequestToHiddenParameters(iwc.getRequest());
+		} else if (getURLToRedirectToOnLogonFailed() != null) {
+			bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON_FAILED, getURLToRedirectToOnLogonFailed());
 		}
+		
 		bean.addParameter(LoginBusinessBean.LoginStateParameter, LoginBusinessBean.LOGIN_EVENT_TRYAGAIN);
 		bean.setOutput(message);
-
+	
 		FaceletComponent facelet = (FaceletComponent) iwc.getApplication().createComponent(FaceletComponent.COMPONENT_TYPE);
 		facelet.setFaceletURI(authenticationFailedFaceletPath);	
 		
@@ -285,6 +302,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		this.styleClass = (String) value[12];
 		this.extraLogonParameters = (Map) value[13];
 		this.extraLogoffParameters = (Map) value[14];
+		this.urlToRedirectToOnLogonFailed = (String) value[15];
 		
 		IWContext iwc = IWContext.getIWContext(context);
 		LoginBean bean = getBeanInstance("loginBean");
@@ -306,6 +324,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		else {
 			LoginState loginState = LoginBusinessBean.internalGetState(iwc);
 			if (loginState.equals(LoginState.LoggedOut) || loginState.equals(LoginState.NoState)) {
+				boolean hiddenParamAdded = false;
 				bean.setAllowCookieLogin(allowCookieLogin);
 				bean.setAction(iwc.getRequestURI(sendToHttps));
 				bean.addParameter(LoginBusinessBean.LoginStateParameter, LoginBusinessBean.LOGIN_EVENT_LOGIN);
@@ -317,7 +336,17 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 				}
 				else if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON)) {
 					bean.addParametersFromRequestToHiddenParameters(iwc.getRequest());
+					hiddenParamAdded = true;
 				}
+				
+				//redirect if login fails
+				if (getURLToRedirectToOnLogonFailed() != null) {
+					bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON_FAILED, getURLToRedirectToOnLogonFailed());
+				} else if (!hiddenParamAdded && iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON_FAILED)) {
+					bean.addParametersFromRequestToHiddenParameters(iwc.getRequest());
+					hiddenParamAdded = true;
+				}				
+				
 				for (Entry<String, String> entry : extraLogonParameters.entrySet()) {
 					bean.addParameter(entry.getKey(), entry.getValue());
 				}
@@ -328,13 +357,16 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 				if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON)) {
 					bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON, iwc.getParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON));
 				}
+				if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON_FAILED)) {
+					bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON_FAILED, iwc.getParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON_FAILED));
+				}
 			}
 		}
 	}
 
 	@Override
 	public Object saveState(FacesContext context) {
-		Object[] state = new Object[15];
+		Object[] state = new Object[16];
 		state[0] = super.saveState(context);
 		state[1] = Boolean.valueOf(this.useSubmitLinks);
 		state[2] = Boolean.valueOf(this.generateContainingForm);
@@ -350,6 +382,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		state[12] = this.styleClass;
 		state[13] = this.extraLogonParameters;
 		state[14] = this.extraLogoffParameters;
+		state[15] = this.urlToRedirectToOnLogonFailed;
 		return state;
 	}
 
@@ -416,6 +449,15 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 
 	public String getURLToRedirectToOnLogoff() {
 		return this.urlToRedirectToOnLogoff;
+	}
+	
+	public void setURLToRedirectToOnLogonFailed(String url) {
+		this.urlToRedirectToOnLogonFailed = url;
+	}
+
+	public String getURLToRedirectToOnLogonFailed() {
+		
+		return urlToRedirectToOnLogonFailed;
 	}
 
 	public void setExtraLogonParameter(String parameter, String value) {
