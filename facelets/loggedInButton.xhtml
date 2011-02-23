@@ -6,7 +6,10 @@
 >
 <ui:component>
 	<form class="logoutForm" action="#{loginBean.action}" method="post">
-		<a href="#{loginBean.passwordChangerURL}" class="passwordChanger"></a>
+		<ui:fragment rendered="#{not empty loginBean.passwordChangerURL}">
+			<a href="#{loginBean.passwordChangerURL}" class="passwordChanger"></a>
+		</ui:fragment>
+		
 		<t:div styleClass="submit #{loginBean.localeStyle}" rendered="#{!loginBean.useSubmitLinks}">
 			<input type="submit" value="#{localizedStrings['com.idega.block.login']['logout_text']}" />
 		</t:div>
