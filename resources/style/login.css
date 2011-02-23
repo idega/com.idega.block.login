@@ -124,6 +124,10 @@ div.loginButtonInContainer input {
 	cursor: pointer;
 }
 
+a.passwordChanger {
+	display: none;	
+}
+
 /* 
 For reference
 
