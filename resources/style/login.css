@@ -71,8 +71,11 @@
 	padding: 4px 12px;
 }
 
+#passwordChanger {
+	padding: 10px 12px;
+}
+
 #passwordChanger .webfaceFormItem {
-	padding-left: 25px !important;
 	overflow: hidden !important;
 	margin-bottom: 15px !important;
 }
@@ -81,6 +84,7 @@
 	color:#042025;
 	font-family:"Lucida Grande","Lucida Sans","Lucida Sans Unicode",Arial,Helvetica,sans-serif;
 	font-size:20px;
+	line-height: 24px;
 	margin:0 0 68px;
 }
 
@@ -94,6 +98,9 @@
 #passwordChanger .webfaceFormItem label {
 	font-weight: bold;
 	font-size: 12px;
+	float: left;
+	width: 120px;
+	line-height: 27px;
 }
 
 #passwordChanger .webfaceFormItem input {
@@ -103,12 +110,14 @@
 }
 
 #passwordChanger .webfaceButtonLayer {
-	padding-left: 25px !important;
+	width: auto;
+	overflow: hidden;
 }
 
 #passwordChanger .webfaceButtonLayer input {
 	font-size: 14px !important;
 	padding: 4px 12px;
+	float: right;
 }
 
 div.loginButtonInContainer input {

@@ -12,7 +12,6 @@ package com.idega.block.login.presentation;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -22,13 +21,21 @@ import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.idega.block.login.bean.LoginBean;
+import com.idega.block.web2.business.JQuery;
 import com.idega.block.web2.business.Web2Business;
+import com.idega.builder.bean.AdvancedProperty;
+import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.business.LoginState;
 import com.idega.core.accesscontrol.data.LoginInfo;
+import com.idega.core.builder.business.BuilderService;
+import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.facelets.ui.FaceletComponent;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWBaseComponent;
@@ -80,6 +87,12 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	public static final String LOGIN_SCRIPT = "javascript/LoginHelper.js";
 	public static final String USER_BUSINESS_DWR_SCRIPT = "/dwr/interface/UserBusiness.js";
 
+	@Autowired
+	private Web2Business web2Business;
+	
+	@Autowired
+	private JQuery jQuery;
+	
 	/**
 	 * 
 	 */
@@ -91,6 +104,14 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	protected UIComponent getLoggedInPart(FacesContext context, LoginBean bean) {
 		IWContext iwc = IWContext.getIWContext(context);
 		
+		try {
+			BuilderService service = BuilderServiceFactory.getBuilderService(iwc);
+			bean.setPasswordChangerURL(service.getUriToObject(UserPasswordChanger.class, new ArrayList<AdvancedProperty>()));
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+
 		bean.addParameter(LoginBusinessBean.LoginStateParameter, LoginBusinessBean.LOGIN_EVENT_LOGOFF);
 		bean.setOutput(iwc.getCurrentUser().getName());
 		if (getURLToRedirectToOnLogoff() != null) {
@@ -250,30 +271,15 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	
 	private void addLoginScriptsAndStyles(FacesContext context) {
 		IWContext iwc = IWContext.getIWContext(context);
+		IWBundle iwb = getBundle(context, getBundleIdentifier());
 		
-		List<String> scripts = new ArrayList<String>();
-		List<String> css = new ArrayList<String>();
-		
-		Web2Business web2 = ELUtil.getInstance().getBean(Web2Business.class);
-		try {
-			scripts.add(web2.getBundleURIToMootoolsLib()); //Mootools
-			scripts.add(web2.getMoodalboxScriptFilePath(true));	//	MOOdalBox
-			scripts.add(CoreConstants.DWR_ENGINE_SCRIPT);
-			scripts.add(USER_BUSINESS_DWR_SCRIPT);
-			scripts.add(getBundle(context, getBundleIdentifier()).getVirtualPathWithFileNameString(LOGIN_SCRIPT));
-			css.add(web2.getMoodalboxStyleFilePath());
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		
-		StringBuffer changePassScript = new StringBuffer("changeUserPassword('")
-		.append(getUriToObject(UserPasswordChanger.class.getName()))
-		.append("');");
-
-		String action = PresentationUtil.getJavaScriptLinesLoadedLazily(scripts, changePassScript.toString());
-		PresentationUtil.addJavaScriptActionToBody(iwc, action);
-		
-		PresentationUtil.addStyleSheetsToHeader(iwc, css);
+		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, getJQuery().getBundleURIToJQueryLib());
+		PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, getWeb2Business().getBundleURIsToFancyBoxScriptFiles());
+		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, CoreConstants.DWR_ENGINE_SCRIPT);
+		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, USER_BUSINESS_DWR_SCRIPT);
+		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, iwb.getVirtualPathWithFileNameString(LOGIN_SCRIPT));
+		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, iwb.getVirtualPathWithFileNameString("javascript/UserPasswordChanger.js"));
+		PresentationUtil.addStyleSheetToHeader(iwc, getWeb2Business().getBundleURIToFancyBoxStyleFile());
 	}
 	
 	/*
@@ -429,6 +435,21 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		return iwc.getLocale().getLanguage();
 	}
 
+	private Web2Business getWeb2Business() {
+		if (web2Business == null) {
+			ELUtil.getInstance().autowire(this);
+		}
+		
+		return web2Business;
+	}
+
+	private JQuery getJQuery() {
+		if (jQuery == null) {
+			ELUtil.getInstance().autowire(this);
+		}
+		
+		return jQuery;
+	}
 	@Deprecated
 	public void setShowLabelInInput(boolean showLabelInInput) {
 		/* Should be handled with custom facelet... */
@@ -498,15 +519,6 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	
 	public void setFocusOnLoad(boolean focusOnLoad) {
 		this.focusOnLoad = focusOnLoad;
-	}
-	
-	private String getUriToObject(String className) {
-		if (className == null) {
-			return null;
-		}
-		StringBuffer uri = new StringBuffer("/servlet/ObjectInstanciator?").append(IWMainApplication.classToInstanciateParameter);
-		uri.append("=").append(className);
-		return uri.toString();
 	}
 	
 	public void setStyleClass(String styleClass) {
