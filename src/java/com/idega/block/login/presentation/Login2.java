@@ -38,7 +38,6 @@ import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.facelets.ui.FaceletComponent;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWBaseComponent;
 import com.idega.presentation.IWContext;
@@ -46,6 +45,7 @@ import com.idega.presentation.Layer;
 import com.idega.servlet.filter.IWAuthenticator;
 import com.idega.user.data.User;
 import com.idega.util.CoreConstants;
+import com.idega.util.CoreUtil;
 import com.idega.util.PresentationUtil;
 import com.idega.util.expression.ELUtil;
 
@@ -90,7 +90,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	public static final String USER_BUSINESS_DWR_SCRIPT = "/dwr/interface/UserBusiness.js";
 
 	@Autowired
-	private Web2Business web2Business;
+	private Web2Business web2;
 	
 	@Autowired
 	private JQuery jQuery;
@@ -101,6 +101,8 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	public Login2() {
 		setStyleClass(STYLE_CLASS_MAIN_DEFAULT);
 		setTransient(false);
+		
+		ELUtil.getInstance().autowire(this);
 	}
 
 	protected UIComponent getLoggedInPart(FacesContext context, LoginBean bean) {
@@ -109,8 +111,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		try {
 			BuilderService service = BuilderServiceFactory.getBuilderService(iwc);
 			bean.setPasswordChangerURL(service.getUriToObject(UserPasswordChanger.class, new ArrayList<AdvancedProperty>()));
-		}
-		catch (RemoteException re) {
+		} catch (RemoteException re) {
 			throw new IBORuntimeException(re);
 		}
 
@@ -139,11 +140,9 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		bean.addParameter(LoginBusinessBean.LoginStateParameter, LoginBusinessBean.LOGIN_EVENT_LOGIN);
 		if (this.redirectUserToPrimaryGroupHomePage) {
 			bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_USER_TO_PRIMARY_GROUP_HOME_PAGE, Boolean.TRUE.toString());
-		}
-		else if (getURLToRedirectToOnLogon() != null) {
+		} else if (getURLToRedirectToOnLogon() != null) {
 			bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON, getURLToRedirectToOnLogon());
-		}
-		else if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON)) {
+		} else if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON)) {
 			bean.addParametersFromRequestToHiddenParameters(iwc.getRequest());
 			hiddenParamAdded = true;
 		}
@@ -151,8 +150,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		//Redirect if login fails
 		if (getURLToRedirectToOnLogonFailed() != null) {
 			bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON_FAILED, getURLToRedirectToOnLogonFailed());
-		}
-		else if (!hiddenParamAdded && iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON_FAILED)) {
+		} else if (!hiddenParamAdded && iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON_FAILED)) {
 			bean.addParametersFromRequestToHiddenParameters(iwc.getRequest());
 			hiddenParamAdded = true;
 		}
@@ -209,11 +207,19 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		bean.setStyleClass(getStyleClass());
 		bean.setLocaleStyle(getCurrentLocaleLanguage(iwc));
 		
-		if (useSubmitLinks) {
-			Web2Business business = ELUtil.getInstance().getBean(Web2Business.class);
-			PresentationUtil.addJavaScriptSourceLineToHeader(iwc, business.getBundleURIToJQueryLib());
-			PresentationUtil.addJavaScriptSourceLineToHeader(iwc, getBundle(context, getBundleIdentifier()).getVirtualPathWithFileNameString("javascript/login.js"));
-		}
+		IWBundle bundle = getBundle(context, getBundleIdentifier());
+		
+		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, jQuery.getBundleURIToJQueryLib());
+		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, bundle.getVirtualPathWithFileNameString("javascript/login.js"));
+		IWResourceBundle iwrb = bundle.getResourceBundle(iwc);
+		String action = "LoginHelper.errorMessage = '" + iwrb.getLocalizedString("login.error_logging_in", "Error logging in: make sure user name and password are entered!") +
+			"'; LoginHelper.useSubmitLinks = " + useSubmitLinks;
+		if (CoreUtil.isSingleComponentRenderingProcess(iwc)) {
+			Layer script = new Layer();
+			add(script);
+			script.add(PresentationUtil.getJavaScriptAction(action));
+		} else
+			PresentationUtil.addJavaScriptActionToBody(iwc, action);
 		
 		String cssFile = getBundle(context, getBundleIdentifier()).getVirtualPathWithFileNameString("style/login.css");
 		if (!PresentationUtil.addStyleSheetToHeader(iwc, cssFile)) {
@@ -223,12 +229,10 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 			add(cssContainer);
 		}
 
-        Map<Object, Object> beans = null;
-        try {
-            beans = WebApplicationContextUtils.getWebApplicationContext(iwc.getServletContext()).getBeansOfType(RemoteLoginService.class);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
+		Map<?, ?> remoteLogins = null;
+		try {
+			remoteLogins = WebApplicationContextUtils.getWebApplicationContext(iwc.getServletContext()).getBeansOfType(RemoteLoginService.class);
+		} catch(Exception e) {}
 		
 		if (iwc.isLoggedOn()) {
 			User currentUser = iwc.getCurrentUser();
@@ -237,26 +241,26 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 			if (loginInfo.getAllowedToChange() && loginInfo.getChangeNextTime() && !iwc.isSuperAdmin()) {
 				addLoginScriptsAndStyles(context);
 			}
-          
-            add(getLoggedInPart(iwc, bean));
-		}
-		else {
+			
+			add(getLoggedInPart(iwc, bean));
+		} else {
 			LoginState state = LoginBusinessBean.internalGetState(iwc);
 			if (state.equals(LoginState.LoggedOut) || state.equals(LoginState.NoState)) {
 				add(getLoggedOutPart(context, bean));
-			}
-			else {
+			} else {
 				UIComponent loginFailedPart = getLoginFailedPart(context, bean, getLoginFailedByState(context, state));
 
 				// TODO: what about wml, see Login block
 				add(loginFailedPart);
 			}
 			
-			for (Object o : beans.values()){
-                if (o instanceof RemoteLoginService) {
-                    add(((RemoteLoginService) o).getUIComponentForLogin(context));
-                }
-            }
+			if (remoteLogins != null) {
+				for (Object remoteLogin: remoteLogins.values()) {
+					if (remoteLogin instanceof RemoteLoginService) {
+						add(((RemoteLoginService) remoteLogin).getUIComponentForLogin(context));
+					}
+				}
+			}
 		}
 	}
 	
@@ -288,13 +292,13 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		IWContext iwc = IWContext.getIWContext(context);
 		IWBundle iwb = getBundle(context, getBundleIdentifier());
 		
-		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, getJQuery().getBundleURIToJQueryLib());
-		PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, getWeb2Business().getBundleURIsToFancyBoxScriptFiles());
+		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, jQuery.getBundleURIToJQueryLib());
+		PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, web2.getBundleURIsToFancyBoxScriptFiles());
 		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, CoreConstants.DWR_ENGINE_SCRIPT);
 		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, USER_BUSINESS_DWR_SCRIPT);
 		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, iwb.getVirtualPathWithFileNameString(LOGIN_SCRIPT));
 		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, iwb.getVirtualPathWithFileNameString("javascript/UserPasswordChanger.js"));
-		PresentationUtil.addStyleSheetToHeader(iwc, getWeb2Business().getBundleURIToFancyBoxStyleFile());
+		PresentationUtil.addStyleSheetToHeader(iwc, web2.getBundleURIToFancyBoxStyleFile());
 	}
 	
 	/*
@@ -450,21 +454,6 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		return iwc.getLocale().getLanguage();
 	}
 
-	private Web2Business getWeb2Business() {
-		if (web2Business == null) {
-			ELUtil.getInstance().autowire(this);
-		}
-		
-		return web2Business;
-	}
-
-	private JQuery getJQuery() {
-		if (jQuery == null) {
-			ELUtil.getInstance().autowire(this);
-		}
-		
-		return jQuery;
-	}
 	@Deprecated
 	public void setShowLabelInInput(boolean showLabelInInput) {
 		/* Should be handled with custom facelet... */
