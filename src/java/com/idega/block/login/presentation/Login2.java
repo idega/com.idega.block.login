@@ -22,8 +22,10 @@ import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.idega.block.login.bean.LoginBean;
+import com.idega.block.login.remote.RemoteLoginService;
 import com.idega.block.web2.business.JQuery;
 import com.idega.block.web2.business.Web2Business;
 import com.idega.builder.bean.AdvancedProperty;
@@ -221,6 +223,13 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 			add(cssContainer);
 		}
 
+        Map<Object, Object> beans = null;
+        try {
+            beans = WebApplicationContextUtils.getWebApplicationContext(iwc.getServletContext()).getBeansOfType(RemoteLoginService.class);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+		
 		if (iwc.isLoggedOn()) {
 			User currentUser = iwc.getCurrentUser();
 			LoginInfo loginInfo = LoginDBHandler.getLoginInfo((LoginDBHandler.getUserLogin(currentUser)));
@@ -228,8 +237,8 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 			if (loginInfo.getAllowedToChange() && loginInfo.getChangeNextTime() && !iwc.isSuperAdmin()) {
 				addLoginScriptsAndStyles(context);
 			}
-			
-			add(getLoggedInPart(iwc, bean));
+          
+            add(getLoggedInPart(iwc, bean));
 		}
 		else {
 			LoginState state = LoginBusinessBean.internalGetState(iwc);
@@ -242,6 +251,12 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 				// TODO: what about wml, see Login block
 				add(loginFailedPart);
 			}
+			
+			for (Object o : beans.values()){
+                if (o instanceof RemoteLoginService) {
+                    add(((RemoteLoginService) o).getUIComponentForLogin(context));
+                }
+            }
 		}
 	}
 	
