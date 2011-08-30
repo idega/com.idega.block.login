@@ -6,7 +6,7 @@
 >
 <ui:component>
 	<div class="#{loginBean.styleClass} loggedOut loginForm">
-		<form class="loginForm" action="#{loginBean.action}" method="post">
+		<form class="loginForm" action="#{loginBean.action}" method="post" onsubmit="return false;">
 			<div class="username">
 				<label for="username">
 					<h:outputText value="#{localizedStrings['com.idega.block.login']['user']}" />
@@ -26,10 +26,10 @@
 				</label>
 			</t:div>
 			<t:div styleClass="submit #{loginBean.localeStyle}" rendered="#{!loginBean.useSubmitLinks}">
-				<input type="submit" value="#{localizedStrings['com.idega.block.login']['login_text']}" />
+				<input type="submit" value="#{localizedStrings['com.idega.block.login']['login_text']}" onclick="LoginHelper.logIn();" />
 			</t:div>
 			<t:div styleClass="submit #{loginBean.localeStyle}" rendered="#{loginBean.useSubmitLinks}">
-				<a href="#" class="loginButton">
+				<a href="#" class="loginButton" onclick="LoginHelper.logIn();">
 					<span><t:outputText value="#{localizedStrings['com.idega.block.login']['login_text']}" /></span>
 				</a>
 			</t:div>
