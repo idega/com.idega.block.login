@@ -4,7 +4,7 @@ LoginHelper.useSubmitLinks = false;
 LoginHelper.errorMessage = 'Error logging in: make sure user name and password are entered!';
 LoginHelper.loggingMessage = 'Logging in...';
 
-//	Provide an object like: {url: 'linkToTheServer', userNameParam: 'userName', passwordParam: 'password'}
+//	Provide an object like: {initUrl: 'optional', url: 'linkToTheServer', userNameParam: 'userName', passwordParam: 'password'}
 LoginHelper.remoteLogins = null;
 
 jQuery(window).load(function() {
@@ -16,13 +16,16 @@ jQuery(window).load(function() {
 			return true;
 		}
 	});
-		
-	if (LoginHelper.useSubmitLinks) {		
-		jQuery("form.loginForm a").click(function() {
-			LoginHelper.logIn();
-			return false;
-		});
-	}
+	
+	jQuery("input[type='submit']", jQuery('form.loginForm')).click(function() {
+		LoginHelper.logIn();
+		return false;
+	});
+	
+	jQuery("a.loginButton").click(function() {
+		LoginHelper.logIn();
+		return false;
+	});
 });
 
 LoginHelper.logIn = function() {
@@ -48,11 +51,13 @@ LoginHelper.doRemoteLogins = function() {
 	
 	var userName = jQuery('#username').attr('value');
 	if (userName == null || userName == '') {
+		closeAllLoadingMessages();
 		alert(LoginHelper.errorMessage);
 		return false;
 	}
 	var password = jQuery('#password').attr('value');
 	if (password == null || password == '') {
+		closeAllLoadingMessages();
 		alert(LoginHelper.errorMessage);
 		return false;
 	}
@@ -60,6 +65,15 @@ LoginHelper.doRemoteLogins = function() {
 	var loginObject = LoginHelper.remoteLogins[0];
 	removeElementFromArray(LoginHelper.remoteLogins, loginObject);
 	
+	if (loginObject.initUrl != null) {
+		jQuery(document.body).append('<iframe onload="window.parent.LoginHelper.doRemoteLogin({url: \'' + loginObject.url + '\', userNameParam: \'' + loginObject.userNameParam +
+			'\', passwordParam: \'' + loginObject.passwordParam + '\'}, \'' + userName + '\', \'' +	password + '\');" style="display: none;" src="' + loginObject.initUrl + '" />');
+	} else {
+		LoginHelper.doRemoteLogin(loginObject, userName, password);
+	}
+}
+
+LoginHelper.doRemoteLogin = function(loginObject, userName, password) {
 	var url = loginObject.url;
 	var firstParam = '&';
 	if (url.indexOf('?') == -1)
