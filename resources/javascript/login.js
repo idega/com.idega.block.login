@@ -38,34 +38,54 @@ LoginHelper.logIn = function() {
 	return false;
 }
 
+LoginHelper.remoteLoginInAction = false;
+
 LoginHelper.doRemoteLogins = function() {
-	for (var i = 0; i < LoginHelper.remoteLogins.length; i++) {
-		var userName = jQuery('#username').attr('value');
-		if (userName == null || userName == '') {
-			alert(LoginHelper.errorMessage);
-			return false;
-		}
-		var password = jQuery('#password').attr('value');
-		if (password == null || password == '') {
-			alert(LoginHelper.errorMessage);
-			return false;
-		}
-		
-		var loginObject = LoginHelper.remoteLogins[i];
-		removeElementFromArray(LoginHelper.remoteLogins, loginObject);
-		
-		var url = loginObject.url;
-		var firstParam = '&';
-		if (url.indexOf('?') == -1)
-			firstParam = '?';
-		url += firstParam + loginObject.userNameParam + '=' + userName + '&' + loginObject.passwordParam + '=' + password;
-		var onLoadAction = 'window.parent.' + (LoginHelper.remoteLogins == null || LoginHelper.remoteLogins.length == 0 ?
-			'LoginHelper.continueLoggingIn()' : 'LoginHelper.doRemoteLogins()') + ';';
+	LoginHelper.remoteLoginInAction = false;
+	
+	if (LoginHelper.remoteLogins == null || LoginHelper.remoteLogins.length == 0)
+		LoginHelper.continueLoggingIn();
+	
+	var userName = jQuery('#username').attr('value');
+	if (userName == null || userName == '') {
+		alert(LoginHelper.errorMessage);
+		return false;
+	}
+	var password = jQuery('#password').attr('value');
+	if (password == null || password == '') {
+		alert(LoginHelper.errorMessage);
+		return false;
+	}
+	
+	var loginObject = LoginHelper.remoteLogins[0];
+	removeElementFromArray(LoginHelper.remoteLogins, loginObject);
+	
+	var url = loginObject.url;
+	var firstParam = '&';
+	if (url.indexOf('?') == -1)
+		firstParam = '?';
+	url += firstParam + loginObject.userNameParam + '=' + userName + '&' + loginObject.passwordParam + '=' + password;
+	var onLoadAction = 'window.parent.' + (LoginHelper.remoteLogins == null || LoginHelper.remoteLogins.length == 0 ?
+		'LoginHelper.continueLoggingIn()' : 'LoginHelper.doRemoteLogins()') + ';';
+	
+	try {
+		LoginHelper.remoteLoginInAction = true;
 		jQuery(document.body).append('<iframe onload="' + onLoadAction + '" style="display: none;" src="' + url + '"></iframe>');
+		
+		//	Timer that checks for the errors during remote login
+		window.setTimeout(function() {
+			if (LoginHelper.remoteLoginInAction) {
+				LoginHelper.doRemoteLogins();
+			}
+		}, 5000);
+	} catch (e) {
+		LoginHelper.doRemoteLogins();
 	}
 }
 
 LoginHelper.continueLoggingIn = function() {
+	LoginHelper.remoteLoginInAction = false;
 	LoginHelper.remoteLogins = null;
+	
 	LoginHelper.logIn();
 }
