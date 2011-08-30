@@ -213,7 +213,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, bundle.getVirtualPathWithFileNameString("javascript/login.js"));
 		IWResourceBundle iwrb = bundle.getResourceBundle(iwc);
 		String action = "LoginHelper.errorMessage = '" + iwrb.getLocalizedString("login.error_logging_in", "Error logging in: make sure user name and password are entered!") +
-			"'; LoginHelper.useSubmitLinks = " + useSubmitLinks;
+			"'; LoginHelper.loggingMessage = '" + iwrb.getLocalizedString("login.logging_in", "Logging in...") + "'; LoginHelper.useSubmitLinks = " + useSubmitLinks;
 		if (CoreUtil.isSingleComponentRenderingProcess(iwc)) {
 			Layer script = new Layer();
 			add(script);
