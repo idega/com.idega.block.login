@@ -29,7 +29,10 @@ jQuery(window).load(function() {
 });
 
 LoginHelper.logIn = function() {
-	if (LoginHelper.remoteLogins == null || LoginHelper.remoteLogins.length == 0) {
+	if (jQuery('div.loggedIn').length > 0)
+		LoginHelper.remoteLogins = null;
+	
+	if (jQuery('div.loginFailed').length > 0 || LoginHelper.remoteLogins == null || LoginHelper.remoteLogins.length == 0) {
 		var form = jQuery("form.loginForm");
 		form.removeAttr('onsubmit');
 		form.submit();
