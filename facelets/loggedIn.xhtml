@@ -6,6 +6,10 @@
 >
 <ui:component>
 	<div class="#{loginBean.styleClass} loggedIn loginForm">
+		<ui:fragment rendered="#{not empty loginBean.passwordChangerURL}">
+			<a href="#{loginBean.passwordChangerURL}" class="passwordChanger"></a>
+		</ui:fragment>
+		
 		<form class="loginForm" action="#{loginBean.action}" method="post">
 			<p class="currentUser"><h:outputText value="#{loginBean.output}"/></p>
 			<t:div styleClass="submit #{loginBean.localeStyle}" rendered="#{!loginBean.useSubmitLinks}">

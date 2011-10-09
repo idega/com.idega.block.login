@@ -6,7 +6,7 @@
 >
 <ui:component>
 	<div class="#{loginBean.styleClass} loggedOut loginForm">
-		<form class="loginForm" action="#{loginBean.action}" method="post">
+		<form class="loginForm" action="#{loginBean.action}" method="post" onsubmit="return false;">
 			<div class="username">
 				<label for="username">
 					<h:outputText value="#{localizedStrings['com.idega.block.login']['user']}" />

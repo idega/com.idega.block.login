@@ -37,6 +37,8 @@ public class LoginBean {
 	private Collection<LoggedInUser> loggedIn;
 	private boolean showPersonalID = false;
 	private boolean showLogin = false;
+	
+	private String passwordChangerURL;
 
 	/**
 	 * @return the useSubmitLinks
@@ -252,5 +254,13 @@ public class LoginBean {
 
 	public void setShowLogin(boolean showLogin) {
 		this.showLogin = showLogin;
+	}
+
+	public String getPasswordChangerURL() {
+		return passwordChangerURL;
+	}
+
+	public void setPasswordChangerURL(String passwordChangerURL) {
+		this.passwordChangerURL = passwordChangerURL;
 	}
 }

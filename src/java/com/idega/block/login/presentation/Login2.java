@@ -12,7 +12,6 @@ package com.idega.block.login.presentation;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -22,14 +21,23 @@ import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
 import com.idega.block.login.bean.LoginBean;
+import com.idega.block.login.remote.RemoteLoginService;
+import com.idega.block.web2.business.JQuery;
 import com.idega.block.web2.business.Web2Business;
+import com.idega.builder.bean.AdvancedProperty;
+import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.business.LoginState;
 import com.idega.core.accesscontrol.data.LoginInfo;
+import com.idega.core.builder.business.BuilderService;
+import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.facelets.ui.FaceletComponent;
-import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWBaseComponent;
 import com.idega.presentation.IWContext;
@@ -37,6 +45,7 @@ import com.idega.presentation.Layer;
 import com.idega.servlet.filter.IWAuthenticator;
 import com.idega.user.data.User;
 import com.idega.util.CoreConstants;
+import com.idega.util.CoreUtil;
 import com.idega.util.PresentationUtil;
 import com.idega.util.expression.ELUtil;
 
@@ -66,6 +75,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	private boolean sendToHttps = false;
 	private String urlToRedirectToOnLogon = null;
 	private String urlToRedirectToOnLogoff = null;
+	private String urlToRedirectToOnLogonFailed = null;
 	private Map<String, String> extraLogonParameters = new HashMap<String, String>();
 	private Map<String, String> extraLogoffParameters = new HashMap<String, String>();
 	private boolean allowCookieLogin = false;
@@ -79,17 +89,32 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	public static final String LOGIN_SCRIPT = "javascript/LoginHelper.js";
 	public static final String USER_BUSINESS_DWR_SCRIPT = "/dwr/interface/UserBusiness.js";
 
+	@Autowired
+	private Web2Business web2;
+	
+	@Autowired
+	private JQuery jQuery;
+	
 	/**
 	 * 
 	 */
 	public Login2() {
 		setStyleClass(STYLE_CLASS_MAIN_DEFAULT);
 		setTransient(false);
+		
+		ELUtil.getInstance().autowire(this);
 	}
 
 	protected UIComponent getLoggedInPart(FacesContext context, LoginBean bean) {
 		IWContext iwc = IWContext.getIWContext(context);
 		
+		try {
+			BuilderService service = BuilderServiceFactory.getBuilderService(iwc);
+			bean.setPasswordChangerURL(service.getUriToObject(UserPasswordChanger.class, new ArrayList<AdvancedProperty>()));
+		} catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+
 		bean.addParameter(LoginBusinessBean.LoginStateParameter, LoginBusinessBean.LOGIN_EVENT_LOGOFF);
 		bean.setOutput(iwc.getCurrentUser().getName());
 		if (getURLToRedirectToOnLogoff() != null) {
@@ -109,18 +134,28 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	protected UIComponent getLoggedOutPart(FacesContext context, LoginBean bean) {
 		IWContext iwc = IWContext.getIWContext(context);
 		
+		boolean hiddenParamAdded = false;
 		bean.setAllowCookieLogin(allowCookieLogin);
 		bean.setAction(iwc.getRequestURI(sendToHttps));
 		bean.addParameter(LoginBusinessBean.LoginStateParameter, LoginBusinessBean.LOGIN_EVENT_LOGIN);
 		if (this.redirectUserToPrimaryGroupHomePage) {
 			bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_USER_TO_PRIMARY_GROUP_HOME_PAGE, Boolean.TRUE.toString());
-		}
-		else if (getURLToRedirectToOnLogon() != null) {
+		} else if (getURLToRedirectToOnLogon() != null) {
 			bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON, getURLToRedirectToOnLogon());
-		}
-		else if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON)) {
+		} else if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON)) {
 			bean.addParametersFromRequestToHiddenParameters(iwc.getRequest());
+			hiddenParamAdded = true;
 		}
+		
+		//Redirect if login fails
+		if (getURLToRedirectToOnLogonFailed() != null) {
+			bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON_FAILED, getURLToRedirectToOnLogonFailed());
+		} else if (!hiddenParamAdded && iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON_FAILED)) {
+			bean.addParametersFromRequestToHiddenParameters(iwc.getRequest());
+			hiddenParamAdded = true;
+		}
+		
+		
 		for (Entry<String, String> entry : extraLogonParameters.entrySet()) {
 			bean.addParameter(entry.getKey(), entry.getValue());
 		}
@@ -134,12 +169,15 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	protected UIComponent getLoginFailedPart(FacesContext context, LoginBean bean, String message) {
 		IWContext iwc = IWContext.getIWContext(context);
 		
-		if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON)) {
+		if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON) || iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON_FAILED)) {
 			bean.addParametersFromRequestToHiddenParameters(iwc.getRequest());
+		} else if (getURLToRedirectToOnLogonFailed() != null) {
+			bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON_FAILED, getURLToRedirectToOnLogonFailed());
 		}
+		
 		bean.addParameter(LoginBusinessBean.LoginStateParameter, LoginBusinessBean.LOGIN_EVENT_TRYAGAIN);
 		bean.setOutput(message);
-
+	
 		FaceletComponent facelet = (FaceletComponent) iwc.getApplication().createComponent(FaceletComponent.COMPONENT_TYPE);
 		facelet.setFaceletURI(authenticationFailedFaceletPath);	
 		
@@ -169,11 +207,19 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		bean.setStyleClass(getStyleClass());
 		bean.setLocaleStyle(getCurrentLocaleLanguage(iwc));
 		
-		if (useSubmitLinks) {
-			Web2Business business = ELUtil.getInstance().getBean(Web2Business.class);
-			PresentationUtil.addJavaScriptSourceLineToHeader(iwc, business.getBundleURIToJQueryLib());
-			PresentationUtil.addJavaScriptSourceLineToHeader(iwc, getBundle(context, getBundleIdentifier()).getVirtualPathWithFileNameString("javascript/login.js"));
-		}
+		IWBundle bundle = getBundle(context, getBundleIdentifier());
+		
+		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, jQuery.getBundleURIToJQueryLib());
+		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, bundle.getVirtualPathWithFileNameString("javascript/login.js"));
+		IWResourceBundle iwrb = bundle.getResourceBundle(iwc);
+		String action = "LoginHelper.errorMessage = '" + iwrb.getLocalizedString("login.error_logging_in", "Error logging in: make sure user name and password are entered!") +
+			"'; LoginHelper.loggingMessage = '" + iwrb.getLocalizedString("login.logging_in", "Logging in...") + "'; LoginHelper.useSubmitLinks = " + useSubmitLinks;
+		if (CoreUtil.isSingleComponentRenderingProcess(iwc)) {
+			Layer script = new Layer();
+			add(script);
+			script.add(PresentationUtil.getJavaScriptAction(action));
+		} else
+			PresentationUtil.addJavaScriptActionToBody(iwc, action);
 		
 		String cssFile = getBundle(context, getBundleIdentifier()).getVirtualPathWithFileNameString("style/login.css");
 		if (!PresentationUtil.addStyleSheetToHeader(iwc, cssFile)) {
@@ -183,6 +229,11 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 			add(cssContainer);
 		}
 
+		Map<?, ?> remoteLogins = null;
+		try {
+			remoteLogins = WebApplicationContextUtils.getWebApplicationContext(iwc.getServletContext()).getBeansOfType(RemoteLoginService.class);
+		} catch(Exception e) {}
+		
 		if (iwc.isLoggedOn()) {
 			User currentUser = iwc.getCurrentUser();
 			LoginInfo loginInfo = LoginDBHandler.getLoginInfo((LoginDBHandler.getUserLogin(currentUser)));
@@ -192,17 +243,23 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 			}
 			
 			add(getLoggedInPart(iwc, bean));
-		}
-		else {
+		} else {
 			LoginState state = LoginBusinessBean.internalGetState(iwc);
 			if (state.equals(LoginState.LoggedOut) || state.equals(LoginState.NoState)) {
 				add(getLoggedOutPart(context, bean));
-			}
-			else {
+			} else {
 				UIComponent loginFailedPart = getLoginFailedPart(context, bean, getLoginFailedByState(context, state));
 
 				// TODO: what about wml, see Login block
 				add(loginFailedPart);
+			}
+			
+			if (remoteLogins != null) {
+				for (Object remoteLogin: remoteLogins.values()) {
+					if (remoteLogin instanceof RemoteLoginService) {
+						add(((RemoteLoginService) remoteLogin).getUIComponentForLogin(context));
+					}
+				}
 			}
 		}
 	}
@@ -233,30 +290,15 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	
 	private void addLoginScriptsAndStyles(FacesContext context) {
 		IWContext iwc = IWContext.getIWContext(context);
+		IWBundle iwb = getBundle(context, getBundleIdentifier());
 		
-		List<String> scripts = new ArrayList<String>();
-		List<String> css = new ArrayList<String>();
-		
-		Web2Business web2 = ELUtil.getInstance().getBean(Web2Business.class);
-		try {
-			scripts.add(web2.getBundleURIToMootoolsLib()); //Mootools
-			scripts.add(web2.getMoodalboxScriptFilePath(true));	//	MOOdalBox
-			scripts.add(CoreConstants.DWR_ENGINE_SCRIPT);
-			scripts.add(USER_BUSINESS_DWR_SCRIPT);
-			scripts.add(getBundle(context, getBundleIdentifier()).getVirtualPathWithFileNameString(LOGIN_SCRIPT));
-			css.add(web2.getMoodalboxStyleFilePath());
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		
-		StringBuffer changePassScript = new StringBuffer("changeUserPassword('")
-		.append(getUriToObject(UserPasswordChanger.class.getName()))
-		.append("');");
-
-		String action = PresentationUtil.getJavaScriptLinesLoadedLazily(scripts, changePassScript.toString());
-		PresentationUtil.addJavaScriptActionToBody(iwc, action);
-		
-		PresentationUtil.addStyleSheetsToHeader(iwc, css);
+		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, jQuery.getBundleURIToJQueryLib());
+		PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, web2.getBundleURIsToFancyBoxScriptFiles());
+		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, CoreConstants.DWR_ENGINE_SCRIPT);
+		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, USER_BUSINESS_DWR_SCRIPT);
+		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, iwb.getVirtualPathWithFileNameString(LOGIN_SCRIPT));
+		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, iwb.getVirtualPathWithFileNameString("javascript/UserPasswordChanger.js"));
+		PresentationUtil.addStyleSheetToHeader(iwc, web2.getBundleURIToFancyBoxStyleFile());
 	}
 	
 	/*
@@ -285,6 +327,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		this.styleClass = (String) value[12];
 		this.extraLogonParameters = (Map) value[13];
 		this.extraLogoffParameters = (Map) value[14];
+		this.urlToRedirectToOnLogonFailed = (String) value[15];
 		
 		IWContext iwc = IWContext.getIWContext(context);
 		LoginBean bean = getBeanInstance("loginBean");
@@ -306,6 +349,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		else {
 			LoginState loginState = LoginBusinessBean.internalGetState(iwc);
 			if (loginState.equals(LoginState.LoggedOut) || loginState.equals(LoginState.NoState)) {
+				boolean hiddenParamAdded = false;
 				bean.setAllowCookieLogin(allowCookieLogin);
 				bean.setAction(iwc.getRequestURI(sendToHttps));
 				bean.addParameter(LoginBusinessBean.LoginStateParameter, LoginBusinessBean.LOGIN_EVENT_LOGIN);
@@ -317,7 +361,17 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 				}
 				else if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON)) {
 					bean.addParametersFromRequestToHiddenParameters(iwc.getRequest());
+					hiddenParamAdded = true;
 				}
+				
+				//redirect if login fails
+				if (getURLToRedirectToOnLogonFailed() != null) {
+					bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON_FAILED, getURLToRedirectToOnLogonFailed());
+				} else if (!hiddenParamAdded && iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON_FAILED)) {
+					bean.addParametersFromRequestToHiddenParameters(iwc.getRequest());
+					hiddenParamAdded = true;
+				}				
+				
 				for (Entry<String, String> entry : extraLogonParameters.entrySet()) {
 					bean.addParameter(entry.getKey(), entry.getValue());
 				}
@@ -328,13 +382,16 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 				if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON)) {
 					bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON, iwc.getParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON));
 				}
+				if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON_FAILED)) {
+					bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON_FAILED, iwc.getParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON_FAILED));
+				}
 			}
 		}
 	}
 
 	@Override
 	public Object saveState(FacesContext context) {
-		Object[] state = new Object[15];
+		Object[] state = new Object[16];
 		state[0] = super.saveState(context);
 		state[1] = Boolean.valueOf(this.useSubmitLinks);
 		state[2] = Boolean.valueOf(this.generateContainingForm);
@@ -350,6 +407,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		state[12] = this.styleClass;
 		state[13] = this.extraLogonParameters;
 		state[14] = this.extraLogoffParameters;
+		state[15] = this.urlToRedirectToOnLogonFailed;
 		return state;
 	}
 
@@ -417,6 +475,15 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	public String getURLToRedirectToOnLogoff() {
 		return this.urlToRedirectToOnLogoff;
 	}
+	
+	public void setURLToRedirectToOnLogonFailed(String url) {
+		this.urlToRedirectToOnLogonFailed = url;
+	}
+
+	public String getURLToRedirectToOnLogonFailed() {
+		
+		return urlToRedirectToOnLogonFailed;
+	}
 
 	public void setExtraLogonParameter(String parameter, String value) {
 		this.extraLogonParameters.put(parameter, value);
@@ -456,15 +523,6 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	
 	public void setFocusOnLoad(boolean focusOnLoad) {
 		this.focusOnLoad = focusOnLoad;
-	}
-	
-	private String getUriToObject(String className) {
-		if (className == null) {
-			return null;
-		}
-		StringBuffer uri = new StringBuffer("/servlet/ObjectInstanciator?").append(IWMainApplication.classToInstanciateParameter);
-		uri.append("=").append(className);
-		return uri.toString();
 	}
 	
 	public void setStyleClass(String styleClass) {

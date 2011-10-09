@@ -1,15 +1,6 @@
-function changeUserPassword(link){
-	var width = Math.round(window.getWidth() * 0.3);
-	var height = Math.round(window.getHeight() * 0.25);
-
-	MOOdalBox.init({resizeDuration: 0, evalScripts: true, animateCaption: false, defContentsWidth: width, defContentsHeight: height});
-	
-	MOOdalBox.open(link, '', '');
-}
-
 function passwordChangeValidation(changeStatus, msgId, saveErrorMsg) {
 	if(changeStatus = 'success') {
-		MOOdalBox.close();
+		parent.jQuery.fancybox.close();
 	} else {
 		document.getElementById(msgId).innerHTML = saveErrorMsg;
 	}
