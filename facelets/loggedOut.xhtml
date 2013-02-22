@@ -26,7 +26,7 @@
 				</label>
 			</t:div>
 			<t:div styleClass="submit #{loginBean.localeStyle}" rendered="#{!loginBean.useSubmitLinks}">
-				<input type="submit" value="#{localizedStrings['com.idega.block.login']['login_text']}" />
+				<input type="submit" value="#{localizedStrings['com.idega.block.login']['login_text']}" class="#{loginBean.buttonStyleClass}"/>
 			</t:div>
 			<t:div styleClass="submit #{loginBean.localeStyle}" rendered="#{loginBean.useSubmitLinks}">
 				<a href="#" class="loginButton">

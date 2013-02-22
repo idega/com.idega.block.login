@@ -29,6 +29,7 @@ import com.idega.block.login.remote.RemoteLoginService;
 import com.idega.block.web2.business.JQuery;
 import com.idega.block.web2.business.Web2Business;
 import com.idega.builder.bean.AdvancedProperty;
+import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
@@ -36,6 +37,7 @@ import com.idega.core.accesscontrol.business.LoginState;
 import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
+import com.idega.core.builder.data.ICPage;
 import com.idega.facelets.ui.FaceletComponent;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -43,6 +45,7 @@ import com.idega.presentation.IWBaseComponent;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.servlet.filter.IWAuthenticator;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
@@ -72,6 +75,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	private boolean generateContainingForm = true;
 	private boolean useSingleLineLayout = false;
 	private boolean redirectUserToPrimaryGroupHomePage = false;
+	private boolean redirectLoggedInUserToPrimaryGroupHomePage = false;
 	private boolean sendToHttps = false;
 	private String urlToRedirectToOnLogon = null;
 	private String urlToRedirectToOnLogoff = null;
@@ -81,6 +85,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	private boolean allowCookieLogin = false;
 	private boolean focusOnLoad = false;
 	private String styleClass = "";
+	private String buttonStyleClass = "";
 
 	private String unAuthenticatedFaceletPath;
 	private String authenticatedFaceletPath;
@@ -185,7 +190,24 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 
 	@Override
 	public void initializeComponent(FacesContext context) {
+
 		IWContext iwc = IWContext.getIWContext(context);
+
+		if (redirectLoggedInUserToPrimaryGroupHomePage) {
+			if (iwc.isLoggedOn()) {
+				try {
+					BuilderService builderService = IBOLookup.getServiceInstance(iwc, BuilderService.class);
+					if (!builderService.isBuilderApplicationRunning(iwc)) {
+						UserBusiness business = IBOLookup.getServiceInstance(iwc, UserBusiness.class);
+						ICPage page = business.getHomePageForUser(iwc.getCurrentUser());
+						iwc.sendRedirect(CoreConstants.PAGES_URI_PREFIX + page.getDefaultPageURI());						
+					}
+				} catch (Exception e) {
+					throw new IBORuntimeException(e);
+				}
+			}
+		}
+		
 
 		if (unAuthenticatedFaceletPath == null) {
 			unAuthenticatedFaceletPath = getBundle(context, getBundleIdentifier()).getFaceletURI("loggedOut.xhtml");
@@ -200,6 +222,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		LoginBean bean = getBeanInstance("loginBean");
 		bean.setUseSubmitLinks(useSubmitLinks);
 		bean.setStyleClass(getStyleClass());
+		bean.setButtonStyleClass(getButtonStyleClass());
 		bean.setLocaleStyle(getCurrentLocaleLanguage(iwc));
 
 		IWBundle bundle = getBundle(context, getBundleIdentifier());
@@ -341,6 +364,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		LoginBean bean = getBeanInstance("loginBean");
 		bean.setUseSubmitLinks(useSubmitLinks);
 		bean.setStyleClass(getStyleClass());
+		bean.setButtonStyleClass(getButtonStyleClass());
 		bean.setLocaleStyle(getCurrentLocaleLanguage(iwc));
 
 		if (iwc.isLoggedOn()) {
@@ -441,6 +465,14 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 
 	public void setRedirectUserToPrimaryGroupHomePage(boolean redirectToHomePage) {
 		this.redirectUserToPrimaryGroupHomePage = redirectToHomePage;
+	}
+
+	public boolean isRedirectLoggedInUserToPrimaryGroupHomePage() {
+		return redirectLoggedInUserToPrimaryGroupHomePage;
+	}
+
+	public void setRedirectLoggedInUserToPrimaryGroupHomePage(boolean redirectLoggedInUserToPrimaryGroupHomePage) {
+		this.redirectLoggedInUserToPrimaryGroupHomePage = redirectLoggedInUserToPrimaryGroupHomePage;
 	}
 
 	public void setUseSingleLineLayout(boolean useSingleLineLayout) {
@@ -552,4 +584,13 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	public void setAuthenticationFailedFaceletPath(String pathToFacelet) {
 		this.authenticationFailedFaceletPath = pathToFacelet;
 	}
+
+	public String getButtonStyleClass() {
+		return buttonStyleClass;
+	}
+
+	public void setButtonStyleClass(String buttonStyleClass) {
+		this.buttonStyleClass = buttonStyleClass;
+	}
+	
 }

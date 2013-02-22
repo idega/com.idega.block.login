@@ -11,7 +11,7 @@
 		</ui:fragment>
 		
 		<t:div styleClass="submit #{loginBean.localeStyle}" rendered="#{!loginBean.useSubmitLinks}">
-			<input type="submit" value="#{localizedStrings['com.idega.block.login']['logout_text']}" />
+			<input type="submit" value="#{localizedStrings['com.idega.block.login']['logout_text']}" class="#{loginBean.buttonStyleClass}" />
 		</t:div>
 		<t:div styleClass="submit #{loginBean.localeStyle}" rendered="#{loginBean.useSubmitLinks}">
 			<a href="#" onclick="changeWindowLocationHrefAndCheckParameters('#{loginBean.uriByHiddenParameters}', false);">

@@ -13,7 +13,7 @@
 		<form class="loginForm" action="#{loginBean.action}" method="post">
 			<p class="currentUser"><h:outputText value="#{loginBean.output}"/></p>
 			<t:div styleClass="submit #{loginBean.localeStyle}" rendered="#{!loginBean.useSubmitLinks}">
-				<input type="submit" value="#{localizedStrings['com.idega.block.login']['logout_text']}" />
+				<input type="submit" value="#{localizedStrings['com.idega.block.login']['logout_text']}" class="#{loginBean.buttonStyleClass}" />
 			</t:div>
 			<t:div styleClass="submit #{loginBean.localeStyle}" rendered="#{loginBean.useSubmitLinks}">
 				<a href="#" onclick="changeWindowLocationHrefAndCheckParameters('#{loginBean.uriByHiddenParameters}', false);">

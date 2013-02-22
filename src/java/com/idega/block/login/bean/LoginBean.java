@@ -29,10 +29,12 @@ public class LoginBean {
 	private boolean generateContainingForm = true;
 	private boolean allowCookieLogin = false;
 	private String styleClass = null;
+	private String buttonStyleClass = null;
 	private String action = null;
 	private Map<String, String> parameters = new HashMap<String, String>();
 	private String defaultOutput;
 	private String localeStyle;
+	
 	
 	private Collection<LoggedInUser> loggedIn;
 	private boolean showPersonalID = false;
@@ -98,6 +100,14 @@ public class LoginBean {
 	 */
 	public void setStyleClass(String styleClass) {
 		this.styleClass = styleClass;
+	}
+
+	public String getButtonStyleClass() {
+		return buttonStyleClass;
+	}
+
+	public void setButtonStyleClass(String buttonStyleClass) {
+		this.buttonStyleClass = buttonStyleClass;
 	}
 
 	/**
