@@ -10,7 +10,7 @@
 			<p class="errorMessage"><h:outputText value="#{loginBean.output}"/></p>
 			<div class="submit #{loginBean.localeStyle}">
 				<f:verbatim rendered="#{!loginBean.useSubmitLinks}">
-					<input type="submit" value="#{localizedStrings['com.idega.block.login']['tryagain_text']}" />
+					<input type="submit" value="#{localizedStrings['com.idega.block.login']['tryagain_text']}" class="#{loginBean.buttonStyleClass}" />
 				</f:verbatim>
 				<t:htmlTag rendered="#{loginBean.useSubmitLinks}" value="a" styleClass="loginButton">
 					<span><t:outputText value="#{localizedStrings['com.idega.block.login']['tryagain_text']}" /></span>
