@@ -76,6 +76,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	private boolean useSingleLineLayout = false;
 	private boolean redirectUserToPrimaryGroupHomePage = false;
 	private boolean redirectLoggedInUserToPrimaryGroupHomePage = false;
+	private boolean redirectLoggedInUserToUrlToRedirectToOnLogon = false;
 	private boolean sendToHttps = false;
 	private String urlToRedirectToOnLogon = null;
 	private String urlToRedirectToOnLogoff = null;
@@ -193,6 +194,15 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 
 		IWContext iwc = IWContext.getIWContext(context);
 
+
+		if (redirectLoggedInUserToUrlToRedirectToOnLogon) {
+			if (iwc.isLoggedOn()) {
+				iwc.sendRedirect(getURLToRedirectToOnLogon());
+				return;
+			}
+		}
+
+
 		if (redirectLoggedInUserToPrimaryGroupHomePage) {
 			if (iwc.isLoggedOn()) {
 				try {
@@ -200,7 +210,8 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 					if (!builderService.isBuilderApplicationRunning(iwc)) {
 						UserBusiness business = IBOLookup.getServiceInstance(iwc, UserBusiness.class);
 						ICPage page = business.getHomePageForUser(iwc.getCurrentUser());
-						iwc.sendRedirect(CoreConstants.PAGES_URI_PREFIX + page.getDefaultPageURI());						
+						iwc.sendRedirect(CoreConstants.PAGES_URI_PREFIX + page.getDefaultPageURI());
+						return;
 					}
 				} catch (Exception e) {
 					throw new IBORuntimeException(e);
@@ -473,6 +484,15 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 
 	public void setRedirectLoggedInUserToPrimaryGroupHomePage(boolean redirectLoggedInUserToPrimaryGroupHomePage) {
 		this.redirectLoggedInUserToPrimaryGroupHomePage = redirectLoggedInUserToPrimaryGroupHomePage;
+	}
+	
+	public boolean isRedirectLoggedInUserToUrlToRedirectToOnLogon() {
+		return redirectLoggedInUserToUrlToRedirectToOnLogon;
+	}
+
+	public void setRedirectLoggedInUserToUrlToRedirectToOnLogon(
+			boolean redirectLoggedInUserToUrlToRedirectToOnLogon) {
+		this.redirectLoggedInUserToUrlToRedirectToOnLogon = redirectLoggedInUserToUrlToRedirectToOnLogon;
 	}
 
 	public void setUseSingleLineLayout(boolean useSingleLineLayout) {
