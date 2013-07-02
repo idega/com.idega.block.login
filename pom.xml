@@ -69,55 +69,5 @@
 			<groupId>com.idega.block.platform</groupId>
 			<artifactId>com.idega.faces</artifactId>
 		</dependency>
-		
-		<!-- OAuth 2.0 login client -->
-		<dependency>
-			<artifactId>org.apache.oltu.oauth2.common</artifactId>
-			<groupId>org.apache.oltu.oauth2</groupId>
-			<version>${oltu.oauth2.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.oltu.oauth2</groupId>
-			<artifactId>org.apache.oltu.oauth2.client</artifactId>
-			<version>${oltu.oauth2.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.oltu.oauth2</groupId>
-			<artifactId>org.apache.oltu.oauth2.jwt</artifactId>
-			<version>${oltu.oauth2.version}</version>
-		</dependency>
-
-		<!-- Restful services for Facebook -->
-		<dependency>
-			<groupId>com.restfb</groupId>
-			<artifactId>restfb</artifactId>
-			<version>1.6.12</version>
-		</dependency>
-		
-		<!-- Login services for Google -->
-		<dependency>
-			<groupId>com.google.http-client</groupId>
-			<artifactId>google-http-client-jackson2</artifactId>
-			<version>1.15.0-rc</version>
-		</dependency>
-		<!-- <dependency>
-			<groupId>com.google.oauth-client</groupId>
-			<artifactId>google-oauth-client-jetty</artifactId>
-			<version>1.15.0-rc</version>
-		</dependency> -->
-		<dependency>
-			<groupId>com.google.apis</groupId>
-			<artifactId>google-api-services-oauth2</artifactId>
-			<version>v2-rev39-1.15.0-rc</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.oauth-client</groupId>
-			<artifactId>google-oauth-client-servlet</artifactId>
-			<version>1.15.0-rc</version>
-		</dependency>
 	</dependencies>
-
-	<properties>
-		<oltu.oauth2.version>1.0.0-SNAPSHOT</oltu.oauth2.version>
-	</properties>
 </project>
