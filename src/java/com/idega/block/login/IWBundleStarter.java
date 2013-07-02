@@ -11,6 +11,8 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
 
 public class IWBundleStarter implements IWBundleStartable {
+	
+	public static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.login";
 
 	public void start(IWBundle iwb) {
 		try {
