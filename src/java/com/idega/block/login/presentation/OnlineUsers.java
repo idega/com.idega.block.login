@@ -22,17 +22,17 @@ import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 
 public class OnlineUsers extends IWBaseComponent {
-	
+
 	public static final String COMPONENT_TYPE = "com.idega.OnlineUsers";
 
 	public static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.login";
 
 	private String faceletPath = null;
 	private String styleClass = "onlineUsers";
-	
+
 	private boolean showPersonalID = false;
 	private boolean showLoginName = false;
-	
+
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
@@ -41,7 +41,7 @@ public class OnlineUsers extends IWBaseComponent {
 	public void restoreState(FacesContext ctx, Object state) {
 		Object values[] = (Object[]) state;
 		super.restoreState(ctx, values[0]);
-		
+
 		this.faceletPath = (String) values[1];
 		this.styleClass = (String) values[2];
 		this.showPersonalID = ((Boolean) values[3]).booleanValue();
@@ -56,7 +56,7 @@ public class OnlineUsers extends IWBaseComponent {
 		values[2] = this.styleClass;
 		values[3] = Boolean.valueOf(this.showPersonalID);
 		values[4] = Boolean.valueOf(this.showLoginName);
-		
+
 		return values;
 	}
 
@@ -74,28 +74,31 @@ public class OnlineUsers extends IWBaseComponent {
 		bean.setShowPersonalID(isShowPersonalID());
 
 		Collection<LoggedInUser> users = new ArrayList<LoggedInUser>();
-		Collection<LoggedOnInfo> loginInfo = LoginBusinessBean.getLoggedOnInfoCollection(iwc);
-		
-		Iterator<LoggedOnInfo> it = loginInfo.iterator();
-		while (it.hasNext()) {
-			LoggedOnInfo info = it.next();
-			User user = info.getUser();
-			
-			LoggedInUser loggedInUser = new LoggedInUser();
-			loggedInUser.setName(new Name(user.getFirstName(), user.getMiddleName(), user.getLastName()).getName(iwc.getCurrentLocale()));
-			loggedInUser.setPersonalID(user.getPersonalID() != null ? PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale()) : "-");
-			loggedInUser.setLogin(info.getLogin());
-			
-			users.add(loggedInUser);
+		Collection<Object> loginInfo = LoginBusinessBean.getLoggedOnInfoCollection(iwc);
+		if (loginInfo != null) {
+			for (Iterator<Object> it = loginInfo.iterator(); it.hasNext();) {
+				Object o = it.next();
+				if (o instanceof LoggedOnInfo) {
+					LoggedOnInfo info = (LoggedOnInfo) o;
+					User user = info.getUser();
+
+					LoggedInUser loggedInUser = new LoggedInUser();
+					loggedInUser.setName(new Name(user.getFirstName(), user.getMiddleName(), user.getLastName()).getName(iwc.getCurrentLocale()));
+					loggedInUser.setPersonalID(user.getPersonalID() != null ? PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale()) : "-");
+					loggedInUser.setLogin(info.getLogin());
+
+					users.add(loggedInUser);
+				}
+			}
 		}
-		
+
 		bean.setLoggedIn(users);
-		
+
 		FaceletComponent facelet = (FaceletComponent) iwc.getApplication().createComponent(FaceletComponent.COMPONENT_TYPE);
 		facelet.setFaceletURI(getFaceletPath());
 		add(facelet);
-	}	
-	
+	}
+
 	private String getFaceletPath() {
 		return faceletPath;
 	}
