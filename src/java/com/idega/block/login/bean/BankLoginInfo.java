@@ -8,7 +8,7 @@ public class BankLoginInfo implements Serializable {
 
 	private boolean success;
 
-	private String orderRef;
+	private String orderRef, status;
 
 	public BankLoginInfo() {
 		super();
@@ -20,10 +20,11 @@ public class BankLoginInfo implements Serializable {
 		this.success = success;
 	}
 
-	public BankLoginInfo(boolean success, String orderRef) {
+	public BankLoginInfo(boolean success, String orderRef, String status) {
 		this(success);
 
 		this.orderRef = orderRef;
+		this.status = status;
 	}
 
 	public boolean isSuccess() {
@@ -40,6 +41,19 @@ public class BankLoginInfo implements Serializable {
 
 	public void setOrderRef(String orderRef) {
 		this.orderRef = orderRef;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	@Override
+	public String toString() {
+		return "Success: " + isSuccess() + ", status: " + getStatus() + ", order ref.: " + getOrderRef();
 	}
 
 }
