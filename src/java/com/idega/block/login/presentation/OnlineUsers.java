@@ -75,19 +75,20 @@ public class OnlineUsers extends IWBaseComponent {
 
 		Collection<LoggedInUser> users = new ArrayList<LoggedInUser>();
 		Collection<Object> loginInfo = LoginBusinessBean.getLoggedOnInfoCollection(iwc);
+		if (loginInfo != null) {
+			for (Iterator<Object> it = loginInfo.iterator(); it.hasNext();) {
+				Object o = it.next();
+				if (o instanceof LoggedOnInfo) {
+					LoggedOnInfo info = (LoggedOnInfo) o;
+					User user = info.getUser();
 
-		for (Iterator<Object> it = loginInfo.iterator(); it.hasNext();) {
-			Object o = it.next();
-			if (o instanceof LoggedOnInfo) {
-				LoggedOnInfo info = (LoggedOnInfo) o;
-				User user = info.getUser();
+					LoggedInUser loggedInUser = new LoggedInUser();
+					loggedInUser.setName(new Name(user.getFirstName(), user.getMiddleName(), user.getLastName()).getName(iwc.getCurrentLocale()));
+					loggedInUser.setPersonalID(user.getPersonalID() != null ? PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale()) : "-");
+					loggedInUser.setLogin(info.getLogin());
 
-				LoggedInUser loggedInUser = new LoggedInUser();
-				loggedInUser.setName(new Name(user.getFirstName(), user.getMiddleName(), user.getLastName()).getName(iwc.getCurrentLocale()));
-				loggedInUser.setPersonalID(user.getPersonalID() != null ? PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale()) : "-");
-				loggedInUser.setLogin(info.getLogin());
-
-				users.add(loggedInUser);
+					users.add(loggedInUser);
+				}
 			}
 		}
 

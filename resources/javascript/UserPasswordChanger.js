@@ -5,5 +5,5 @@ jQuery(document).ready(function() {
 		jQuery(this).attr('data-fancybox-type', 'ajax');
 	});
 	
-	jQuery('a.passwordChanger').fancybox().trigger('click');
+	jQuery('a.passwordChanger').fancybox({type: 'ajax'}).trigger('click');
 });

@@ -2,6 +2,10 @@
 /.project
 target
 .settings
+<<<<<<< HEAD
 .settings
 .classpath
 .project
+=======
+/bin
+>>>>>>> adb9535e571b7dc7db18e38adc98bc8ce9ccb23c
