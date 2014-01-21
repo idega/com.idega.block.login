@@ -64,4 +64,28 @@ version="1.2">
 		<component-type>com.idega.Register</component-type>
 		<component-class>com.idega.block.login.presentation.Register</component-class>
 	</component>
+
+	<component>
+		<component-class>com.idega.block.login.presentation.PasswordTokenCreator</component-class>
+		<component-type>Link creator for password reset</component-type>
+		<description>Creates a token as parameter for password reset component with expiration date in data source. Searches users by email, personal id or nickname. All users found by these criteria receives email with link, suggesting to change password. If link not visited, it will expire and password will be unchanged.</description>
+		<component-extension>
+			<idegaweb-info>
+        		<builder-visible>true</builder-visible>
+        		<object-type>jsf.uicomponent</object-type>
+      		</idegaweb-info>
+		</component-extension>
+	</component>
+
+	<managed-bean>
+		<managed-bean-name>passwordTokenBean</managed-bean-name>
+		<managed-bean-class>com.idega.block.login.presentation.beans.PasswordTokenBean</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+	</managed-bean>
+
+	<managed-bean>
+		<managed-bean-name>passwordChangerBean</managed-bean-name>
+		<managed-bean-class>com.idega.block.login.presentation.beans.PasswordChangerBean</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+	</managed-bean>
 </faces-config>
