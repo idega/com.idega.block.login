@@ -82,6 +82,9 @@
  */
 package com.idega.block.login.presentation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
@@ -89,10 +92,13 @@ import org.hsqldb.lib.StringUtil;
 
 import com.idega.block.login.IWBundleStarter;
 import com.idega.block.login.data.PasswordTokenEntity;
+import com.idega.block.web2.business.JQuery;
 import com.idega.facelets.ui.FaceletComponent;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWBaseComponent;
 import com.idega.presentation.IWContext;
+import com.idega.util.PresentationUtil;
+import com.idega.util.expression.ELUtil;
 
 /**
  * <p>JSF UI component for {@link PasswordTokenEntity} creation.</p>
@@ -135,6 +141,15 @@ public class PasswordTokenCreator extends IWBaseComponent {
 		if (facelet instanceof FaceletComponent) {
 			((FaceletComponent) facelet).setFaceletURI(faceletURI);
 		}
+		
+		List<String> files = new ArrayList<String>();
+		JQuery jQuery = ELUtil.getInstance().getBean(JQuery.BEAN_NAME);
+		files.add(jQuery.getBundleURIToJQueryLib());
+		files.addAll(jQuery.getBundleURISToValidation());
+		files.add(bundle.getVirtualPathWithFileNameString("javascript/passwordChangerHelper.js"));
+		PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, files);
+		
+		PresentationUtil.addStyleSheetToHeader(iwc, bundle.getVirtualPathWithFileNameString("style/passwordTokenCreator.css"));
 
 		add(facelet);
 	}
