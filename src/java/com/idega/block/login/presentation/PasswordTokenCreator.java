@@ -141,17 +141,18 @@ public class PasswordTokenCreator extends IWBaseComponent {
 		if (facelet instanceof FaceletComponent) {
 			((FaceletComponent) facelet).setFaceletURI(faceletURI);
 		}
+		add(facelet);
 		
 		List<String> files = new ArrayList<String>();
 		JQuery jQuery = ELUtil.getInstance().getBean(JQuery.BEAN_NAME);
 		files.add(jQuery.getBundleURIToJQueryLib());
 		files.addAll(jQuery.getBundleURISToValidation());
 		files.add(bundle.getVirtualPathWithFileNameString("javascript/passwordChangerHelper.js"));
+		files.add(bundle.getVirtualPathWithFileNameString("javascript/passwordTokenCreatorHelper.js"));
 		PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, files);
 		
 		PresentationUtil.addStyleSheetToHeader(iwc, bundle.getVirtualPathWithFileNameString("style/passwordTokenCreator.css"));
 
-		add(facelet);
 	}
 
 	protected String getToken(IWContext iwc) {
