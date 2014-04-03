@@ -82,12 +82,22 @@
  */
 package com.idega.block.login.presentation.beans;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.hsqldb.lib.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.idega.block.login.business.PasswordTokenBusiness;
 import com.idega.block.login.presentation.PasswordTokenCreator;
+import com.idega.business.IBOLookup;
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
+import com.idega.core.builder.data.ICPage;
 import com.idega.presentation.IWContext;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.dao.UserDAO;
+import com.idega.user.data.User;
+import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
 import com.idega.util.expression.ELUtil;
 
@@ -110,6 +120,8 @@ public class PasswordChangerBean {
 	private String token = null;
 
 	private Boolean changed = null;
+	
+	private boolean redirectToHomepage;
 
 	public String getNewPassword() {
 		return newPassword;
@@ -164,16 +176,43 @@ public class PasswordChangerBean {
 		this.changed = changed;
 	}
 
+	@SuppressWarnings("deprecation")
 	public void submit() {
-		boolean changed = Boolean.FALSE;
-		if (getNewPassword().equals(getRetypedPassword())) {
-			changed = getPasswordTokenBusiness().completePasswordReset(
-					getToken(), getNewPassword());
+		if (!getNewPassword().equals(getRetypedPassword())) {
+			setChanged(Boolean.FALSE);
+			return;
 		}
-
+		User user = getPasswordTokenBusiness().completePasswordReset(
+				getToken(), getNewPassword());
+		boolean changed = user != null;
 		setChanged(changed);
+		if(changed && redirectToHomepage){
+			try {
+				UserDAO userDAO = ELUtil.getInstance().getBean("userDAO");
+				com.idega.user.data.bean.User usr = userDAO.getUser(Integer.valueOf(user.getId()));
+				LoginBusinessBean loginBean = LoginBusinessBean.getLoginBusinessBean(iwc);
+				loginBean.logInUser(iwc, usr);
+				UserBusiness userBusiness = IBOLookup.getServiceInstance(iwc, UserBusiness.class);
+				
+				String url;
+				try{
+					ICPage page = userBusiness.getHomePageForUser(user);
+					url = CoreConstants.PAGES_URI_PREFIX + page.getDefaultPageURI();
+				}catch (Exception e) {
+					url = "/pages/";
+				}
+				getIWContext().getExternalContext().redirect(url);
+			} catch (Exception e) {
+				getLogger().log(Level.WARNING, "Failed redirecting user to homepage", e);
+			}
+			return;
+		}
 	}
 
+	private Logger getLogger(){
+		return Logger.getLogger(PasswordChangerBean.class.getName());
+	}
+	
 	private IWContext iwc = null;
 
 	protected IWContext getIWContext() {
@@ -193,5 +232,13 @@ public class PasswordChangerBean {
 		}
 
 		return this.passwordTokenBusiness;
+	}
+
+	public boolean isRedirectToHomepage() {
+		return redirectToHomepage;
+	}
+
+	public void setRedirectToHomepage(boolean redirectToHomepage) {
+		this.redirectToHomepage = redirectToHomepage;
 	}
 }

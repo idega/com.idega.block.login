@@ -82,6 +82,7 @@
  */
 package com.idega.block.login.presentation;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,6 +93,7 @@ import org.hsqldb.lib.StringUtil;
 
 import com.idega.block.login.IWBundleStarter;
 import com.idega.block.login.data.PasswordTokenEntity;
+import com.idega.block.login.presentation.beans.PasswordChangerBean;
 import com.idega.block.web2.business.JQuery;
 import com.idega.facelets.ui.FaceletComponent;
 import com.idega.idegaweb.IWBundle;
@@ -114,6 +116,8 @@ public class PasswordTokenCreator extends IWBaseComponent {
 	
 	public static final String TOKEN_CREATOR_FACELET_FILENAME = "passwordTokenCreator.xhtml";
 	public static final String PASSWORD_CHANGER_FACELET_FILENAME = "passwordChanger.xhtml";
+	
+	private boolean redirectToHomepage;
 	
 	@Override
 	protected void initializeComponent(FacesContext context) {
@@ -143,6 +147,22 @@ public class PasswordTokenCreator extends IWBaseComponent {
 		}
 		add(facelet);
 		
+	}
+
+	protected String getToken(IWContext iwc) {
+		if (iwc != null) {
+			return iwc.getParameter(PARAMETER_TOKEN);
+		}
+
+		return null;
+	}
+
+	@Override
+	public void encodeBegin(FacesContext context) throws IOException {
+		IWContext iwc = IWContext.getIWContext(context);
+		PasswordChangerBean passwordChangerBean = (PasswordChangerBean) context.getApplication().evaluateExpressionGet(context, "#{passwordChangerBean}", PasswordChangerBean.class);
+		passwordChangerBean.setRedirectToHomepage(isRedirectToHomepage());
+		IWBundle bundle = getBundle(context, IWBundleStarter.IW_BUNDLE_IDENTIFIER);
 		List<String> files = new ArrayList<String>();
 		JQuery jQuery = ELUtil.getInstance().getBean(JQuery.BEAN_NAME);
 		files.add(jQuery.getBundleURIToJQueryLib());
@@ -152,14 +172,14 @@ public class PasswordTokenCreator extends IWBaseComponent {
 		PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, files);
 		
 		PresentationUtil.addStyleSheetToHeader(iwc, bundle.getVirtualPathWithFileNameString("style/passwordTokenCreator.css"));
-
+		super.encodeBegin(context);
 	}
 
-	protected String getToken(IWContext iwc) {
-		if (iwc != null) {
-			return iwc.getParameter(PARAMETER_TOKEN);
-		}
+	public boolean isRedirectToHomepage() {
+		return redirectToHomepage;
+	}
 
-		return null;
+	public void setRedirectToHomepage(boolean redirectToHomepage) {
+		this.redirectToHomepage = redirectToHomepage;
 	}
 }

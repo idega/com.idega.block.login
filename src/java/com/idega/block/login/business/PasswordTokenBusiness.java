@@ -348,24 +348,27 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 	 * @param token is {@link PasswordTokenEntity#getToken()}, 
 	 * not <code>null</code>;
 	 * @param newPassword not <code>null</code>;
-	 * @return <code>true</code> on success, <code>false</code> on failure;
+	 * @return <code>User</code> on success, <code>null</code> on failure;
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
-	public boolean completePasswordReset(String token, String newPassword) {
+	public User completePasswordReset(String token, String newPassword) {
 		if (StringUtil.isEmpty(newPassword)) {
-			return Boolean.FALSE;
+			return null;
 		}
 
 		User user = getUserByToken(token);
 		if (user == null) {
-			return Boolean.FALSE;
+			return null;
 		}
 
 		if (!getPasswordTokenEntityDAO().removeByUUID(user.getUniqueId())) {
-			return Boolean.FALSE;
+			return null;
 		}
 
-		return getUserBusiness().changeUserPassword(user, newPassword);
+		if(getUserBusiness().changeUserPassword(user, newPassword)){
+			return user;
+		}
+		return null;
 	}
 
 	/**
