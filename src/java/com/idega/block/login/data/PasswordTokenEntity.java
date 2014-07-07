@@ -82,6 +82,7 @@
  */
 package com.idega.block.login.data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -137,7 +138,12 @@ import javax.persistence.Table;
 					PasswordTokenEntity.expirationDateProp + " > :" + 
 					PasswordTokenEntity.expirationDateProp)
 })
-public class PasswordTokenEntity {
+public class PasswordTokenEntity implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2018453461962930901L;
 
 	public static final String TABLE_NAME = "ic_passw_reset";
 
