@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.idega.block.login.data.AuthorizationCodeEntity;
 import com.idega.block.login.data.dao.LoginDAO;
+import com.idega.core.idgenerator.business.UUIDGenerator;
 import com.idega.core.persistence.Param;
 import com.idega.core.persistence.Query;
 import com.idega.core.persistence.impl.GenericDaoImpl;
@@ -56,6 +57,24 @@ public class LoginDAOImpl extends GenericDaoImpl implements LoginDAO {
 			getLogger().log(Level.WARNING, "Failed Authorizing by code " + code + " entity " + c, e);
 		}
 		return null;
+	}
+	
+	@Transactional(readOnly = false)
+	@Override
+	public String generateNewCode(String authorization, String type){
+		AuthorizationCodeEntity entity = getSingleResult(AuthorizationCodeEntity.QUERY_GET_BY_AUTHORIZATION_AND_TYPE, 
+				AuthorizationCodeEntity.class, 
+				new Param(AuthorizationCodeEntity.PROP_AUTHORIZATION, authorization),
+				new Param(AuthorizationCodeEntity.PROP_TYPE, type));
+		if(entity == null){
+			entity = new AuthorizationCodeEntity();
+			entity.setAuthorization(authorization);
+			entity.setType(type);
+		}
+		String code = UUIDGenerator.getInstance().generateUUID();
+		entity.setCode(code);
+		merge(entity);
+		return code;
 	}
 	
 

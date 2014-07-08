@@ -24,7 +24,11 @@ import javax.persistence.UniqueConstraint;
 			query = "FROM AuthorizationCodeEntity "),
 	@NamedQuery(
 			name = AuthorizationCodeEntity.QUERY_GET_BY_CODE, 
-			query = "FROM AuthorizationCodeEntity  a WHERE a.code = :" + AuthorizationCodeEntity.PROP_CODE)
+			query = "FROM AuthorizationCodeEntity  a WHERE a.code = :" + AuthorizationCodeEntity.PROP_CODE),
+	@NamedQuery(
+			name = AuthorizationCodeEntity.QUERY_GET_BY_AUTHORIZATION_AND_TYPE, 
+			query = "FROM AuthorizationCodeEntity  a WHERE a.authorization = :" + AuthorizationCodeEntity.PROP_AUTHORIZATION
+			+ " AND a.type = :" + AuthorizationCodeEntity.PROP_TYPE)
 })
 public class AuthorizationCodeEntity implements Serializable{
 
@@ -32,6 +36,9 @@ public class AuthorizationCodeEntity implements Serializable{
 	public static final String TABLE_NAME = "ic_authorization_code";
 	public static final String QUERY_GET_ALL = TABLE_NAME + ".getAll";
 	public static final String QUERY_GET_BY_CODE = TABLE_NAME + ".getByCode";
+	public static final String QUERY_GET_BY_AUTHORIZATION_AND_TYPE = TABLE_NAME + ".getByAuthorizationAndType";
+	
+	
 	
 	public static final String PROP_ID = TABLE_NAME + "_id";
 	@Id

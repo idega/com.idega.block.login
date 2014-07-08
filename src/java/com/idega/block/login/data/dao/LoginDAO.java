@@ -13,4 +13,5 @@ public interface LoginDAO {
 	public <T extends IDOEntity> T authorize(String code,Class<T> c);
 	public void persist(Object product);
 	public <T> T merge(T product);
+	public String generateNewCode(String authorization, String type);
 }
