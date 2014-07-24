@@ -6,4 +6,6 @@
     version="1.0">
     <entity 
     	class="com.idega.block.login.data.PasswordTokenEntity" />
+    <entity 
+    	class="com.idega.block.login.data.LoginAttemptsAmountEntity" />
 </entity-mappings>
