@@ -83,6 +83,7 @@
 package com.idega.block.login.business.impl;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -92,9 +93,11 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import com.idega.block.login.data.LoginAttemptsAmountEntity;
 import com.idega.block.login.data.dao.LoginAttemptsAmountEntityDAO;
 import com.idega.core.accesscontrol.business.LoginLock;
 import com.idega.core.business.DefaultSpringBean;
+import com.idega.util.ListUtil;
 import com.idega.util.StringUtil;
 import com.idega.util.expression.ELUtil;
 
@@ -138,7 +141,7 @@ public class LoginLockImpl extends DefaultSpringBean implements LoginLock {
 	@Override
 	public boolean isLoginLocked(String ip) {
 		long failedLoginsAmount = getLoginAttemptsAmountEntityDAO()
-				.findAmount(getTimeFrom(), getTimeTo(), ip, Boolean.TRUE);
+				.findAmount(getTimeFrom(), getTimeTo(), ip, Boolean.TRUE, Boolean.FALSE);
 		if (failedLoginsAmount > getMaxAmountOfFailedLoginAttempts()) {
 			return Boolean.TRUE;
 		}
@@ -168,6 +171,30 @@ public class LoginLockImpl extends DefaultSpringBean implements LoginLock {
 	@Override
 	public boolean createFailedLoginRecord(HttpServletRequest request) {
 		return createFailedLoginRecord(getIp(request));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.idega.core.accesscontrol.business.LoginLock#deleteAllPreviuosRecords(java.lang.String)
+	 */
+	@Override
+	public void deleteAllPreviuosRecords(String ip) {
+		List<LoginAttemptsAmountEntity> entitiesToRemove = getLoginAttemptsAmountEntityDAO()
+				.findAll(getTimeFrom(), getTimeTo(), ip, Boolean.TRUE, Boolean.FALSE);
+		if (!ListUtil.isEmpty(entitiesToRemove)) {
+			for (LoginAttemptsAmountEntity entityToRemove:  entitiesToRemove) {
+				getLoginAttemptsAmountEntityDAO().remove(entityToRemove);
+			}
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.idega.core.accesscontrol.business.LoginLock#deleteAllPreviuosRecords(javax.servlet.http.HttpServletRequest)
+	 */
+	@Override
+	public void deleteAllPreviuosRecords(HttpServletRequest request) {
+		deleteAllPreviuosRecords(getIp(request));
 	}
 
 	protected String getIp(HttpServletRequest request) {
