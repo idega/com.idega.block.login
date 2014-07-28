@@ -111,22 +111,7 @@ import javax.persistence.Table;
 			name = LoginAttemptsAmountEntity.QUERY_FIND_BY_ID, 
 			query = "FROM LoginAttemptsAmountEntity laae WHERE laae." + 
 					LoginAttemptsAmountEntity.idProp + " = :" + 
-					LoginAttemptsAmountEntity.idProp),
-	@NamedQuery(
-			name = LoginAttemptsAmountEntity.QUERY_FIND_BY_CRITERIA, 
-			query = "FROM LoginAttemptsAmountEntity laae " + 
-					"WHERE laae.creationDate >= :from " + 
-					"AND laae.creationDate < :to " +  
-					"AND laae.ip = :" + LoginAttemptsAmountEntity.ipProp + 
-					" AND laae.failed = :" + LoginAttemptsAmountEntity.failedProp),
-	@NamedQuery(
-			name = LoginAttemptsAmountEntity.QUERY_FIND_AMOUNT_BY_CRITERIA, 
-			query = "SELECT COUNT(laae.id) " + 
-					"FROM LoginAttemptsAmountEntity laae " + 
-					"WHERE laae.creationDate >= :from " + 
-					"AND laae.creationDate < :to " + 
-					"AND laae.ip = :" + LoginAttemptsAmountEntity.ipProp + 
-					" AND laae.failed = :" + LoginAttemptsAmountEntity.failedProp)
+					LoginAttemptsAmountEntity.idProp)
 })
 public class LoginAttemptsAmountEntity {
 
@@ -134,8 +119,6 @@ public class LoginAttemptsAmountEntity {
 
 	public static final String QUERY_FIND_ALL = "loginAttemptsAmountEntity.findAll";
 	public static final String QUERY_FIND_BY_ID = "loginAttemptsAmountEntity.findById";
-	public static final String QUERY_FIND_BY_CRITERIA = "loginAttemptsAmountEntity.findByCriteria";
-	public static final String QUERY_FIND_AMOUNT_BY_CRITERIA = "loginAttemptsAmountEntity.findAmountByCriteria";
 
 	public static final String idProp = "id";
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)
@@ -151,10 +134,15 @@ public class LoginAttemptsAmountEntity {
 	@Column(name = COLUMN_IP_ADDRESS, nullable = false)
 	private String ip;
 
-	public static final String failedProp = "login_failed";
+	public static final String failedProp = "failed";
 	public static final String COLUMN_FAILED = "login_failed";
 	@Column(name = COLUMN_FAILED, nullable = false)
-	private Boolean failed;
+	private boolean failed;
+
+	public static final String deletedProp = "deleted";
+	public static final String COLUMN_RECORD_DELETED = "record_deleted";
+	@Column(name = COLUMN_RECORD_DELETED, nullable = false)
+	private boolean deleted;
 
 	public Long getId() {
 		return id;
@@ -184,11 +172,19 @@ public class LoginAttemptsAmountEntity {
 		this.ip = ip;
 	}
 
-	public Boolean getFailed() {
+	public boolean isFailed() {
 		return failed;
 	}
 
-	public void setFailed(Boolean failed) {
+	public void setFailed(boolean failed) {
 		this.failed = failed;
-	}	
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
 }
