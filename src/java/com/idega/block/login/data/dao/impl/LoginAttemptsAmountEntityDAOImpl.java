@@ -82,10 +82,17 @@
  */
 package com.idega.block.login.data.dao.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -96,6 +103,7 @@ import com.idega.block.login.data.LoginAttemptsAmountEntity;
 import com.idega.block.login.data.dao.LoginAttemptsAmountEntityDAO;
 import com.idega.core.persistence.Param;
 import com.idega.core.persistence.impl.GenericDaoImpl;
+import com.idega.util.ListUtil;
 import com.idega.util.StringUtil;
 
 /**
@@ -128,8 +136,7 @@ public class LoginAttemptsAmountEntityDAOImpl extends GenericDaoImpl implements
 	public LoginAttemptsAmountEntity update(LoginAttemptsAmountEntity entity) {
 		if (
 				entity != null
-				&& !StringUtil.isEmpty(entity.getIp())
-				&& entity.getFailed() != null) {
+				&& !StringUtil.isEmpty(entity.getIp())) {
 
 			if (entity.getId() == null) {
 				entity.setCreationDate(System.currentTimeMillis());
@@ -183,6 +190,15 @@ public class LoginAttemptsAmountEntityDAOImpl extends GenericDaoImpl implements
 		remove(findById(id));
 	}
 
+	@Override
+	@Transactional(readOnly = false)
+	public void remove(Object entity) {
+		if (entity instanceof LoginAttemptsAmountEntity) {
+			((LoginAttemptsAmountEntity) entity).setDeleted(Boolean.TRUE);
+			update((LoginAttemptsAmountEntity) entity);
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see com.idega.block.login.data.dao.LoginAttemptsAmountEntityDAO#findById(java.lang.Long)
 	 */
@@ -213,48 +229,9 @@ public class LoginAttemptsAmountEntityDAOImpl extends GenericDaoImpl implements
 	 */
 	@Override
 	public List<LoginAttemptsAmountEntity> findAll(Date from, Date to,
-			String ip, Boolean failed) {
-		StringBuilder hql = new StringBuilder();
-		hql.append("SELECT laae ")
-		.append("FROM LoginAttemptsAmountEntity laae ")
-		.append("WHERE laae.id IS NOT NULL ");
-
-		if (from != null) {
-			hql.append("AND laae.creationDate >= : from ");
-		}
-
-		if (to != null) {
-			hql.append("AND laae.creationDate < : to ");
-		}
-
-		if (!StringUtil.isEmpty(ip)) {
-			hql.append(" AND laae.ip = :" + LoginAttemptsAmountEntity.ipProp + " ");
-		}
-
-		if (failed != null) {
-			hql.append("AND laae.failed = :" + LoginAttemptsAmountEntity.failedProp);
-		}
-		
+			String ip, Boolean failed, Boolean deleted) {
 		TypedQuery<LoginAttemptsAmountEntity> query = getEntityManager()
-				.createQuery(hql.toString(), LoginAttemptsAmountEntity.class);
-		if (from != null) {
-			query = query.setParameter("from", from);
-		}
-
-		if (to != null) {
-			query = query.setParameter("to", to);
-		}
-
-		if (!StringUtil.isEmpty(ip)) {
-			query = query.setParameter(
-					LoginAttemptsAmountEntity.ipProp, ip);
-		}
-
-		if (failed != null) {
-			query = query.setParameter(
-					LoginAttemptsAmountEntity.failedProp, failed);
-		}		
-		
+				.createQuery(getQuery(from, to, ip, failed, deleted));
 		return query.getResultList();
 	}
 
@@ -263,13 +240,239 @@ public class LoginAttemptsAmountEntityDAOImpl extends GenericDaoImpl implements
 	 * @see com.idega.block.login.data.dao.LoginAttemptsAmountEntityDAO#findAmount(java.util.Date, java.util.Date, java.lang.String, java.lang.Boolean)
 	 */
 	@Override
-	public long findAmount(Date from, Date to, String ip, Boolean failed) {
-		return getSingleResult(
-				LoginAttemptsAmountEntity.QUERY_FIND_AMOUNT_BY_CRITERIA,
-				Long.class, 
-				new Param("from", from),
-				new Param("to", to),
-				new Param(LoginAttemptsAmountEntity.failedProp, failed),
-				new Param(LoginAttemptsAmountEntity.ipProp, ip));
+	public long findAmount(
+			Date from, 
+			Date to, 
+			String ip, 
+			Boolean failed, 
+			Boolean deleted) {
+		TypedQuery<Long> query = getEntityManager().createQuery(
+				getAmountQuery(from, to, ip, failed, deleted));
+		return query.getSingleResult();
+	}
+
+	/**
+	 * 
+	 * @param from is floor of {@link LoginAttemptsAmountEntity#getCreationDate()}, 
+	 * not <code>null</code>;
+	 * @param to is ceiling of {@link LoginAttemptsAmountEntity#getCreationDate()},
+	 * not <code>null</code>;
+	 * @param ip is address user connecting from, not <code>null</code>;
+	 * @param failed is <code>true</code> if only failed attempts are required,
+	 * not <code>null</code>;
+	 * @param deleted is set to <code>true</code> when only deleted entities
+	 * should be shown, <code>false</code> when only existing entities should 
+	 * be shown an <code>null</code> if both of them;
+	 * @return query for fetching number of entities;
+	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
+	 */
+	protected CriteriaQuery<Long> getAmountQuery(
+			Date from, 
+			Date to, 
+			String ip, 
+			Boolean failed, 
+			Boolean deleted) {
+		CriteriaQuery<Long> criteriaQuery = getCriteriaBuilder().createQuery(Long.class);
+		
+		/*
+		 * Table to select from
+		 */
+		Root<LoginAttemptsAmountEntity> entityRoot = criteriaQuery
+				.from(LoginAttemptsAmountEntity.class);
+		
+		/*
+		 * SELECT COUNT(*)
+		 */
+		Expression<Long> expression = getCriteriaBuilder().count(entityRoot);
+		criteriaQuery.select(expression);
+
+		/*
+		 * Appending predicates
+		 */
+		criteriaQuery.where(getPredicatesArray(entityRoot, from, to, ip, failed, deleted));
+		return criteriaQuery;
+	}
+
+	/**
+	 * 
+	 * @param from is floor of {@link LoginAttemptsAmountEntity#getCreationDate()}, 
+	 * not <code>null</code>;
+	 * @param to is ceiling of {@link LoginAttemptsAmountEntity#getCreationDate()},
+	 * not <code>null</code>;
+	 * @param ip is address user connecting from, not <code>null</code>;
+	 * @param failed is <code>true</code> if only failed attempts are required,
+	 * not <code>null</code>;
+	 * @param deleted is set to <code>true</code> when only deleted entities
+	 * should be shown, <code>false</code> when only existing entities should 
+	 * be shown an <code>null</code> if both of them;
+	 * @return query for fetching entities;
+	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
+	 */
+	protected CriteriaQuery<LoginAttemptsAmountEntity> getQuery(
+			Date from, 
+			Date to, 
+			String ip, 
+			Boolean failed, 
+			Boolean deleted) {
+		CriteriaQuery<LoginAttemptsAmountEntity> criteriaQuery = getCriteriaBuilder()
+				.createQuery(LoginAttemptsAmountEntity.class);
+
+		/*
+		 * Table to select from
+		 */
+		Root<LoginAttemptsAmountEntity> entityRoot = criteriaQuery
+				.from(LoginAttemptsAmountEntity.class);
+
+		/*
+		 * Appending predicates
+		 */
+		criteriaQuery.where(getPredicatesArray(entityRoot, from, to, ip, failed, deleted));
+		return criteriaQuery;
+	}
+
+	/**
+	 * 
+	 * @param entityRoot is {@link Root} of {@link LoginAttemptsAmountEntity}
+	 * to get attributes from, not <code>null</code>;
+	 * @param from is floor of {@link LoginAttemptsAmountEntity#getCreationDate()}, 
+	 * not <code>null</code>;
+	 * @param to is ceiling of {@link LoginAttemptsAmountEntity#getCreationDate()},
+	 * not <code>null</code>;
+	 * @param ip is address user connecting from, not <code>null</code>;
+	 * @param failed is <code>true</code> if only failed attempts are required,
+	 * not <code>null</code>;
+	 * @param deleted is set to <code>true</code> when only deleted entities
+	 * should be shown, <code>false</code> when only existing entities should 
+	 * be shown an <code>null</code> if both of them;
+	 * @return {@link Predicate}s for querying data source or 
+	 * {@link Collections#emptyList()} on failure;
+	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
+	 */
+	protected Predicate[] getPredicatesArray(
+			Root<LoginAttemptsAmountEntity> entityRoot,
+			Date from, 
+			Date to, 
+			String ip, 
+			Boolean failed, 
+			Boolean deleted) {
+		ArrayList<Predicate> predicates = getPredicates(
+				entityRoot, from, to, ip, failed, deleted);
+		if (!ListUtil.isEmpty(predicates)) {
+			return predicates.toArray(new Predicate[predicates.size()]);
+		}
+
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @param entityRoot is {@link Root} of {@link LoginAttemptsAmountEntity}
+	 * to get attributes from, not <code>null</code>;
+	 * @param from is floor of {@link LoginAttemptsAmountEntity#getCreationDate()}, 
+	 * not <code>null</code>;
+	 * @param to is ceiling of {@link LoginAttemptsAmountEntity#getCreationDate()},
+	 * not <code>null</code>;
+	 * @param ip is address user connecting from, not <code>null</code>;
+	 * @param failed is <code>true</code> if only failed attempts are required,
+	 * not <code>null</code>;
+	 * @param deleted is set to <code>true</code> when only deleted entities
+	 * should be shown, <code>false</code> when only existing entities should 
+	 * be shown an <code>null</code> if both of them;
+	 * @return {@link Predicate}s for querying data source or 
+	 * {@link Collections#emptyList()} on failure;
+	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
+	 */
+	protected ArrayList<Predicate> getPredicates(
+			Root<LoginAttemptsAmountEntity> entityRoot,
+			Date from, 
+			Date to, 
+			String ip, 
+			Boolean failed, 
+			Boolean deleted) {
+		
+		/*
+		 * Adding criteria list to search by;
+		 */
+		ArrayList<Predicate> predicates = new ArrayList<Predicate>();
+		if (entityRoot != null) {
+			/*
+			 * Adding date criteria
+			 */
+			if (from != null || to != null) {
+				Path<Date> creationDateAttribute = entityRoot
+						.get(LoginAttemptsAmountEntity.creationDateProp);
+				if (creationDateAttribute != null) {
+
+					/*
+					 * Adding date from criteria
+					 */
+					if (from != null) {
+						Predicate dateFromPredicate = getCriteriaBuilder()
+								.greaterThanOrEqualTo(creationDateAttribute, from);
+						if (dateFromPredicate != null) {
+							predicates.add(dateFromPredicate);
+						}
+					}
+
+					/*
+					 * Adding date to criteria
+					 */
+					if (to != null) {
+						Predicate dateToPredicate = getCriteriaBuilder()
+								.lessThan(creationDateAttribute, to);
+						if (dateToPredicate != null) {
+							predicates.add(dateToPredicate);
+						}
+					}
+				}
+			}
+
+			/*
+			 * IP address criteria
+			 */
+			if (!StringUtil.isEmpty(ip)) {
+				Path<String> ipAttribute = entityRoot
+						.get(LoginAttemptsAmountEntity.ipProp);
+				if (ipAttribute != null) {
+					Predicate ipAddressPredicate = getCriteriaBuilder()
+							.equal(ipAttribute, ip);
+					if (ipAddressPredicate != null) {
+						predicates.add(ipAddressPredicate);
+					}
+				}
+			}
+
+			/*
+			 * Failed criteria filter
+			 */
+			if (failed != null) {
+				Path<Boolean> failedAttribute = entityRoot
+						.get(LoginAttemptsAmountEntity.failedProp);
+				if (failedAttribute != null) {
+					Predicate failedPredicate = getCriteriaBuilder()
+							.equal(failedAttribute, failed);
+					if (failedPredicate != null) {
+						predicates.add(failedPredicate);
+					}
+				}
+			}
+
+			/*
+			 * Deleted criteria filter
+			 */
+			if (deleted != null) {
+				Path<Boolean> deletedAttribute = entityRoot
+						.get(LoginAttemptsAmountEntity.deletedProp);
+				if (deletedAttribute != null) {
+					Predicate deletedPredicate = getCriteriaBuilder()
+							.equal(deletedAttribute, deleted);
+					if (deletedPredicate != null) {
+						predicates.add(deletedPredicate);
+					}
+				}
+			}
+		}		
+
+		return predicates;
 	}
 }

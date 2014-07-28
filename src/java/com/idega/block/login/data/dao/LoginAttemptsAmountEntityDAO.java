@@ -169,11 +169,14 @@ public interface LoginAttemptsAmountEntityDAO extends GenericDao {
 	 * @param ip is address user connecting from, skipped if <code>null</code>;
 	 * @param failed is <code>true</code> if only failed attempts are required,
 	 * skipped if <code>null</code>;
+	 * @param deleted is set to <code>true</code> when only deleted entities
+	 * should be shown, <code>false</code> when only existing entities should 
+	 * be shown an <code>null</code> if both of them;
 	 * @return entities by criteria or {@link Collections#emptyList()}
 	 * on failure;
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
-	List<LoginAttemptsAmountEntity> findAll(Date from, Date to, String ip, Boolean failed);
+	List<LoginAttemptsAmountEntity> findAll(Date from, Date to, String ip, Boolean failed, Boolean deleted);
 
 	/**
 	 * 
@@ -184,8 +187,11 @@ public interface LoginAttemptsAmountEntityDAO extends GenericDao {
 	 * @param ip is address user connecting from, not <code>null</code>;
 	 * @param failed is <code>true</code> if only failed attempts are required,
 	 * not <code>null</code>;
+	 * @param deleted is set to <code>true</code> when only deleted entities
+	 * should be shown, <code>false</code> when only existing entities should 
+	 * be shown an <code>null</code> if both of them;
 	 * @return number of entities by criteria or 0 on failure;
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
-	long findAmount(Date from, Date to, String ip, Boolean failed);
+	long findAmount(Date from, Date to, String ip, Boolean failed, Boolean deleted);
 }
