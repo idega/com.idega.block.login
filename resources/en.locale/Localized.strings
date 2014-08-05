@@ -86,3 +86,4 @@ reset.enter_text_above=Enter text in picture
 reset.capcha_failed=The text you entered does not match the text in the picture
 reset.your_link_not_valid=Your link is not valid anymore, please try again\ 
 reset.here=here
+login_blocked=Temporarily blocked due to too many log-in attempts

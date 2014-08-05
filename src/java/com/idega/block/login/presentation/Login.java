@@ -200,25 +200,25 @@ public class Login extends Block {
 		this.passwordText = this.iwrb.getLocalizedString("password", "Password");
 		LoginState state = internalGetState(iwc);
 	
-		if(state.equals(LoginState.LoggedOn)){
+		if(state.equals(LoginState.LOGGED_ON)){
 			isLoggedOn(iwc);
 		}
-		else if(state.equals(LoginState.LoggedOut)){
+		else if(state.equals(LoginState.LOGGED_OUT)){
 			startState(iwc);
 		}
-		else if(state.equals(LoginState.Failed)){
+		else if(state.equals(LoginState.FAILED)){
 			loginFailed(iwc, this.iwrb.getLocalizedString("login_failed", "Login failed"));
 		}
-		else if(state.equals(LoginState.NoUser)){
+		else if(state.equals(LoginState.USER_NOT_FOUND)){
 			loginFailed(iwc, this.iwrb.getLocalizedString("login_no_user", "Invalid user"));
 		}
-		else if(state.equals(LoginState.WrongPassword)){
+		else if(state.equals(LoginState.WRONG_PASSWORD)){
 			loginFailed(iwc, this.iwrb.getLocalizedString("login_wrong", "Invalid password"));
 		}
-		else if(state.equals(LoginState.Expired)){
+		else if(state.equals(LoginState.EXPIRED)){
 			loginFailed(iwc, this.iwrb.getLocalizedString("login_expired", "Login expired"));
 		}
-		else if(state.equals(LoginState.FailedDisabledNextTime)){
+		else if(state.equals(LoginState.FAILED_DISABLED_NEXT_TIME)){
 			loginFailed(iwc, this.iwrb.getLocalizedString("login_wrong_disabled_next_time", "Invalid password, access closed next time login fails"));
 			if (hintMessage == null) {
 				handleHint(iwc);

@@ -33,6 +33,7 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
+import com.idega.core.accesscontrol.business.LoginLock;
 import com.idega.core.accesscontrol.business.LoginState;
 import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.core.builder.business.BuilderService;
@@ -273,8 +274,14 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 
 			add(getLoggedInPart(iwc, bean));
 		} else {
-			LoginState state = LoginBusinessBean.internalGetState(iwc);
-			if (state.equals(LoginState.LoggedOut) || state.equals(LoginState.NoState)) {
+			LoginState state = null;
+			if (getLoginLock() != null && getLoginLock().isLoginLocked(context)) {
+				state = LoginState.DISABLED;
+			} else {
+				state = LoginBusinessBean.internalGetState(iwc);
+			}
+
+			if (state.equals(LoginState.LOGGED_OUT) || state.equals(LoginState.NO_STATE)) {
 				add(getLoggedOutPart(context, bean));
 			} else {
 				UIComponent loginFailedPart = getLoginFailedPart(context, bean, getLoginFailedByState(context, state));
@@ -297,22 +304,13 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		IWContext iwc = IWContext.getIWContext(context);
 		IWResourceBundle iwrb = getBundle(context, getBundleIdentifier()).getResourceBundle(iwc);
 
-		if (state.equals(LoginState.Failed)) {
-			return iwrb.getLocalizedString("login_failed", "Login failed");
-		}
-		else if (state.equals(LoginState.NoUser)) {
-			return iwrb.getLocalizedString("login_no_user", "Invalid user");
-		}
-		else if (state.equals(LoginState.WrongPassword)) {
-			return iwrb.getLocalizedString("login_wrong", "Invalid password");
-		}
-		else if (state.equals(LoginState.Expired)) {
+		if (state.equals(LoginState.EXPIRED)) {
 			return iwrb.getLocalizedString("login_expired", "Login expired");
-		}
-		else if (state.equals(LoginState.FailedDisabledNextTime)) {
+		} else if (state.equals(LoginState.FAILED_DISABLED_NEXT_TIME)) {
 			return iwrb.getLocalizedString("login_wrong_disabled_next_time", "Invalid password, access closed next time login fails");
-		}
-		else {
+		} else if (state.equals(LoginState.DISABLED)) {
+			return iwrb.getLocalizedString("login_blocked", "Temporarily blocked due to too many log-in attempts");
+		} else {
 			return iwrb.getLocalizedString("login_failed", "Login failed");
 		}
 	}
@@ -391,7 +389,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		}
 		else {
 			LoginState loginState = LoginBusinessBean.internalGetState(iwc);
-			if (loginState.equals(LoginState.LoggedOut) || loginState.equals(LoginState.NoState)) {
+			if (loginState.equals(LoginState.LOGGED_OUT) || loginState.equals(LoginState.NO_STATE)) {
 				boolean hiddenParamAdded = false;
 				bean.setAllowCookieLogin(allowCookieLogin);
 				bean.setAction(iwc.getRequestURI(sendToHttps));
@@ -612,5 +610,15 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	public void setButtonStyleClass(String buttonStyleClass) {
 		this.buttonStyleClass = buttonStyleClass;
 	}
-	
+
+	@Autowired(required=false)
+	private LoginLock loginLock;
+
+	protected LoginLock getLoginLock() {
+		if (this.loginLock == null) {
+			ELUtil.getInstance().autowire(this);
+		}
+
+		return this.loginLock;
+	}
 }

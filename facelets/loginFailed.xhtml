@@ -5,20 +5,37 @@
 		xmlns:f="http://java.sun.com/jsf/core"
 >
 <ui:component>
-	<div class="#{loginBean.styleClass} loginFailed loginForm">
+	<div class="#{loginBean.styleClass} loginForm">
 		<form class="loginForm" action="#{loginBean.action}" method="post">
-			<p class="errorMessage"><h:outputText value="#{loginBean.output}"/></p>
-			<div class="submit #{loginBean.localeStyle}">
-				<f:verbatim rendered="#{!loginBean.useSubmitLinks}">
-					<input type="submit" value="#{localizedStrings['com.idega.block.login']['tryagain_text']}" class="#{loginBean.buttonStyleClass}" />
+			<p 
+				class="errorMessage">
+				<h:outputText 
+					value="#{loginBean.output}"/>
+			</p>
+			<h:panelGroup
+				layout="block"
+				styleClass="submit #{loginBean.localeStyle}">
+				<f:verbatim 
+					rendered="#{!loginBean.useSubmitLinks}">
+					<input 
+						type="submit" 
+						value="#{localizedStrings['com.idega.block.login']['tryagain_text']}" 
+						class="#{loginBean.buttonStyleClass}" />
 				</f:verbatim>
-				<t:htmlTag rendered="#{loginBean.useSubmitLinks}" value="a" styleClass="loginButton">
-					<span><t:outputText value="#{localizedStrings['com.idega.block.login']['tryagain_text']}" /></span>
+				<t:htmlTag 
+					rendered="#{loginBean.useSubmitLinks}" 
+					value="a" 
+					styleClass="loginButton">
+					<span><t:outputText 
+						value="#{localizedStrings['com.idega.block.login']['tryagain_text']}" /></span>
 				</t:htmlTag>
-			</div>
-			
+			</h:panelGroup>
+
 			<ui:repeat value="#{loginBean.hiddenParameters}" var="parameter">
-				<input type="hidden" name="#{parameter.parameter}" value="#{parameter.value}" />
+				<input 
+					type="hidden" 
+					name="#{parameter.parameter}" 
+					value="#{parameter.value}" />
 			</ui:repeat>
 		</form>
 	</div>
