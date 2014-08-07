@@ -97,6 +97,7 @@ import com.idega.block.login.data.LoginAttemptsAmountEntity;
 import com.idega.block.login.data.dao.LoginAttemptsAmountEntityDAO;
 import com.idega.core.accesscontrol.business.LoginLock;
 import com.idega.core.business.DefaultSpringBean;
+import com.idega.util.CoreUtil;
 import com.idega.util.ListUtil;
 import com.idega.util.StringUtil;
 import com.idega.util.expression.ELUtil;
@@ -186,6 +187,8 @@ public class LoginLockImpl extends DefaultSpringBean implements LoginLock {
 				getLoginAttemptsAmountEntityDAO().remove(entityToRemove);
 			}
 		}
+
+		CoreUtil.clearAllCaches();
 	}
 
 	/*
