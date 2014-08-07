@@ -219,7 +219,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 				}
 			}
 		}
-		
+
 
 		if (unAuthenticatedFaceletPath == null) {
 			unAuthenticatedFaceletPath = getBundle(context, getBundleIdentifier()).getFaceletURI("loggedOut.xhtml");
@@ -477,7 +477,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	public void setRedirectLoggedInUserToPrimaryGroupHomePage(boolean redirectLoggedInUserToPrimaryGroupHomePage) {
 		this.redirectLoggedInUserToPrimaryGroupHomePage = redirectLoggedInUserToPrimaryGroupHomePage;
 	}
-	
+
 	public boolean isRedirectLoggedInUserToUrlToRedirectToOnLogon() {
 		return redirectLoggedInUserToUrlToRedirectToOnLogon;
 	}
