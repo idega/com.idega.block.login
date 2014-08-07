@@ -144,6 +144,11 @@ public class LoginAttemptsAmountEntity {
 	@Column(name = COLUMN_RECORD_DELETED, nullable = false)
 	private boolean deleted;
 
+	public static final String usernameProp = "username";
+	public static final String COLUMN_USERNAME = "username";
+	@Column(name = COLUMN_USERNAME, nullable = true)
+	private String username;
+
 	public Long getId() {
 		return id;
 	}
@@ -186,5 +191,13 @@ public class LoginAttemptsAmountEntity {
 
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 }

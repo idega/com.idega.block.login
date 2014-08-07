@@ -129,7 +129,7 @@ public class LoginLockImpl extends DefaultSpringBean implements LoginLock {
 	@Override
 	public boolean isLoginLocked(FacesContext context) {
 		if (context != null) {
-			return isLoginLocked((HttpServletRequest) context.getExternalContext().getRequest());
+			return isLoginLocked((HttpServletRequest) context.getExternalContext().getRequest(), null);
 		}
 
 		return Boolean.FALSE;
@@ -139,9 +139,9 @@ public class LoginLockImpl extends DefaultSpringBean implements LoginLock {
 	 * @see com.idega.core.accesscontrol.business.LoginLock#isLoginLocked(java.lang.String)
 	 */
 	@Override
-	public boolean isLoginLocked(String ip) {
+	public boolean isLoginLocked(String ip, String username) {
 		long failedLoginsAmount = getLoginAttemptsAmountEntityDAO()
-				.findAmount(getTimeFrom(), getTimeTo(), ip, Boolean.TRUE, Boolean.FALSE);
+				.findAmount(getTimeFrom(), getTimeTo(), ip, Boolean.TRUE, Boolean.FALSE, username);
 		if (failedLoginsAmount > getMaxAmountOfFailedLoginAttempts()) {
 			return Boolean.TRUE;
 		}
@@ -153,24 +153,24 @@ public class LoginLockImpl extends DefaultSpringBean implements LoginLock {
 	 * @see com.idega.core.accesscontrol.business.LoginLock#isLoginLocked(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
-	public boolean isLoginLocked(HttpServletRequest request) {
-		return isLoginLocked(getIp(request));
+	public boolean isLoginLocked(HttpServletRequest request, String username) {
+		return isLoginLocked(getIp(request), username);
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.core.accesscontrol.business.LoginLock#createFailedLoginRecord(java.lang.String)
 	 */
 	@Override
-	public boolean createFailedLoginRecord(String ip) {
-		return getLoginAttemptsAmountEntityDAO().create(ip, Boolean.TRUE) != null;
+	public boolean createFailedLoginRecord(String ip, String username) {
+		return getLoginAttemptsAmountEntityDAO().create(ip, Boolean.TRUE, username) != null;
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.core.accesscontrol.business.LoginLock#createFailedLoginRecord(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
-	public boolean createFailedLoginRecord(HttpServletRequest request) {
-		return createFailedLoginRecord(getIp(request));
+	public boolean createFailedLoginRecord(HttpServletRequest request, String username) {
+		return createFailedLoginRecord(getIp(request), username);
 	}
 
 	/*
@@ -178,9 +178,9 @@ public class LoginLockImpl extends DefaultSpringBean implements LoginLock {
 	 * @see com.idega.core.accesscontrol.business.LoginLock#deleteAllPreviuosRecords(java.lang.String)
 	 */
 	@Override
-	public void deleteAllPreviuosRecords(String ip) {
+	public void deleteAllPreviuosRecords(String ip, String username) {
 		List<LoginAttemptsAmountEntity> entitiesToRemove = getLoginAttemptsAmountEntityDAO()
-				.findAll(getTimeFrom(), getTimeTo(), ip, Boolean.TRUE, Boolean.FALSE);
+				.findAll(getTimeFrom(), getTimeTo(), ip, Boolean.TRUE, Boolean.FALSE, username);
 		if (!ListUtil.isEmpty(entitiesToRemove)) {
 			for (LoginAttemptsAmountEntity entityToRemove:  entitiesToRemove) {
 				getLoginAttemptsAmountEntityDAO().remove(entityToRemove);
@@ -193,8 +193,8 @@ public class LoginLockImpl extends DefaultSpringBean implements LoginLock {
 	 * @see com.idega.core.accesscontrol.business.LoginLock#deleteAllPreviuosRecords(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
-	public void deleteAllPreviuosRecords(HttpServletRequest request) {
-		deleteAllPreviuosRecords(getIp(request));
+	public void deleteAllPreviuosRecords(HttpServletRequest request, String username) {
+		deleteAllPreviuosRecords(getIp(request), username);
 	}
 
 	protected String getIp(HttpServletRequest request) {

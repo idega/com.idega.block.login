@@ -274,13 +274,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 
 			add(getLoggedInPart(iwc, bean));
 		} else {
-			LoginState state = null;
-			if (getLoginLock() != null && getLoginLock().isLoginLocked(context)) {
-				state = LoginState.DISABLED;
-			} else {
-				state = LoginBusinessBean.internalGetState(iwc);
-			}
-
+			LoginState state = LoginBusinessBean.internalGetState(iwc);
 			if (state.equals(LoginState.LOGGED_OUT) || state.equals(LoginState.NO_STATE)) {
 				add(getLoggedOutPart(context, bean));
 			} else {

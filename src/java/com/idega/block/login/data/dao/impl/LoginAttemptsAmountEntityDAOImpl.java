@@ -101,6 +101,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.idega.block.login.data.LoginAttemptsAmountEntity;
 import com.idega.block.login.data.dao.LoginAttemptsAmountEntityDAO;
+import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.persistence.Param;
 import com.idega.core.persistence.impl.GenericDaoImpl;
 import com.idega.util.ListUtil;
@@ -125,8 +126,8 @@ public class LoginAttemptsAmountEntityDAOImpl extends GenericDaoImpl implements
 	 * @see com.idega.block.login.data.dao.LoginAttemptsAmountEntityDAO#create(java.lang.String, java.lang.Boolean)
 	 */
 	@Override
-	public LoginAttemptsAmountEntity create(String ip, Boolean failed) {
-		return update(null, ip, failed);
+	public LoginAttemptsAmountEntity create(String ip, Boolean failed, String username) {
+		return update(null, ip, failed, username);
 	}
 	
 	/* (non-Javadoc)
@@ -165,7 +166,8 @@ public class LoginAttemptsAmountEntityDAOImpl extends GenericDaoImpl implements
 	 * @see com.idega.block.login.data.dao.LoginAttemptsAmountEntityDAO#update(java.lang.Long, java.lang.String, java.lang.Boolean)
 	 */
 	@Override
-	public LoginAttemptsAmountEntity update(Long id, String ip, Boolean failed) {
+	public LoginAttemptsAmountEntity update(Long id, String ip, Boolean failed, 
+			String username) {
 		LoginAttemptsAmountEntity entity = findById(id);
 		if (entity == null) {
 			entity = new LoginAttemptsAmountEntity(); 
@@ -177,6 +179,10 @@ public class LoginAttemptsAmountEntityDAOImpl extends GenericDaoImpl implements
 
 		if (failed != null) {
 			entity.setFailed(failed);
+		}
+
+		if (!StringUtil.isEmpty(username)) {
+			entity.setUsername(username);
 		}
 
 		return update(entity);
@@ -229,9 +235,9 @@ public class LoginAttemptsAmountEntityDAOImpl extends GenericDaoImpl implements
 	 */
 	@Override
 	public List<LoginAttemptsAmountEntity> findAll(Date from, Date to,
-			String ip, Boolean failed, Boolean deleted) {
+			String ip, Boolean failed, Boolean deleted, String username) {
 		TypedQuery<LoginAttemptsAmountEntity> query = getEntityManager()
-				.createQuery(getQuery(from, to, ip, failed, deleted));
+				.createQuery(getQuery(from, to, ip, failed, deleted, username));
 		return query.getResultList();
 	}
 
@@ -245,9 +251,9 @@ public class LoginAttemptsAmountEntityDAOImpl extends GenericDaoImpl implements
 			Date to, 
 			String ip, 
 			Boolean failed, 
-			Boolean deleted) {
+			Boolean deleted, String username) {
 		TypedQuery<Long> query = getEntityManager().createQuery(
-				getAmountQuery(from, to, ip, failed, deleted));
+				getAmountQuery(from, to, ip, failed, deleted, username));
 		return query.getSingleResult();
 	}
 
@@ -263,6 +269,8 @@ public class LoginAttemptsAmountEntityDAOImpl extends GenericDaoImpl implements
 	 * @param deleted is set to <code>true</code> when only deleted entities
 	 * should be shown, <code>false</code> when only existing entities should 
 	 * be shown an <code>null</code> if both of them;
+	 * @param username is {@link LoginTable#getUserLogin()}, 
+	 * skipped if <code>null</code>;
 	 * @return query for fetching number of entities;
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
@@ -271,7 +279,7 @@ public class LoginAttemptsAmountEntityDAOImpl extends GenericDaoImpl implements
 			Date to, 
 			String ip, 
 			Boolean failed, 
-			Boolean deleted) {
+			Boolean deleted, String username) {
 		CriteriaQuery<Long> criteriaQuery = getCriteriaBuilder().createQuery(Long.class);
 		
 		/*
@@ -289,7 +297,8 @@ public class LoginAttemptsAmountEntityDAOImpl extends GenericDaoImpl implements
 		/*
 		 * Appending predicates
 		 */
-		criteriaQuery.where(getPredicatesArray(entityRoot, from, to, ip, failed, deleted));
+		criteriaQuery.where(getPredicatesArray(entityRoot, from, to, ip, failed, 
+				deleted, username));
 		return criteriaQuery;
 	}
 
@@ -305,6 +314,8 @@ public class LoginAttemptsAmountEntityDAOImpl extends GenericDaoImpl implements
 	 * @param deleted is set to <code>true</code> when only deleted entities
 	 * should be shown, <code>false</code> when only existing entities should 
 	 * be shown an <code>null</code> if both of them;
+	 * @param username is {@link LoginTable#getUserLogin()}, 
+	 * skipped if <code>null</code>;
 	 * @return query for fetching entities;
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
@@ -313,7 +324,7 @@ public class LoginAttemptsAmountEntityDAOImpl extends GenericDaoImpl implements
 			Date to, 
 			String ip, 
 			Boolean failed, 
-			Boolean deleted) {
+			Boolean deleted, String username) {
 		CriteriaQuery<LoginAttemptsAmountEntity> criteriaQuery = getCriteriaBuilder()
 				.createQuery(LoginAttemptsAmountEntity.class);
 
@@ -326,7 +337,7 @@ public class LoginAttemptsAmountEntityDAOImpl extends GenericDaoImpl implements
 		/*
 		 * Appending predicates
 		 */
-		criteriaQuery.where(getPredicatesArray(entityRoot, from, to, ip, failed, deleted));
+		criteriaQuery.where(getPredicatesArray(entityRoot, from, to, ip, failed, deleted, username));
 		return criteriaQuery;
 	}
 
@@ -344,6 +355,8 @@ public class LoginAttemptsAmountEntityDAOImpl extends GenericDaoImpl implements
 	 * @param deleted is set to <code>true</code> when only deleted entities
 	 * should be shown, <code>false</code> when only existing entities should 
 	 * be shown an <code>null</code> if both of them;
+	 * @param username is {@link LoginTable#getUserLogin()}, 
+	 * skipped if <code>null</code>;
 	 * @return {@link Predicate}s for querying data source or 
 	 * {@link Collections#emptyList()} on failure;
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
@@ -354,9 +367,9 @@ public class LoginAttemptsAmountEntityDAOImpl extends GenericDaoImpl implements
 			Date to, 
 			String ip, 
 			Boolean failed, 
-			Boolean deleted) {
+			Boolean deleted, String username) {
 		ArrayList<Predicate> predicates = getPredicates(
-				entityRoot, from, to, ip, failed, deleted);
+				entityRoot, from, to, ip, failed, deleted, username);
 		if (!ListUtil.isEmpty(predicates)) {
 			return predicates.toArray(new Predicate[predicates.size()]);
 		}
@@ -378,6 +391,8 @@ public class LoginAttemptsAmountEntityDAOImpl extends GenericDaoImpl implements
 	 * @param deleted is set to <code>true</code> when only deleted entities
 	 * should be shown, <code>false</code> when only existing entities should 
 	 * be shown an <code>null</code> if both of them;
+	 * @param username is {@link LoginTable#getUserLogin()}, 
+	 * skipped if <code>null</code>;
 	 * @return {@link Predicate}s for querying data source or 
 	 * {@link Collections#emptyList()} on failure;
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
@@ -388,7 +403,7 @@ public class LoginAttemptsAmountEntityDAOImpl extends GenericDaoImpl implements
 			Date to, 
 			String ip, 
 			Boolean failed, 
-			Boolean deleted) {
+			Boolean deleted, String username) {
 		
 		/*
 		 * Adding criteria list to search by;
@@ -468,6 +483,21 @@ public class LoginAttemptsAmountEntityDAOImpl extends GenericDaoImpl implements
 							.equal(deletedAttribute, deleted);
 					if (deletedPredicate != null) {
 						predicates.add(deletedPredicate);
+					}
+				}
+			}
+
+			/*
+			 * Username
+			 */
+			if (!StringUtil.isEmpty(username)) {
+				Path<String> usernameAttribute = entityRoot
+						.get(LoginAttemptsAmountEntity.usernameProp);
+				if (usernameAttribute != null) {
+					Predicate usernamePredicate = getCriteriaBuilder()
+							.equal(usernameAttribute, username);
+					if (usernamePredicate != null) {
+						predicates.add(usernamePredicate);
 					}
 				}
 			}

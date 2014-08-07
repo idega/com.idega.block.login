@@ -87,6 +87,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.idega.block.login.data.LoginAttemptsAmountEntity;
+import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.persistence.GenericDao;
 
 /**
@@ -107,10 +108,12 @@ public interface LoginAttemptsAmountEntityDAO extends GenericDao {
 	 * @param ip address of login attempt, not <code>null</code>;
 	 * @param failed must be set to <code>true</code>
 	 * when attempt to login is failed, not <code>null</code>;
+	 * @param username is {@link LoginTable#getUserLogin()}, 
+	 * skipped if <code>null</code>;
 	 * @return created entity or <code>null</code> on failure;
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
-	LoginAttemptsAmountEntity create(String ip, Boolean failed);
+	LoginAttemptsAmountEntity create(String ip, Boolean failed, String username);
 	
 	/**
 	 * 
@@ -129,10 +132,12 @@ public interface LoginAttemptsAmountEntityDAO extends GenericDao {
 	 * @param ip address of login attempt, not <code>null</code>;
 	 * @param failed must be set to <code>true</code>
 	 * when attempt to login is failed, not <code>null</code>;
+	 * @param username is {@link LoginTable#getUserLogin()}, 
+	 * skipped if <code>null</code>;
 	 * @return updated/created entity or <code>null</code> on failure;
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
-	LoginAttemptsAmountEntity update(Long id, String ip, Boolean failed);
+	LoginAttemptsAmountEntity update(Long id, String ip, Boolean failed, String username);
 
 	/**
 	 * 
@@ -172,11 +177,13 @@ public interface LoginAttemptsAmountEntityDAO extends GenericDao {
 	 * @param deleted is set to <code>true</code> when only deleted entities
 	 * should be shown, <code>false</code> when only existing entities should 
 	 * be shown an <code>null</code> if both of them;
+	 * @param username is {@link LoginTable#getUserLogin()}, 
+	 * skipped if <code>null</code>;
 	 * @return entities by criteria or {@link Collections#emptyList()}
 	 * on failure;
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
-	List<LoginAttemptsAmountEntity> findAll(Date from, Date to, String ip, Boolean failed, Boolean deleted);
+	List<LoginAttemptsAmountEntity> findAll(Date from, Date to, String ip, Boolean failed, Boolean deleted, String username);
 
 	/**
 	 * 
@@ -190,8 +197,10 @@ public interface LoginAttemptsAmountEntityDAO extends GenericDao {
 	 * @param deleted is set to <code>true</code> when only deleted entities
 	 * should be shown, <code>false</code> when only existing entities should 
 	 * be shown an <code>null</code> if both of them;
+	 * @param username is {@link LoginTable#getUserLogin()}, 
+	 * skipped if <code>null</code>;
 	 * @return number of entities by criteria or 0 on failure;
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
-	long findAmount(Date from, Date to, String ip, Boolean failed, Boolean deleted);
+	long findAmount(Date from, Date to, String ip, Boolean failed, Boolean deleted, String username);
 }
