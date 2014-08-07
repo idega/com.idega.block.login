@@ -219,7 +219,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 				}
 			}
 		}
-		
+
 
 		if (unAuthenticatedFaceletPath == null) {
 			unAuthenticatedFaceletPath = getBundle(context, getBundleIdentifier()).getFaceletURI("loggedOut.xhtml");
@@ -275,7 +275,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 			add(getLoggedInPart(iwc, bean));
 		} else {
 			LoginState state = null;
-			if (getLoginLock() != null && getLoginLock().isLoginLocked(context)) {
+			if (iwc.getApplicationSettings().getBoolean("iw_login_lock_enabled", Boolean.TRUE) && getLoginLock() != null && getLoginLock().isLoginLocked(context)) {
 				state = LoginState.DISABLED;
 			} else {
 				state = LoginBusinessBean.internalGetState(iwc);
@@ -483,7 +483,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	public void setRedirectLoggedInUserToPrimaryGroupHomePage(boolean redirectLoggedInUserToPrimaryGroupHomePage) {
 		this.redirectLoggedInUserToPrimaryGroupHomePage = redirectLoggedInUserToPrimaryGroupHomePage;
 	}
-	
+
 	public boolean isRedirectLoggedInUserToUrlToRedirectToOnLogon() {
 		return redirectLoggedInUserToUrlToRedirectToOnLogon;
 	}
