@@ -54,6 +54,7 @@ public class UserPasswordChanger extends Block {
 
 		// Header
 		Layer headerContainer = new Layer();
+		headerContainer.setStyleAttribute("width:360px;text-align:justify;");
 		container.add(headerContainer);
 		headerContainer.setStyleClass(styleName);
 		Text header = new Text(iwrb.getLocalizedString("change_your_password", "Please change your password"));
