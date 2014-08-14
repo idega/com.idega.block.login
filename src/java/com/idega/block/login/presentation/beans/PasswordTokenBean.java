@@ -136,15 +136,16 @@ public class PasswordTokenBean {
 	}
 
 	public void submit() {
+		IWContext iwc = getIWContext();
 		boolean human = getWeb2Business().validateJCaptcha(
-				getIWContext().getSessionId(), 
+				iwc.getSessionId(), 
 				getCapcha());
 		
 		boolean processStarted = Boolean.FALSE;
 		if (human) {
 			processStarted = getPasswordTokenBusiness().initiatePasswordReset(
 					getIdentifier(),
-					getIpAddress());
+					getIpAddress(),iwc);
 		} else {
 			getIWContext().setMultipartParameter(
 					CAPCHA_FAILED, 

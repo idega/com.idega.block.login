@@ -329,6 +329,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, getWeb2Business().getBundleURIsToFancyBoxScriptFiles());
 		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, CoreConstants.DWR_ENGINE_SCRIPT);
 		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, USER_BUSINESS_DWR_SCRIPT);
+		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, "/dwr/interface/LoginServices.js");
 		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, iwb.getVirtualPathWithFileNameString(LOGIN_SCRIPT));
 		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, iwb.getVirtualPathWithFileNameString("javascript/UserPasswordChanger.js"));
 		PresentationUtil.addStyleSheetToHeader(iwc, getWeb2Business().getBundleURIToFancyBoxStyleFile());

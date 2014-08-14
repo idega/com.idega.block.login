@@ -82,13 +82,16 @@
  */
 package com.idega.block.login.presentation.beans;
 
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.hsqldb.lib.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.idega.block.login.business.LoginServices;
 import com.idega.block.login.business.PasswordTokenBusiness;
+import com.idega.block.login.business.PasswordValidator;
 import com.idega.block.login.presentation.PasswordTokenCreator;
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
@@ -122,6 +125,10 @@ public class PasswordChangerBean {
 	private Boolean changed = null;
 	
 	private boolean redirectToHomepage;
+	private String validationError;
+	
+	@Autowired
+	private LoginServices loginServices;
 
 	public String getNewPassword() {
 		return newPassword;
@@ -176,14 +183,26 @@ public class PasswordChangerBean {
 		this.changed = changed;
 	}
 
+	public boolean isValidPassword(String password,String token){
+		Collection<PasswordValidator> validators = getLoginServices().getPasswordValidators();
+		for(PasswordValidator validator : validators){
+			validationError = validator.getPasswordError(password, getIWContext(), getPasswordTokenBusiness().getUserByToken(token));
+			if(validationError != null){
+				return false;
+			}
+		}
+		return true;
+	}
 	@SuppressWarnings("deprecation")
 	public void submit() {
-		if (!getNewPassword().equals(getRetypedPassword())) {
+		String newPassword = getNewPassword();
+		String token = getToken();
+		if (!newPassword.equals(getRetypedPassword()) || !isValidPassword(newPassword,token)) {
 			setChanged(Boolean.FALSE);
 			return;
 		}
 		User user = getPasswordTokenBusiness().completePasswordReset(
-				getToken(), getNewPassword());
+				token, newPassword);
 		boolean changed = user != null;
 		setChanged(changed);
 		if(changed && redirectToHomepage){
@@ -240,5 +259,21 @@ public class PasswordChangerBean {
 
 	public void setRedirectToHomepage(boolean redirectToHomepage) {
 		this.redirectToHomepage = redirectToHomepage;
+	}
+
+	private LoginServices getLoginServices() {
+		if(loginServices != null){
+			return loginServices;
+		}
+		ELUtil.getInstance().autowire(this);
+		return loginServices;
+	}
+
+	public String getMainError() {
+		return validationError;
+	}
+
+	public void setMainError(String mainError) {
+		this.validationError = mainError;
 	}
 }

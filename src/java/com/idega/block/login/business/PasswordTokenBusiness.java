@@ -91,8 +91,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.FinderException;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -140,18 +138,19 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 	 * @return link of current request
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
-	public String getCleanURI() {
-		FacesContext context = FacesContext.getCurrentInstance();
-		if (context == null) {
-			return null;
-		}
-
-		ExternalContext externalContext = context.getExternalContext();
-		if (externalContext == null) {
-			return null;
-		}
-
-		return externalContext.getRequestHeaderMap().get("referer");
+	public String getCleanURI(IWContext iwc) {
+		return iwc.getServerURL() + iwc.getRequest().getRequestURI();
+//		FacesContext context = FacesContext.getCurrentInstance();
+//		if (context == null) {
+//			return null;
+//		}
+//
+//		ExternalContext externalContext = context.getExternalContext();
+//		if (externalContext == null) {
+//			return null;
+//		}
+//
+//		return externalContext.getRequestHeaderMap().get("referer");
 	}
 
 	/**
@@ -251,7 +250,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 	 * @param entity is created link for password reset component, not <code>null</code>;
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
-	public boolean notifyRegisteredUser(PasswordTokenEntity entity) {
+	public boolean notifyRegisteredUser(PasswordTokenEntity entity,IWContext iwc) {
 		if (entity == null) {
 			return Boolean.FALSE;
 		}
@@ -290,7 +289,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 				"to reset the password of an account. If you did not asked " +
 				"password reset please ignore this email. To continue the " +
 				"password reset, please proceed to "));
-		sb.append(getLink(entity));
+		sb.append(getLink(entity,iwc));
 		sb.append(getLocalizedMessage("mail.existing.text.4", "\n\n" +
 				"Kind regards,\nClient Support."));
 		sb.append(getLocalizedMessage("mail.request.from",
@@ -320,7 +319,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 	 * @param ip is IP address from where password reset request was sent.
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
-	public boolean initiatePasswordReset(String identifier, String ip) {
+	public boolean initiatePasswordReset(String identifier, String ip,IWContext iwc) {
 		if (!StringUtil.isEmpty(identifier) && !StringUtil.isEmpty(ip)) {
 			Collection<User> users = getUsers(identifier);
 			if (ListUtil.isEmpty(users)) {
@@ -329,7 +328,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 			} else {
 				for (User user : users) {
 					if (!notifyRegisteredUser(getPasswordTokenEntityDAO()
-							.create(user.getUniqueId(), ip))) {
+							.create(user.getUniqueId(), ip),iwc)) {
 						return Boolean.FALSE;
 					}
 				}
@@ -415,12 +414,12 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 	 * @return designed link or <code>null</code> on failure;
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
-	protected String getLink(PasswordTokenEntity entity) {
+	protected String getLink(PasswordTokenEntity entity,IWContext iwc) {
 		if (entity == null) {
 			return null;
 		}
 		
-		StringBuilder uri = new StringBuilder(getCleanURI());
+		StringBuilder uri = new StringBuilder(getCleanURI(iwc));
 		uri.append(CoreConstants.QMARK)
 		.append(PasswordTokenCreator.PARAMETER_TOKEN)
 		.append(CoreConstants.EQ)

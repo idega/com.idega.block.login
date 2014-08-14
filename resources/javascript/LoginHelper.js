@@ -14,6 +14,15 @@ function validateAndSavePassword(msgId, validateErrorMsg, saveErrorMsg) {
 	if(password != password2) {
 		document.getElementById(msgId).innerHTML = validateErrorMsg;
 	} else {
-		UserBusiness.changeUserPassword(password, function(str) { passwordChangeValidation(str, msgId, saveErrorMsg); });  
+		LoginServices.savePassword(password,{
+			callback : function(reply) { 
+				if(reply.status == "OK"){
+					document.getElementById(msgId).innerHTML = "";
+					passwordChangeValidation("success", msgId, saveErrorMsg); 
+					return;
+				}
+				document.getElementById(msgId).innerHTML = reply.message;
+			}
+		});  
 	}
 }
