@@ -16,7 +16,7 @@ function validateAndSavePassword(msgId, validateErrorMsg, saveErrorMsg) {
 	} else {
 		LoginServices.savePassword(password,{
 			callback : function(reply) { 
-				if(reply.status == "OK"){
+				if(reply.status == "OK" || reply.message == null){
 					document.getElementById(msgId).innerHTML = "";
 					passwordChangeValidation("success", msgId, saveErrorMsg); 
 					return;

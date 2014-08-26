@@ -31,7 +31,7 @@ import com.idega.util.CoreUtil;
 }, name="LoginServices")
 public class LoginServices extends DefaultSpringBean{
 	public static final String BEAN_NAME = "loginServices";
-	
+
 	private Collection<PasswordValidator> passwordValidators;
 
 	public Collection<PasswordValidator> getPasswordValidators() {
@@ -41,11 +41,11 @@ public class LoginServices extends DefaultSpringBean{
 		passwordValidators = new ArrayList<PasswordValidator>();
 		return passwordValidators;
 	}
-	
+
 	public void addPasswordValidator(PasswordValidator passwordValidator){
 		getPasswordValidators().add(passwordValidator);
 	}
-	
+
 	public IWResourceBundle getIwrb(IWContext iwc) {
 		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(LoginConstants.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 		return iwrb;
@@ -61,28 +61,36 @@ public class LoginServices extends DefaultSpringBean{
 		return null;
 	}
 	@RemoteMethod
-	public Response savePassword(String password){
+	public Response savePassword(String password) {
 		IWContext iwc = CoreUtil.getIWContext();
 		IWResourceBundle iwrb = getIwrb(iwc);
 		Response response = new Response();
-		try{
-			User user = iwc.getCurrentUser();
-			String validationError = isValidPassword(password, user, iwc);
-			if(validationError != null){
-				response.setMessage(validationError);
-				response.setStatus(HttpStatus.getStatusText(HttpStatus.SC_BAD_REQUEST));
+		if (iwc.isLoggedOn()) {
+			try {
+				User user = iwc.getCurrentUser();
+				String validationError = isValidPassword(password, user, iwc);
+				if (validationError != null) {
+					response.setMessage(validationError);
+					response.setStatus(HttpStatus.getStatusText(HttpStatus.SC_BAD_REQUEST));
+					return response;
+				}
+
+				UserBusiness userBusiness = IBOLookup.getServiceInstance(iwc, UserBusiness.class);
+				if (userBusiness.changeUserPassword(user, password)) {
+					response.setStatus(HttpStatus.getStatusText(HttpStatus.SC_OK));
+				} else {
+					response.setStatus(HttpStatus.getStatusText(HttpStatus.SC_INTERNAL_SERVER_ERROR));
+					response.setMessage(iwrb.getLocalizedString("error", "Error"));
+				}
 				return response;
+			} catch (Exception e) {
+				getLogger().log(Level.WARNING, "Failed changing password to " + password, e);
 			}
-			UserBusiness userBusiness = IBOLookup.getServiceInstance(iwc, UserBusiness.class);
-			userBusiness.changeUserPassword(user, password);
-			response.setStatus(HttpStatus.getStatusText(HttpStatus.SC_INTERNAL_SERVER_ERROR));
-			return response;
-		}catch (Exception e) {
-			getLogger().log(Level.WARNING, "Failed changing password to " + password, e);
 		}
+
 		response.setStatus(HttpStatus.getStatusText(HttpStatus.SC_INTERNAL_SERVER_ERROR));
 		response.setMessage(iwrb.getLocalizedString("error", "Error"));
 		return response;
 	}
-	
+
 }
