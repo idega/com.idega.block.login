@@ -76,7 +76,7 @@ public class LoginServices extends DefaultSpringBean{
 				}
 
 				UserBusiness userBusiness = IBOLookup.getServiceInstance(iwc, UserBusiness.class);
-				if (userBusiness.changeUserPassword(user, password)) {
+				if (userBusiness.changeUserCurrentPassword(iwc, password)) {
 					response.setStatus(HttpStatus.getStatusText(HttpStatus.SC_OK));
 				} else {
 					response.setStatus(HttpStatus.getStatusText(HttpStatus.SC_INTERNAL_SERVER_ERROR));

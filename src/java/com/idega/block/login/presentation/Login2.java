@@ -31,11 +31,11 @@ import com.idega.block.web2.business.Web2Business;
 import com.idega.builder.bean.AdvancedProperty;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
+import com.idega.core.accesscontrol.business.LoggedOnInfo;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
-import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.business.LoginLock;
 import com.idega.core.accesscontrol.business.LoginState;
-import com.idega.core.accesscontrol.data.LoginInfo;
+import com.idega.core.accesscontrol.data.bean.LoginInfo;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.core.builder.data.ICPage;
@@ -47,7 +47,6 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.servlet.filter.IWAuthenticator;
 import com.idega.user.business.UserBusiness;
-import com.idega.user.data.User;
 import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
 import com.idega.util.PresentationUtil;
@@ -265,8 +264,8 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		} catch(Exception e) {}
 
 		if (iwc.isLoggedOn()) {
-			User currentUser = iwc.getCurrentUser();
-			LoginInfo loginInfo = LoginDBHandler.getLoginInfo((LoginDBHandler.getUserLogin(currentUser)));
+			LoggedOnInfo loggedOnInfo = LoginBusinessBean.getLoggedOnInfo(iwc);
+			LoginInfo loginInfo = loggedOnInfo.getUserLogin().getLoginInfo();
 
 			if (loginInfo.getAllowedToChange() && loginInfo.getChangeNextTime() && !iwc.isSuperAdmin()) {
 				addLoginScriptsAndStyles(context);
