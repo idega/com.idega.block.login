@@ -36,6 +36,7 @@ import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginLock;
 import com.idega.core.accesscontrol.business.LoginState;
 import com.idega.core.accesscontrol.data.bean.LoginInfo;
+import com.idega.core.accesscontrol.data.bean.UserLogin;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.core.builder.data.ICPage;
@@ -50,6 +51,7 @@ import com.idega.user.business.UserBusiness;
 import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
 import com.idega.util.PresentationUtil;
+import com.idega.util.StringUtil;
 import com.idega.util.expression.ELUtil;
 
 /**
@@ -268,7 +270,19 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 			LoginInfo loginInfo = loggedOnInfo.getUserLogin().getLoginInfo();
 
 			if (loginInfo.getAllowedToChange() && loginInfo.getChangeNextTime() && !iwc.isSuperAdmin()) {
-				addLoginScriptsAndStyles(context);
+				UserLogin login = loginInfo.getUserLogin();
+				String loginType = login.getLoginType();
+				Integer bankCount = login.getBankCount();
+
+				boolean changePassword = false;
+				if (StringUtil.isEmpty(loginType) && bankCount == null) {
+					changePassword = true;
+				} else if (!"is-pki-stjr".equals(loginType) && bankCount == null) {
+					changePassword = true;
+				}
+				if (changePassword) {
+					addLoginScriptsAndStyles(context);
+				}
 			}
 
 			add(getLoggedInPart(iwc, bean));
