@@ -11,6 +11,7 @@ package com.idega.block.login.presentation;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,6 +21,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -46,6 +48,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWBaseComponent;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
+import com.idega.presentation.Page;
 import com.idega.servlet.filter.IWAuthenticator;
 import com.idega.user.business.UserBusiness;
 import com.idega.util.CoreConstants;
@@ -124,7 +127,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 			bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGOFF, getURLToRedirectToOnLogoff());
 		}
 
-		for (Entry<String, String> entry : extraLogoffParameters.entrySet()) {
+		for (Entry<String, String> entry: extraLogoffParameters.entrySet()) {
 			bean.addParameter(entry.getKey(), entry.getValue());
 		}
 
@@ -158,7 +161,6 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 			hiddenParamAdded = true;
 		}
 
-
 		for (Entry<String, String> entry : extraLogonParameters.entrySet()) {
 			bean.addParameter(entry.getKey(), entry.getValue());
 		}
@@ -166,7 +168,38 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		FaceletComponent facelet = (FaceletComponent) iwc.getApplication().createComponent(FaceletComponent.COMPONENT_TYPE);
 		facelet.setFaceletURI(unAuthenticatedFaceletPath);
 
+		//	Disabling back button
+		doDisableBackButton(context, iwc);
+
 		return facelet;
+	}
+
+	private void doDisableBackButton(FacesContext context, IWContext iwc) {
+		HttpServletResponse response = iwc.getResponse();
+		response.setHeader("Cache-Control","no-cache,no-store,must-revalidate");	//	HTTP 1.1
+		response.setHeader("Pragma","no-cache");									//	HTTP 1.0
+		response.setDateHeader("Expires", -1);										//	Prevents caching at the proxy server
+
+		Page page = getParentPage();
+		if (page != null) {
+			page.setMetaTag("Cache-Control", "no-cache");
+			page.setMetaTag("Cache-Control","no-store");
+			page.setMetaTag("Pragma","no-cache");
+
+			if (iwc.getIWMainApplication().getSettings().getBoolean("login.no_back_after_logout", Boolean.FALSE)) {
+				PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, Arrays.asList(
+					getJQuery().getBundleURIToJQueryLib(),
+					CoreConstants.DWR_ENGINE_SCRIPT,
+					"/dwr/interface/WebUtil.js",
+					getBundle(context, IW_BUNDLE_IDENTIFIER).getVirtualPathWithFileNameString("javascript/no-back-action.js")
+				));
+				String action = "NoBackActionHelper.initialize({loggedOut: true});";
+				if (!CoreUtil.isSingleComponentRenderingProcess(iwc)) {
+					action = "jQuery(window).load(function() {" + action + "});";
+				}
+				PresentationUtil.addJavaScriptActionToBody(iwc, action);
+			}
+		}
 	}
 
 	protected UIComponent getLoginFailedPart(FacesContext context, LoginBean bean, String message) {
@@ -193,9 +226,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 
 	@Override
 	public void initializeComponent(FacesContext context) {
-
 		IWContext iwc = IWContext.getIWContext(context);
-
 
 		if (redirectLoggedInUserToUrlToRedirectToOnLogon) {
 			if (iwc.isLoggedOn()) {
@@ -203,7 +234,6 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 				return;
 			}
 		}
-
 
 		if (redirectLoggedInUserToPrimaryGroupHomePage) {
 			if (iwc.isLoggedOn()) {
@@ -249,8 +279,9 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 			Layer script = new Layer();
 			add(script);
 			script.add(PresentationUtil.getJavaScriptAction(action));
-		} else
+		} else {
 			PresentationUtil.addJavaScriptActionToBody(iwc, action);
+		}
 
 		String cssFile = getBundle(context, getBundleIdentifier()).getVirtualPathWithFileNameString("style/login.css");
 		if (!PresentationUtil.addStyleSheetToHeader(iwc, cssFile)) {
