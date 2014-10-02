@@ -1,0 +1,38 @@
+<html
+		xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:t="http://myfaces.apache.org/tomahawk"
+		xmlns:f="http://java.sun.com/jsf/core"
+>
+<ui:component>
+	<div class="#{loginBean.styleClass} loggedOut smsCodeForm">
+		<form class="smsCodeForm" action="#{loginBean.action}" method="post" onsubmit="return false;">
+			<div class="sms">
+				<label for="smsCode">
+					<h:outputText value="#{localizedStrings['com.idega.block.login']['smsCode']}" />
+				</label>
+				<input type="text" id="smsCode" name="smsCode" size="6" maxlength="6"/>
+			</div>
+			
+			<t:div styleClass="submit #{loginBean.localeStyle}" rendered="#{!loginBean.useSubmitLinks}">
+				<input type="button" value="#{localizedStrings['com.idega.block.login']['cancel_text']}" class="#{loginBean.buttonStyleClass}"/>
+				<input type="submit" value="#{localizedStrings['com.idega.block.login']['login_text']}" class="#{loginBean.buttonStyleClass}"/>
+			</t:div>
+			<t:div styleClass="submit #{loginBean.localeStyle}" rendered="#{loginBean.useSubmitLinks}">
+				<a href="#" class="smsCodeCancelButton">
+					<span><t:outputText value="#{localizedStrings['com.idega.block.login']['login_text']}" /></span>
+				</a>
+				<a href="#" class="smsCodeLoginButton">
+					<span><t:outputText value="#{localizedStrings['com.idega.block.login']['cancel_text']}" /></span>
+				</a>
+			</t:div>
+			
+			<ui:repeat value="#{loginBean.hiddenParameters}" var="parameter">
+				<input type="hidden" name="#{parameter.parameter}" value="#{parameter.value}" />
+			</ui:repeat>
+			
+			<input type="hidden" name="isCancel" id="isCancel" value="false" />
+		</form>
+	</div>
+</ui:component>
+</html>

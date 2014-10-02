@@ -50,3 +50,5 @@ welcome_message.morning=God morgon
 without_hyphen=Personnummer skall skrivas utan bindestreck
 write_ssn=Skriv personnummer
 wrong_confirm=Bekr\u00E4ftelsen misslyckades
+smsCode=SMS code
+cancel_text=Cancel

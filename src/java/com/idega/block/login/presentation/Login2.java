@@ -93,6 +93,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	private String unAuthenticatedFaceletPath;
 	private String authenticatedFaceletPath;
 	private String authenticationFailedFaceletPath;
+	private String smsAuthenticationFaceletPath;
 
 	public static final String LOGIN_SCRIPT = "javascript/LoginHelper.js";
 	public static final String USER_BUSINESS_DWR_SCRIPT = "/dwr/interface/UserBusiness.js";
@@ -231,6 +232,9 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		if (authenticationFailedFaceletPath == null) {
 			authenticationFailedFaceletPath = getBundle(context, getBundleIdentifier()).getFaceletURI("loginFailed.xhtml");
 		}
+		if (smsAuthenticationFaceletPath == null) {
+			smsAuthenticationFaceletPath = getBundle(context, getBundleIdentifier()).getFaceletURI("smsLogin.xhtml");
+		}
 
 		LoginBean bean = getBeanInstance("loginBean");
 		bean.setUseSubmitLinks(useSubmitLinks);
@@ -307,7 +311,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		}
 	}
 
-	private String getLoginFailedByState(FacesContext context, LoginState state) {
+	protected String getLoginFailedByState(FacesContext context, LoginState state) {
 		IWContext iwc = IWContext.getIWContext(context);
 		IWResourceBundle iwrb = getBundle(context, getBundleIdentifier()).getResourceBundle(iwc);
 
@@ -334,7 +338,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		return jQuery;
 	}
 
-	private void addLoginScriptsAndStyles(FacesContext context) {
+	protected void addLoginScriptsAndStyles(FacesContext context) {
 		IWContext iwc = IWContext.getIWContext(context);
 		IWBundle iwb = getBundle(context, getBundleIdentifier());
 
@@ -376,6 +380,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		this.extraLogonParameters = (Map) value[13];
 		this.extraLogoffParameters = (Map) value[14];
 		this.urlToRedirectToOnLogonFailed = (String) value[15];
+		this.smsAuthenticationFaceletPath = (String) value[16];
 
 		IWContext iwc = IWContext.getIWContext(context);
 		LoginBean bean = getBeanInstance("loginBean");
@@ -440,7 +445,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 
 	@Override
 	public Object saveState(FacesContext context) {
-		Object[] state = new Object[16];
+		Object[] state = new Object[17];
 		state[0] = super.saveState(context);
 		state[1] = Boolean.valueOf(this.useSubmitLinks);
 		state[2] = Boolean.valueOf(this.generateContainingForm);
@@ -457,6 +462,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		state[13] = this.extraLogonParameters;
 		state[14] = this.extraLogoffParameters;
 		state[15] = this.urlToRedirectToOnLogonFailed;
+		state[16] = this.smsAuthenticationFaceletPath;
 		return state;
 	}
 
@@ -482,6 +488,10 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 
 	public void setRedirectUserToPrimaryGroupHomePage(boolean redirectToHomePage) {
 		this.redirectUserToPrimaryGroupHomePage = redirectToHomePage;
+	}
+
+	protected boolean getRedirectUserToPrimaryGroupHomePage() {
+		return this.redirectUserToPrimaryGroupHomePage;
 	}
 
 	public boolean isRedirectLoggedInUserToPrimaryGroupHomePage() {
@@ -516,7 +526,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	 * @param iwc
 	 * @return
 	 */
-	private String getCurrentLocaleLanguage(IWContext iwc) {
+	protected String getCurrentLocaleLanguage(IWContext iwc) {
 		return iwc.getLocale().getLanguage();
 	}
 
@@ -555,8 +565,16 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		this.extraLogonParameters.put(parameter, value);
 	}
 
+	protected Map<String, String> getExtraLogonParameters() {
+		return this.extraLogonParameters;
+	}
+
 	public void setExtraLogoffParameter(String parameter, String value) {
 		this.extraLogoffParameters.put(parameter, value);
+	}
+
+	protected Map<String, String> getExtraLogoffParameter() {
+		return this.extraLogoffParameters;
 	}
 
 	@Deprecated
@@ -566,6 +584,10 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 
 	public void setSendToHTTPS(boolean sendToHttps) {
 		this.sendToHttps = sendToHttps;
+	}
+
+	protected boolean getSendToHTTPS() {
+		return this.sendToHttps;
 	}
 
 	/**
@@ -595,16 +617,28 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		this.styleClass = styleClass;
 	}
 
-	private String getStyleClass() {
+	protected String getStyleClass() {
 		return styleClass;
+	}
+
+	public String getUnAuthenticatedFaceletPath() {
+		return unAuthenticatedFaceletPath;
 	}
 
 	public void setUnAuthenticatedFaceletPath(String pathToFacelet) {
 		this.unAuthenticatedFaceletPath = pathToFacelet;
 	}
 
+	public String getAuthenticatedFaceletPath() {
+		return authenticatedFaceletPath;
+	}
+
 	public void setAuthenticatedFaceletPath(String pathToFacelet) {
 		this.authenticatedFaceletPath = pathToFacelet;
+	}
+
+	public String getAuthenticationFailedFaceletPath() {
+		return authenticationFailedFaceletPath;
 	}
 
 	public void setAuthenticationFailedFaceletPath(String pathToFacelet) {
@@ -628,5 +662,14 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		}
 
 		return this.loginLock;
+	}
+
+	public String getSmsAuthenticationFaceletPath() {
+		return smsAuthenticationFaceletPath;
+	}
+
+	public void setSmsAuthenticationFaceletPath(
+			String smsAuthenticationFaceletPath) {
+		this.smsAuthenticationFaceletPath = smsAuthenticationFaceletPath;
 	}
 }

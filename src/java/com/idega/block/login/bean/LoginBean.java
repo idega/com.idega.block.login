@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.idega.block.login.bean;
 
@@ -34,12 +34,12 @@ public class LoginBean {
 	private Map<String, String> parameters = new HashMap<String, String>();
 	private String defaultOutput;
 	private String localeStyle;
-	
-	
+
+
 	private Collection<LoggedInUser> loggedIn;
 	private boolean showPersonalID = false;
 	private boolean showLogin = false;
-	
+
 	private String passwordChangerURL;
 
 	/**
@@ -136,28 +136,28 @@ public class LoginBean {
 		}
 		return ArrayUtil.convertListToArray(parametersList);
 	}
-	
+
 	public String removeParameter(String parameter){
 		return parameters.remove(parameter);
 	}
-	
+
 	public String getUriByHiddenParameters() {
 		Parameter[] parameters = getHiddenParameters();
 		if (ArrayUtil.isEmpty(parameters)) {
 			return CoreConstants.EMPTY;
 		}
-		
+
 		Parameter param = null;
 		StringBuilder uri = new StringBuilder();
 		for (Iterator<Parameter> paramsIter = Arrays.asList(parameters).iterator(); paramsIter.hasNext();) {
 			param = paramsIter.next();
-			
+
 			uri.append(param.getParameter()).append(CoreConstants.EQ).append(param.getValue());
 			if (paramsIter.hasNext()) {
 				uri.append(CoreConstants.AMP);
 			}
 		}
-		
+
 		return uri.toString();
 	}
 
@@ -209,9 +209,9 @@ public class LoginBean {
 	public void setLocaleStyle(String localeStyle) {
 		this.localeStyle = localeStyle;
 	}
-	
+
 	/**
-	 * Adds all parameters from the request to hidden input, except internal login 
+	 * Adds all parameters from the request to hidden input, except internal login
 	 * parameters for state, password, user name and unique id
 	 * @param request
 	 */
@@ -223,7 +223,8 @@ public class LoginBean {
 		excludeParam.add(LoginBusinessBean.PARAMETER_PASSWORD2);//whatever that is...
 		excludeParam.add(LoginBusinessBean.LoginStateParameter);
 		excludeParam.add(LoginBusinessBean.PARAM_LOGIN_BY_UNIQUE_ID);
-		
+		excludeParam.add(LoginBusinessBean.PARAMETER_SMS_CODE);
+
 
 		if (parameters != null && !parameters.isEmpty()) {
 			Set<String> parametersSet = parameters.keySet();
@@ -239,7 +240,7 @@ public class LoginBean {
 				}
 			}
 		}
-		
+
 	}
 
 	public Collection<LoggedInUser> getLoggedIn() {

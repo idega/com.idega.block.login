@@ -72,3 +72,5 @@ without_hyphen=Social-security number must be written without a hyphen
 write_ssn=Type social-security number in user input
 wrong_confirm=Confirmation failed
 login_blocked=Temporarily blocked due to too many log-in attempts
+smsCode=SMS code
+cancel_text=Cancel
