@@ -128,21 +128,23 @@ public class LoginWithSMSCode extends Login2 {
 
 		if (iwc.isLoggedOn()) {
 			LoggedOnInfo loggedOnInfo = LoginBusinessBean.getLoggedOnInfo(iwc);
-			LoginInfo loginInfo = loggedOnInfo.getUserLogin().getLoginInfo();
+			LoginInfo loginInfo = null;
+			if (loggedOnInfo != null && loggedOnInfo.getUserLogin() != null) {
+				loginInfo = loggedOnInfo.getUserLogin().getLoginInfo();
+				if (loginInfo != null && loginInfo.getAllowedToChange() && loginInfo.getChangeNextTime() && !iwc.isSuperAdmin()) {
+					UserLogin login = loginInfo.getUserLogin();
+					String loginType = login.getLoginType();
+					Integer bankCount = login.getBankCount();
 
-			if (loginInfo.getAllowedToChange() && loginInfo.getChangeNextTime() && !iwc.isSuperAdmin()) {
-				UserLogin login = loginInfo.getUserLogin();
-				String loginType = login.getLoginType();
-				Integer bankCount = login.getBankCount();
-
-				boolean changePassword = false;
-				if (StringUtil.isEmpty(loginType) && bankCount == null) {
-					changePassword = true;
-				} else if (!"is-pki-stjr".equals(loginType) && bankCount == null) {
-					changePassword = true;
-				}
-				if (changePassword) {
-					addLoginScriptsAndStyles(context);
+					boolean changePassword = false;
+					if (StringUtil.isEmpty(loginType) && bankCount == null) {
+						changePassword = true;
+					} else if (!"is-pki-stjr".equals(loginType) && bankCount == null) {
+						changePassword = true;
+					}
+					if (changePassword) {
+						addLoginScriptsAndStyles(context);
+					}
 				}
 			}
 
@@ -201,6 +203,9 @@ public class LoginWithSMSCode extends Login2 {
 			bean.addParameter(entry.getKey(), entry.getValue());
 		}
 
+		//Logout from Ticket service
+		//logoutFromTicketSystem();
+
 		FaceletComponent facelet = (FaceletComponent) iwc.getApplication().createComponent(FaceletComponent.COMPONENT_TYPE);
 		facelet.setFaceletURI(getUnAuthenticatedFaceletPath());
 
@@ -248,5 +253,48 @@ public class LoginWithSMSCode extends Login2 {
 		return jQuery;
 	}
 
+//	private void logoutFromTicketSystem() {
+//		HttpURLConnection conn = null;
+//		String urlString = "http://localhost:8080/" + "TicketServices/Authentication?logout=true";
+//
+//		try {
+//			URL url = new URL(urlString);
+//			conn = (HttpURLConnection) url.openConnection();
+//
+//			// Set the headers and main request parameters
+//			conn.setRequestProperty("SOAPAction", urlString);
+//			conn.setRequestProperty("Content-type", "text/xml; charset=utf-8");
+//		    conn.setRequestProperty("Content-Length", "" + 0);
+//			conn.setRequestMethod("POST");
+//		 	conn.setDoOutput(true);
+//
+//			// Send the request
+//			OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+//			wr.write("");
+//			wr.flush();
+//			wr.close();
+//
+//			int responseCode = conn.getResponseCode();
+//			getLogger().info("Response code from SMS service: " + responseCode);
+//			BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+//			String line;
+//			StringBuffer response = new StringBuffer();
+//			while ((line = rd.readLine()) != null) {
+//				response.append(line);
+//			}
+//			rd.close();
+//
+//			//Return the response as String
+//			getLogger().info(response.toString());
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			getLogger().warning("Could not logout from Ticket system...");
+//		} finally {
+//			if(conn != null) {
+//				conn.disconnect();
+//			}
+//		}
+//	}
 
 }
