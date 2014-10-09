@@ -74,6 +74,11 @@ version="1.2">
 			<property-name>redirectToHomepage</property-name>
 			<property-class>java.lang.Boolean</property-class>
 		</property>
+		<property>
+			<display-name>tokenSendResponseDiv</display-name>
+			<property-name>tokenSendResponseDiv</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
 		<component-extension>
 			<idegaweb-info>
         		<builder-visible>true</builder-visible>

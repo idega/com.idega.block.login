@@ -129,17 +129,23 @@ import com.idega.util.expression.ELUtil;
  * @version 1.0.0 Jan 15, 2014
  * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
  */
-@Service
+@Service(PasswordTokenBusiness.BEAN_NAME)
 @Scope(BeanDefinition.SCOPE_SINGLETON)
 public class PasswordTokenBusiness extends DefaultSpringBean {
 
+	public static final String BEAN_NAME="passwordTokenBusiness";
+	private PasswordTokenEmailMessageSender passwordTokenEmailMessageSender;
 	/**
 	 * 
 	 * @return link of current request
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
 	public String getCleanURI(IWContext iwc) {
-		return iwc.getServerURL() + iwc.getRequest().getRequestURI();
+		String serverUrl = iwc.getServerURL();
+		if(serverUrl.endsWith(CoreConstants.SLASH)){
+			serverUrl = serverUrl.substring(0, serverUrl.length()-1);
+		}
+		return serverUrl + iwc.getRequest().getRequestURI();
 //		FacesContext context = FacesContext.getCurrentInstance();
 //		if (context == null) {
 //			return null;
@@ -280,6 +286,13 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 			return Boolean.FALSE;
 		}
 
+		String message;
+		PasswordTokenEmailMessageSender passwordTokenEmailMessageSender = getPasswordTokenEmailMessageSender();
+		
+		if(passwordTokenEmailMessageSender != null){
+			passwordTokenEmailMessageSender.sendMessageForUser(user, iwc, getLink(entity,iwc));
+			return true;
+		}
 		StringBuilder sb = new StringBuilder();
 		sb.append(getLocalizedMessage("mail.existing.text.1", "Hello ")).append(user.getName());
 		sb.append(getLocalizedMessage("mail.existing.text.2", ",\n\n" +
@@ -297,10 +310,12 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 		sb.append(entity.getIp());
 		sb.append(getLocalizedMessage("mail.request.more_info", 
 				" find out more about this address here: http://www.whatismyip.com/"));
+		message = sb.toString();
+		
 
 		try {
 			SendMail.send(getSender(), email.getEmailAddress(), null, null, 
-					getMailHost(), getSubject(), sb.toString());
+					getMailHost(), getSubject(), message);
 			return Boolean.TRUE;
 		} catch (javax.mail.MessagingException me) {
 			Logger.getLogger(getClass().getName()).log(Level.SEVERE,
@@ -568,5 +583,14 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 		}
 
 		return this.userBusiness;
+	}
+
+	public PasswordTokenEmailMessageSender getPasswordTokenEmailMessageSender() {
+		return passwordTokenEmailMessageSender;
+	}
+
+	public void setPasswordTokenEmailMessageSender(
+			PasswordTokenEmailMessageSender passwordTokenEmailMessageSender) {
+		this.passwordTokenEmailMessageSender = passwordTokenEmailMessageSender;
 	}
 }
