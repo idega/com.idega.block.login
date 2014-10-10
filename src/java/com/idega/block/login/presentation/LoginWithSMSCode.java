@@ -1,5 +1,12 @@
 package com.idega.block.login.presentation;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -17,12 +24,14 @@ import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.business.LoggedOnInfo;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginState;
+import com.idega.core.accesscontrol.business.TwoStepLoginVerificator;
 import com.idega.core.accesscontrol.data.bean.LoginInfo;
 import com.idega.core.accesscontrol.data.bean.UserLogin;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.data.ICPage;
 import com.idega.facelets.ui.FaceletComponent;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
@@ -32,6 +41,7 @@ import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
 import com.idega.util.PresentationUtil;
 import com.idega.util.StringUtil;
+import com.idega.util.datastructures.map.MapUtil;
 import com.idega.util.expression.ELUtil;
 
 /**
@@ -177,6 +187,9 @@ public class LoginWithSMSCode extends Login2 {
 	protected UIComponent getLoggedOutPart(FacesContext context, LoginBean bean) {
 		IWContext iwc = IWContext.getIWContext(context);
 
+		//Logout from Ticket service
+		logoutFromTicketSystem(iwc);
+
 		boolean hiddenParamAdded = false;
 		bean.setAllowCookieLogin(getAllowCookieLogin());
 		bean.setAction(iwc.getRequestURI(getSendToHTTPS()));
@@ -202,9 +215,6 @@ public class LoginWithSMSCode extends Login2 {
 		for (Entry<String, String> entry : getExtraLogonParameters().entrySet()) {
 			bean.addParameter(entry.getKey(), entry.getValue());
 		}
-
-		//Logout from Ticket service
-		//logoutFromTicketSystem();
 
 		FaceletComponent facelet = (FaceletComponent) iwc.getApplication().createComponent(FaceletComponent.COMPONENT_TYPE);
 		facelet.setFaceletURI(getUnAuthenticatedFaceletPath());
@@ -253,48 +263,69 @@ public class LoginWithSMSCode extends Login2 {
 		return jQuery;
 	}
 
-//	private void logoutFromTicketSystem() {
-//		HttpURLConnection conn = null;
-//		String urlString = "http://localhost:8080/" + "TicketServices/Authentication?logout=true";
-//
-//		try {
-//			URL url = new URL(urlString);
-//			conn = (HttpURLConnection) url.openConnection();
-//
-//			// Set the headers and main request parameters
-//			conn.setRequestProperty("SOAPAction", urlString);
-//			conn.setRequestProperty("Content-type", "text/xml; charset=utf-8");
-//		    conn.setRequestProperty("Content-Length", "" + 0);
-//			conn.setRequestMethod("POST");
-//		 	conn.setDoOutput(true);
-//
-//			// Send the request
-//			OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-//			wr.write("");
-//			wr.flush();
-//			wr.close();
-//
-//			int responseCode = conn.getResponseCode();
-//			getLogger().info("Response code from SMS service: " + responseCode);
-//			BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-//			String line;
-//			StringBuffer response = new StringBuffer();
-//			while ((line = rd.readLine()) != null) {
-//				response.append(line);
-//			}
-//			rd.close();
-//
-//			//Return the response as String
-//			getLogger().info(response.toString());
-//
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			getLogger().warning("Could not logout from Ticket system...");
-//		} finally {
-//			if(conn != null) {
-//				conn.disconnect();
-//			}
-//		}
-//	}
+	private void logoutFromTicketSystem(IWContext iwc) {
+		HttpURLConnection conn = null;
+		String serverLink = iwc.getServerURL();
+		String urlString = serverLink + "TicketServices/Authentication?logout=true";
+		String parameter = "";
+
+		//Setting parameter
+		try {
+			parameter = URLEncoder.encode("logout", "UTF-8") + "=" + URLEncoder.encode("true", "UTF-8");
+		} catch (Exception e) {
+			parameter = "logout=true";
+		}
+
+		try {
+			URL url = new URL(urlString);
+			conn = (HttpURLConnection) url.openConnection();
+
+			// Set the headers and main request parameters
+			conn.setRequestProperty("SOAPAction", urlString);
+			conn.setRequestProperty("Content-type", "text/xml; charset=utf-8");
+		    conn.setRequestProperty("Content-Length", "" + parameter.length());
+		    conn.setRequestProperty("Accept-Charset", "utf-8");
+		    conn.addRequestProperty("logout", "true");
+			conn.setRequestMethod("POST");
+		 	conn.setDoOutput(true);
+		 	conn.setDoInput(true);
+		    //conn.setUseCaches (false);
+		    //conn.setDefaultUseCaches (false);
+
+			//Saving session id as cookie
+		 	//Collection<TwoStepLoginVerificator> verificators = getVerificators();
+			//if (!ListUtil.isEmpty(verificators)) {
+			//	for (TwoStepLoginVerificator verificator: verificators) {
+			//		verificator.addCookieToJarfallaSessionBean(iwc.getCookie("JSESSIONID"));
+			//	}
+			//}
+
+		 	InputStream responseInputStream = url.openStream();
+
+		 	BufferedReader rd = new BufferedReader(new InputStreamReader(responseInputStream));
+			String line;
+			StringBuffer response = new StringBuffer();
+			while ((line = rd.readLine()) != null) {
+				response.append(line);
+			}
+			rd.close();
+
+		 	getLogger().info("Response from Ticket WS: " + response.toString());
+		} catch (Exception e) {
+			getLogger().warning("Could not logout from Ticket system...");
+			e.printStackTrace();
+		} finally {
+			if(conn != null) {
+				conn.disconnect();
+			}
+		}
+	}
+
+	private Collection<TwoStepLoginVerificator> getVerificators() {
+		Map<String, TwoStepLoginVerificator> verficators = WebApplicationContextUtils.getWebApplicationContext(IWMainApplication.getDefaultIWMainApplication().getServletContext())
+			.getBeansOfType(TwoStepLoginVerificator.class);
+		return MapUtil.isEmpty(verficators) ? null : verficators.values();
+	}
+
 
 }
