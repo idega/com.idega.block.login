@@ -9,10 +9,12 @@
  */
 package com.idega.block.login.presentation;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -42,6 +44,7 @@ import com.idega.core.accesscontrol.data.bean.UserLogin;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.core.builder.data.ICPage;
+import com.idega.data.SimpleQuerier;
 import com.idega.facelets.ui.FaceletComponent;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -51,8 +54,11 @@ import com.idega.presentation.Layer;
 import com.idega.presentation.Page;
 import com.idega.servlet.filter.IWAuthenticator;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.data.bean.User;
+import com.idega.util.ArrayUtil;
 import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
+import com.idega.util.ListUtil;
 import com.idega.util.PresentationUtil;
 import com.idega.util.StringUtil;
 import com.idega.util.expression.ELUtil;
@@ -311,7 +317,32 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 				} else if (!"is-pki-stjr".equals(loginType) && bankCount == null) {
 					changePassword = true;
 				}
+
+				Object changePasswordDBValue = null;
 				if (changePassword) {
+					try {
+						List<Serializable[]> data = SimpleQuerier.executeQuery("select change_next_time from " + LoginInfo.ENTITY_NAME + " where ic_login_id = " + login.getId(), 1);
+						if (!ListUtil.isEmpty(data)) {
+							Serializable[] rawData = data.iterator().next();
+							if (!ArrayUtil.isEmpty(rawData)) {
+								changePasswordDBValue = rawData[0];
+								if (changePasswordDBValue instanceof Character) {
+									changePassword = ((Character) changePasswordDBValue).charValue() == 'Y';
+								} else {
+									String tmp = changePasswordDBValue.toString();
+									changePassword = "Y".equals(tmp);
+								}
+							}
+						}
+					} catch (Exception e) {
+						changePassword = false;
+						e.printStackTrace();
+					}
+				}
+
+				if (changePassword) {
+					User user = login.getUser();
+					getLogger().info("It is marked to change password for " + user.getName() + " (personal ID: " + user.getPersonalID() + ", ID: " + user.getId() + ") : " + changePasswordDBValue);
 					addLoginScriptsAndStyles(context);
 				}
 			}
