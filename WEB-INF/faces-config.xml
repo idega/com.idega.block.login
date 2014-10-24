@@ -82,6 +82,16 @@ version="1.2">
 		</component-extension>
 	</component>
 
+	<component>
+		<component-type>Login with SMS code</component-type>
+		<component-class>com.idega.block.login.presentation.LoginWithSMSCode</component-class>
+		<property>
+			<display-name>Show link to authenticate with Ticket system</display-name>
+			<property-name>showLinkAuthByTicketSystem</property-name>
+			<property-class>java.lang.Boolean</property-class>
+		</property>
+	</component>
+
 	<managed-bean>
 		<managed-bean-name>passwordTokenBean</managed-bean-name>
 		<managed-bean-class>com.idega.block.login.presentation.beans.PasswordTokenBean</managed-bean-class>

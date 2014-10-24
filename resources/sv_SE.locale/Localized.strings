@@ -52,3 +52,4 @@ write_ssn=Skriv personnummer
 wrong_confirm=Bekr\u00E4ftelsen misslyckades
 smsCode=SMS code
 cancel_text=Cancel
+auth_by_ticket_service=Authenticate by Ticket service

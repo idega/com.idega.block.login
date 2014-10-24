@@ -54,6 +54,8 @@ public class LoginWithSMSCode extends Login2 {
 	@Autowired
 	private JQuery jQuery;
 
+	private boolean showLinkAuthByTicketSystem = true;
+
 	public LoginWithSMSCode() {
 		super();
 	}
@@ -108,6 +110,7 @@ public class LoginWithSMSCode extends Login2 {
 		bean.setStyleClass(getStyleClass());
 		bean.setButtonStyleClass(getButtonStyleClass());
 		bean.setLocaleStyle(getCurrentLocaleLanguage(iwc));
+		bean.setShowLinkAuthByTicketSystem(isShowLinkAuthByTicketSystem());
 
 		IWBundle bundle = getBundle(context, getBundleIdentifier());
 
@@ -326,6 +329,17 @@ public class LoginWithSMSCode extends Login2 {
 			.getBeansOfType(TwoStepLoginVerificator.class);
 		return MapUtil.isEmpty(verficators) ? null : verficators.values();
 	}
+
+
+	public boolean isShowLinkAuthByTicketSystem() {
+		return showLinkAuthByTicketSystem;
+	}
+
+
+	public void setShowLinkAuthByTicketSystem(boolean showLinkAuthByTicketSystem) {
+		this.showLinkAuthByTicketSystem = showLinkAuthByTicketSystem;
+	}
+
 
 
 }

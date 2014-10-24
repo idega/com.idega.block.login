@@ -74,3 +74,4 @@ wrong_confirm=Confirmation failed
 login_blocked=Temporarily blocked due to too many log-in attempts
 smsCode=SMS code
 cancel_text=Cancel
+auth_by_ticket_service=Authenticate by Ticket service

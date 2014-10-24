@@ -33,6 +33,11 @@
 					<span><t:outputText value="#{localizedStrings['com.idega.block.login']['login_text']}" /></span>
 				</a>
 			</t:div>
+
+			<t:div rendered="#{loginBean.showLinkAuthByTicketSystem}">
+				<h:outputLink id="authenticationByTicketService" value="#{loginBean.authenticationServletLink}"> #{localizedStrings['com.idega.block.login']['auth_by_ticket_service']} </h:outputLink>
+			</t:div>
+			
 			
 			<ui:repeat value="#{loginBean.hiddenParameters}" var="parameter">
 				<input type="hidden" name="#{parameter.parameter}" value="#{parameter.value}" />

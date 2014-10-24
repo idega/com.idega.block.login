@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import com.idega.block.login.LoginConstants;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.util.ArrayUtil;
 import com.idega.util.CoreConstants;
@@ -34,6 +35,7 @@ public class LoginBean {
 	private Map<String, String> parameters = new HashMap<String, String>();
 	private String defaultOutput;
 	private String localeStyle;
+	private boolean showLinkAuthByTicketSystem = false;
 
 
 	private Collection<LoggedInUser> loggedIn;
@@ -274,4 +276,17 @@ public class LoginBean {
 	public void setPasswordChangerURL(String passwordChangerURL) {
 		this.passwordChangerURL = passwordChangerURL;
 	}
+
+	public boolean isShowLinkAuthByTicketSystem() {
+		return showLinkAuthByTicketSystem;
+	}
+
+	public void setShowLinkAuthByTicketSystem(boolean showLinkAuthByTicketSystem) {
+		this.showLinkAuthByTicketSystem = showLinkAuthByTicketSystem;
+	}
+
+	public String getAuthenticationServletLink() {
+		return LoginConstants.TICKET_WEBSERVICE_PATH;
+	}
+
 }
