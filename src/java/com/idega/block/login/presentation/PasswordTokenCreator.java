@@ -94,6 +94,7 @@ import org.hsqldb.lib.StringUtil;
 import com.idega.block.login.IWBundleStarter;
 import com.idega.block.login.data.PasswordTokenEntity;
 import com.idega.block.login.presentation.beans.PasswordChangerBean;
+import com.idega.block.login.presentation.beans.PasswordTokenBean;
 import com.idega.block.web2.business.JQuery;
 import com.idega.facelets.ui.FaceletComponent;
 import com.idega.idegaweb.IWBundle;
@@ -118,11 +119,12 @@ public class PasswordTokenCreator extends IWBaseComponent {
 	public static final String PASSWORD_CHANGER_FACELET_FILENAME = "passwordChanger.xhtml";
 	
 	private boolean redirectToHomepage;
+	private String tokenSendResponseDiv;
+	
 	
 	@Override
 	protected void initializeComponent(FacesContext context) {
 		super.initializeComponent(context);
-
 		IWBundle bundle = getBundle(context, IWBundleStarter.IW_BUNDLE_IDENTIFIER);
 		if (bundle == null) {
 			return;
@@ -172,7 +174,31 @@ public class PasswordTokenCreator extends IWBaseComponent {
 		PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, files);
 		
 		PresentationUtil.addStyleSheetToHeader(iwc, bundle.getVirtualPathWithFileNameString("style/passwordTokenCreator.css"));
+		if (StringUtil.isEmpty(getToken(iwc))) {
+			PasswordTokenBean passwordTokenBean = (PasswordTokenBean)context.getApplication().evaluateExpressionGet(context, "#{passwordTokenBean}", PasswordTokenBean.class);
+			passwordTokenBean.setTokenSendResponseDiv(getTokenSendResponseDiv());
+		}
 		super.encodeBegin(context);
+	}
+	@Override
+	public Object saveState(FacesContext ctx) {
+		Object values[] = new Object[3];
+		values[0] = super.saveState(ctx);
+		values[1] = isRedirectToHomepage();
+		values[2] = getTokenSendResponseDiv();
+		return values;
+	}
+
+	/**
+	 * @see javax.faces.component.UIPanel#restoreState(javax.faces.context.FacesContext,
+	 *      java.lang.Object)
+	 */
+	@Override
+	public void restoreState(FacesContext ctx, Object state) {
+		Object values[] = (Object[]) state;
+		super.restoreState(ctx, values[0]);
+		setRedirectToHomepage((Boolean) values[1]);
+		setTokenSendResponseDiv((String) values[2]);
 	}
 
 	public boolean isRedirectToHomepage() {
@@ -181,5 +207,13 @@ public class PasswordTokenCreator extends IWBaseComponent {
 
 	public void setRedirectToHomepage(boolean redirectToHomepage) {
 		this.redirectToHomepage = redirectToHomepage;
+	}
+
+	public String getTokenSendResponseDiv() {
+		return tokenSendResponseDiv;
+	}
+
+	public void setTokenSendResponseDiv(String tokenSendResponseDiv) {
+		this.tokenSendResponseDiv = tokenSendResponseDiv;
 	}
 }

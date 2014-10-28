@@ -110,6 +110,7 @@ public class PasswordTokenBean {
 	private String identifier = null;
 
 	private String capcha = null;
+	private String tokenSendResponseDiv;
 
 	public String getIdentifier() {
 		return identifier;
@@ -211,5 +212,13 @@ public class PasswordTokenBean {
 		}
 
 		return this.web2Business;
+	}
+
+	public String getTokenSendResponseDiv() {
+		return tokenSendResponseDiv;
+	}
+
+	public void setTokenSendResponseDiv(String tokenSendResponseDiv) {
+		this.tokenSendResponseDiv = tokenSendResponseDiv;
 	}
 }

@@ -9,9 +9,12 @@
  */
 package com.idega.block.login.presentation;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -20,6 +23,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -40,16 +44,21 @@ import com.idega.core.accesscontrol.data.bean.UserLogin;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.core.builder.data.ICPage;
+import com.idega.data.SimpleQuerier;
 import com.idega.facelets.ui.FaceletComponent;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWBaseComponent;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
+import com.idega.presentation.Page;
 import com.idega.servlet.filter.IWAuthenticator;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.data.bean.User;
+import com.idega.util.ArrayUtil;
 import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
+import com.idega.util.ListUtil;
 import com.idega.util.PresentationUtil;
 import com.idega.util.StringUtil;
 import com.idega.util.expression.ELUtil;
@@ -125,7 +134,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 			bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGOFF, getURLToRedirectToOnLogoff());
 		}
 
-		for (Entry<String, String> entry : extraLogoffParameters.entrySet()) {
+		for (Entry<String, String> entry: extraLogoffParameters.entrySet()) {
 			bean.addParameter(entry.getKey(), entry.getValue());
 		}
 
@@ -159,7 +168,6 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 			hiddenParamAdded = true;
 		}
 
-
 		for (Entry<String, String> entry : extraLogonParameters.entrySet()) {
 			bean.addParameter(entry.getKey(), entry.getValue());
 		}
@@ -167,7 +175,38 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		FaceletComponent facelet = (FaceletComponent) iwc.getApplication().createComponent(FaceletComponent.COMPONENT_TYPE);
 		facelet.setFaceletURI(unAuthenticatedFaceletPath);
 
+		//	Disabling back button
+		doDisableBackButton(context, iwc);
+
 		return facelet;
+	}
+
+	private void doDisableBackButton(FacesContext context, IWContext iwc) {
+		HttpServletResponse response = iwc.getResponse();
+		response.setHeader("Cache-Control","no-cache,no-store,must-revalidate");	//	HTTP 1.1
+		response.setHeader("Pragma","no-cache");									//	HTTP 1.0
+		response.setDateHeader("Expires", -1);										//	Prevents caching at the proxy server
+
+		Page page = getParentPage();
+		if (page != null) {
+			page.setMetaTag("Cache-Control", "no-cache");
+			page.setMetaTag("Cache-Control","no-store");
+			page.setMetaTag("Pragma","no-cache");
+
+			if (iwc.getIWMainApplication().getSettings().getBoolean("login.no_back_after_logout", Boolean.FALSE)) {
+				PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, Arrays.asList(
+					getJQuery().getBundleURIToJQueryLib(),
+					CoreConstants.DWR_ENGINE_SCRIPT,
+					"/dwr/interface/WebUtil.js",
+					getBundle(context, IW_BUNDLE_IDENTIFIER).getVirtualPathWithFileNameString("javascript/no-back-action.js")
+				));
+				String action = "NoBackActionHelper.initialize({loggedOut: true});";
+				if (!CoreUtil.isSingleComponentRenderingProcess(iwc)) {
+					action = "jQuery(window).load(function() {" + action + "});";
+				}
+				PresentationUtil.addJavaScriptActionToBody(iwc, action);
+			}
+		}
 	}
 
 	protected UIComponent getLoginFailedPart(FacesContext context, LoginBean bean, String message) {
@@ -194,9 +233,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 
 	@Override
 	public void initializeComponent(FacesContext context) {
-
 		IWContext iwc = IWContext.getIWContext(context);
-
 
 		if (redirectLoggedInUserToUrlToRedirectToOnLogon) {
 			if (iwc.isLoggedOn()) {
@@ -204,7 +241,6 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 				return;
 			}
 		}
-
 
 		if (redirectLoggedInUserToPrimaryGroupHomePage) {
 			if (iwc.isLoggedOn()) {
@@ -253,8 +289,9 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 			Layer script = new Layer();
 			add(script);
 			script.add(PresentationUtil.getJavaScriptAction(action));
-		} else
+		} else {
 			PresentationUtil.addJavaScriptActionToBody(iwc, action);
+		}
 
 		String cssFile = getBundle(context, getBundleIdentifier()).getVirtualPathWithFileNameString("style/login.css");
 		if (!PresentationUtil.addStyleSheetToHeader(iwc, cssFile)) {
@@ -284,7 +321,32 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 				} else if (!"is-pki-stjr".equals(loginType) && bankCount == null) {
 					changePassword = true;
 				}
+
+				Object changePasswordDBValue = null;
 				if (changePassword) {
+					try {
+						List<Serializable[]> data = SimpleQuerier.executeQuery("select change_next_time from " + LoginInfo.ENTITY_NAME + " where ic_login_id = " + login.getId(), 1);
+						if (!ListUtil.isEmpty(data)) {
+							Serializable[] rawData = data.iterator().next();
+							if (!ArrayUtil.isEmpty(rawData)) {
+								changePasswordDBValue = rawData[0];
+								if (changePasswordDBValue instanceof Character) {
+									changePassword = ((Character) changePasswordDBValue).charValue() == 'Y';
+								} else {
+									String tmp = changePasswordDBValue.toString();
+									changePassword = "Y".equals(tmp);
+								}
+							}
+						}
+					} catch (Exception e) {
+						changePassword = false;
+						e.printStackTrace();
+					}
+				}
+
+				if (changePassword) {
+					User user = login.getUser();
+					getLogger().info("It is marked to change password for " + user.getName() + " (personal ID: " + user.getPersonalID() + ", ID: " + user.getId() + ") : " + changePasswordDBValue);
 					addLoginScriptsAndStyles(context);
 				}
 			}
