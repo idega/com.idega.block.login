@@ -314,8 +314,12 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 				boolean changePassword = false;
 				if (StringUtil.isEmpty(loginType) && bankCount == null) {
 					changePassword = true;
-				} else if (!"is-pki-stjr".equals(loginType) && bankCount == null) {
+				}
+				if (!"is-pki-stjr".equals(loginType) && bankCount == null) {
 					changePassword = true;
+				}
+				if (changePassword && (loginType != null && "is-pki-stjr".equals(loginType))) {
+					changePassword = false;
 				}
 
 				Object changePasswordDBValue = null;
@@ -342,7 +346,8 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 
 				if (changePassword) {
 					User user = login.getUser();
-					getLogger().info("It is marked to change password for " + user.getName() + " (personal ID: " + user.getPersonalID() + ", ID: " + user.getId() + ") : " + changePasswordDBValue);
+					getLogger().info("It is marked to change password for " + user.getName() + " (personal ID: " + user.getPersonalID() + ", ID: " + user.getId() + ") : " + changePasswordDBValue +
+							". Login type: " + loginType + ", login ID: " + login.getId() + ", login info ID: " + loginInfo.getId());
 					addLoginScriptsAndStyles(context);
 				}
 			}
