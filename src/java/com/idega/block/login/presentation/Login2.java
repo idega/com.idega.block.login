@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.idega.block.login.LoginConstants;
 import com.idega.block.login.bean.LoginBean;
 import com.idega.block.login.remote.RemoteLoginService;
 import com.idega.block.web2.business.JQuery;
@@ -320,6 +321,12 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 				}
 				if (changePassword && (loginType != null && "is-pki-stjr".equals(loginType))) {
 					changePassword = false;
+				}
+				Object loginTypeAttr = iwc.getSession().getAttribute(LoginConstants.LOGIN_TYPE);
+				if (loginTypeAttr instanceof String && LoginConstants.LoginType.ISLAND_DOT_IS.toString().equals(loginTypeAttr.toString())) {
+					changePassword = false;
+					User user = login.getUser();
+					getLogger().info(user.getName() + " (personal ID: " + user.getPersonalID() + ", ID: " + user.getId() + ") has logged in via " + loginTypeAttr + ", no need to change password.");
 				}
 
 				Object changePasswordDBValue = null;
