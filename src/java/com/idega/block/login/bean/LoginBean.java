@@ -19,12 +19,13 @@ import org.springframework.stereotype.Service;
 
 import com.idega.block.login.LoginConstants;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
+import com.idega.core.business.DefaultSpringBean;
 import com.idega.util.ArrayUtil;
 import com.idega.util.CoreConstants;
 
 @Service("loginBean")
 @Scope("request")
-public class LoginBean {
+public class LoginBean extends DefaultSpringBean {
 
 	private boolean useSubmitLinks = false;
 	private boolean generateContainingForm = true;
@@ -218,8 +219,9 @@ public class LoginBean {
 	 * @param request
 	 */
 	public void addParametersFromRequestToHiddenParameters(HttpServletRequest request) {
-		Map parameters = request.getParameterMap();
-		ArrayList<String> excludeParam = new ArrayList<String>();
+		@SuppressWarnings("unchecked")
+		Map<String, ?> parameters = request.getParameterMap();
+		List<String> excludeParam = new ArrayList<String>();
 		excludeParam.add(LoginBusinessBean.PARAMETER_USERNAME);
 		excludeParam.add(LoginBusinessBean.PARAMETER_PASSWORD);
 		excludeParam.add(LoginBusinessBean.PARAMETER_PASSWORD2);//whatever that is...
@@ -230,8 +232,8 @@ public class LoginBean {
 
 		if (parameters != null && !parameters.isEmpty()) {
 			Set<String> parametersSet = parameters.keySet();
-			for (Iterator iterator = parametersSet.iterator(); iterator.hasNext();) {
-				String key = (String) iterator.next();
+			for (Iterator<String> iterator = parametersSet.iterator(); iterator.hasNext();) {
+				String key = iterator.next();
 				if(!excludeParam.contains(key)){
 					String[] values = request.getParameterValues(key);
 					if (values != null && values.length > 0) {
@@ -286,7 +288,7 @@ public class LoginBean {
 	}
 
 	public String getAuthenticationServletLink() {
-		return LoginConstants.TICKET_WEBSERVICE_PATH;
+		return getApplication().getSettings().getProperty("login.ext_auth_uri", LoginConstants.TICKET_WEBSERVICE_PATH);
 	}
 
 }

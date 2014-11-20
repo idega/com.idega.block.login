@@ -54,18 +54,15 @@ public class LoginWithSMSCode extends Login2 {
 	@Autowired
 	private JQuery jQuery;
 
-	private boolean showLinkAuthByTicketSystem = true;
+	private boolean showLinkAuthByTicketSystem = false;
 
 	public LoginWithSMSCode() {
 		super();
 	}
 
-
 	@Override
 	public void initializeComponent(FacesContext context) {
-
 		IWContext iwc = IWContext.getIWContext(context);
-
 
 		if (isRedirectLoggedInUserToUrlToRedirectToOnLogon()) {
 			if (iwc.isLoggedOn()) {
@@ -73,7 +70,6 @@ public class LoginWithSMSCode extends Login2 {
 				return;
 			}
 		}
-
 
 		if (isRedirectLoggedInUserToPrimaryGroupHomePage()) {
 			if (iwc.isLoggedOn()) {
@@ -90,7 +86,6 @@ public class LoginWithSMSCode extends Login2 {
 				}
 			}
 		}
-
 
 		if (getUnAuthenticatedFaceletPath() == null) {
 			setUnAuthenticatedFaceletPath(getBundle(context, getBundleIdentifier()).getFaceletURI("loggedOut.xhtml"));
@@ -191,7 +186,9 @@ public class LoginWithSMSCode extends Login2 {
 		IWContext iwc = IWContext.getIWContext(context);
 
 		//Logout from Ticket service
-		logoutFromTicketSystem(iwc);
+		if (iwc.isLoggedOn()) {
+			logoutFromTicketSystem(iwc);
+		}
 
 		boolean hiddenParamAdded = false;
 		bean.setAllowCookieLogin(getAllowCookieLogin());
@@ -330,7 +327,6 @@ public class LoginWithSMSCode extends Login2 {
 		return MapUtil.isEmpty(verficators) ? null : verficators.values();
 	}
 
-
 	public boolean isShowLinkAuthByTicketSystem() {
 		return showLinkAuthByTicketSystem;
 	}
@@ -339,7 +335,5 @@ public class LoginWithSMSCode extends Login2 {
 	public void setShowLinkAuthByTicketSystem(boolean showLinkAuthByTicketSystem) {
 		this.showLinkAuthByTicketSystem = showLinkAuthByTicketSystem;
 	}
-
-
 
 }
