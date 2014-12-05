@@ -64,15 +64,13 @@ public class LoginWithSMSCode extends Login2 {
 	public void initializeComponent(FacesContext context) {
 		IWContext iwc = IWContext.getIWContext(context);
 
-		if (isRedirectLoggedInUserToUrlToRedirectToOnLogon()) {
-			if (iwc.isLoggedOn()) {
+		if (iwc.isLoggedOn()) {
+			if (isRedirectLoggedInUserToUrlToRedirectToOnLogon()) {
 				iwc.sendRedirect(getURLToRedirectToOnLogon());
 				return;
 			}
-		}
 
-		if (isRedirectLoggedInUserToPrimaryGroupHomePage()) {
-			if (iwc.isLoggedOn()) {
+			if (isRedirectLoggedInUserToPrimaryGroupHomePage()) {
 				try {
 					BuilderService builderService = IBOLookup.getServiceInstance(iwc, BuilderService.class);
 					if (!builderService.isBuilderApplicationRunning(iwc)) {
