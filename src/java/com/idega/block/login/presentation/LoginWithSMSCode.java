@@ -251,6 +251,11 @@ public class LoginWithSMSCode extends Login2 {
 		if (!StringUtil.isEmpty(userName)) {
 			bean.addParameter(LoginBusinessBean.PARAMETER_USERNAME, userName);
 		}
+		String sessionId = (String) iwc.getRequest().getAttribute(LoginBusinessBean.PARAMETER_SESSION_ID);
+		getLogger().info("Got session ID: " + sessionId);	//	TODO
+		if (!StringUtil.isEmpty(sessionId)) {
+			bean.addParameter(LoginBusinessBean.PARAMETER_SESSION_ID, sessionId);
+		}
 
 		FaceletComponent facelet = (FaceletComponent) iwc.getApplication().createComponent(FaceletComponent.COMPONENT_TYPE);
 		facelet.setFaceletURI(getSmsAuthenticationFaceletPath());
