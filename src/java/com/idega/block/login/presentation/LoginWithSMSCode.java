@@ -247,6 +247,10 @@ public class LoginWithSMSCode extends Login2 {
 		for (Entry<String, String> entry : getExtraLogonParameters().entrySet()) {
 			bean.addParameter(entry.getKey(), entry.getValue());
 		}
+		String userName = iwc.getParameter(LoginBusinessBean.PARAMETER_USERNAME);
+		if (!StringUtil.isEmpty(userName)) {
+			bean.addParameter(LoginBusinessBean.PARAMETER_USERNAME, userName);
+		}
 
 		FaceletComponent facelet = (FaceletComponent) iwc.getApplication().createComponent(FaceletComponent.COMPONENT_TYPE);
 		facelet.setFaceletURI(getSmsAuthenticationFaceletPath());
