@@ -25,10 +25,20 @@
 					<h:outputText value="#{localizedStrings['com.idega.block.login']['cookie.allow']}" />
 				</label>
 			</t:div>
+			
 			<t:div styleClass="submit #{loginBean.localeStyle}" rendered="#{!loginBean.useSubmitLinks}">
+				<ui:fragment rendered="#{loginBean.showBackButton}">
+					<input type="button" onclick="window.history.back();" value="#{localizedStrings['com.idega.block.login']['back']}" class="#{loginBean.buttonStyleClass}"/>
+				</ui:fragment>
 				<input type="submit" value="#{localizedStrings['com.idega.block.login']['login_text']}" class="#{loginBean.buttonStyleClass}"/>
 			</t:div>
+			
 			<t:div styleClass="submit #{loginBean.localeStyle}" rendered="#{loginBean.useSubmitLinks}">
+				<ui:fragment rendered="#{loginBean.showBackButton}">
+					<a href="javascript:window.history.back();" class="backButton">
+						<span><t:outputText value="#{localizedStrings['com.idega.block.login']['back']}" /></span>
+					</a>
+				</ui:fragment>
 				<a href="#" class="loginButton">
 					<span><t:outputText value="#{localizedStrings['com.idega.block.login']['login_text']}" /></span>
 				</a>

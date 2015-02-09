@@ -89,3 +89,5 @@ mail.existing.text.4=\n\nBestu kve\u00F0jur, \nvi\u00F0skiptavinur sty\u00F0ja.
 mail.new.text.1=Hall\u00F3, \n\n\u00FE\u00FA (e\u00F0a einhver annar) inn \u00FEetta netfang\ 
 mail.new.text.2=\u00FEegar \u00FE\u00FA reynir a\u00F0 endurstilla lykilor\u00F0 reikning. \u00DE\u00F3 \u00FEetta netfang er ekki \u00E1 gagnagrunni okkar skr\u00E1\u00F0a notendur og \u00FEv\u00ED reyndi lykilor\u00F0 endurstilla hefur mistekist. Ef \u00FE\u00FA ert skr\u00E1\u00F0ur notandi og var\u00FAlfur b\u00FAast \u00FEennan t\u00F6lvup\u00F3st, vinsamlegast reyndu aftur a\u00F0 nota netfangi\u00F0 sem \u00FE\u00FA gafst \u00FEegar opnun reikninginn \u00FEinn. Ef \u00FE\u00FA ert ekki skr\u00E1\u00F0ur notandi skaltu hunsa \u00FEennan t\u00F6lvup\u00F3st. \n\nBestu kve\u00F0jur, \nVi\u00F0skiptavinur sty\u00F0ja.\n\n
 login_blocked=T\u00EDmabundi\u00F0 loka\u00F0 vegna \u00FEess a\u00F0 of m\u00F6rg log-\u00ED tilraunum
+
+back=Til baka

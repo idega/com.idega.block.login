@@ -97,6 +97,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	private Map<String, String> extraLogoffParameters = new HashMap<String, String>();
 	private boolean allowCookieLogin = false;
 	private boolean focusOnLoad = false;
+	private boolean showBackButton = false;
 	private String styleClass = "";
 	private String buttonStyleClass = "";
 
@@ -105,8 +106,8 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	private String authenticationFailedFaceletPath;
 	private String smsAuthenticationFaceletPath;
 
-	public static final String LOGIN_SCRIPT = "javascript/LoginHelper.js";
-	public static final String USER_BUSINESS_DWR_SCRIPT = "/dwr/interface/UserBusiness.js";
+	public static final String	LOGIN_SCRIPT = "javascript/LoginHelper.js",
+								USER_BUSINESS_DWR_SCRIPT = "/dwr/interface/UserBusiness.js";
 
 	@Autowired
 	private Web2Business web2;
@@ -278,6 +279,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		bean.setStyleClass(getStyleClass());
 		bean.setButtonStyleClass(getButtonStyleClass());
 		bean.setLocaleStyle(getCurrentLocaleLanguage(iwc));
+		bean.setShowBackButton(isShowBackButton());
 
 		IWBundle bundle = getBundle(context, getBundleIdentifier());
 
@@ -746,4 +748,13 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 			String smsAuthenticationFaceletPath) {
 		this.smsAuthenticationFaceletPath = smsAuthenticationFaceletPath;
 	}
+
+	public boolean isShowBackButton() {
+		return showBackButton;
+	}
+
+	public void setShowBackButton(boolean showBackButton) {
+		this.showBackButton = showBackButton;
+	}
+
 }

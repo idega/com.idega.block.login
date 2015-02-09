@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -24,14 +23,12 @@ import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.business.LoggedOnInfo;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginState;
-import com.idega.core.accesscontrol.business.TwoStepLoginVerificator;
 import com.idega.core.accesscontrol.data.bean.LoginInfo;
 import com.idega.core.accesscontrol.data.bean.UserLogin;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.data.ICPage;
 import com.idega.facelets.ui.FaceletComponent;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
@@ -41,7 +38,6 @@ import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
 import com.idega.util.PresentationUtil;
 import com.idega.util.StringUtil;
-import com.idega.util.datastructures.map.MapUtil;
 import com.idega.util.expression.ELUtil;
 
 /**
@@ -104,6 +100,7 @@ public class LoginWithSMSCode extends Login2 {
 		bean.setButtonStyleClass(getButtonStyleClass());
 		bean.setLocaleStyle(getCurrentLocaleLanguage(iwc));
 		bean.setShowLinkAuthByTicketSystem(isShowLinkAuthByTicketSystem());
+		bean.setShowBackButton(isShowBackButton());
 
 		IWBundle bundle = getBundle(context, getBundleIdentifier());
 
@@ -163,8 +160,6 @@ public class LoginWithSMSCode extends Login2 {
 				add(getLoginWithSMSCodePart(context, bean));
 			} else {
 				UIComponent loginFailedPart = getLoginFailedPart(context, bean, getLoginFailedByState(context, state));
-
-				// TODO: what about wml, see Login block
 				add(loginFailedPart);
 			}
 
@@ -252,7 +247,6 @@ public class LoginWithSMSCode extends Login2 {
 			bean.addParameter(LoginBusinessBean.PARAMETER_USERNAME, userName);
 		}
 		String sessionId = (String) iwc.getRequest().getAttribute(LoginBusinessBean.PARAMETER_SESSION_ID);
-		getLogger().info("Got session ID: " + sessionId);	//	TODO
 		if (!StringUtil.isEmpty(sessionId)) {
 			bean.addParameter(LoginBusinessBean.PARAMETER_SESSION_ID, sessionId);
 		}
@@ -328,11 +322,6 @@ public class LoginWithSMSCode extends Login2 {
 		}
 	}
 
-	private Collection<TwoStepLoginVerificator> getVerificators() {
-		Map<String, TwoStepLoginVerificator> verficators = WebApplicationContextUtils.getWebApplicationContext(IWMainApplication.getDefaultIWMainApplication().getServletContext())
-			.getBeansOfType(TwoStepLoginVerificator.class);
-		return MapUtil.isEmpty(verficators) ? null : verficators.values();
-	}
 
 	public boolean isShowLinkAuthByTicketSystem() {
 		return showLinkAuthByTicketSystem;

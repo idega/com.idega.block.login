@@ -27,23 +27,24 @@ import com.idega.util.CoreConstants;
 @Scope("request")
 public class LoginBean extends DefaultSpringBean {
 
-	private boolean useSubmitLinks = false;
-	private boolean generateContainingForm = true;
-	private boolean allowCookieLogin = false;
-	private String styleClass = null;
-	private String buttonStyleClass = null;
-	private String action = null;
-	private Map<String, String> parameters = new HashMap<String, String>();
-	private String defaultOutput;
-	private String localeStyle;
-	private boolean showLinkAuthByTicketSystem = false;
+	private boolean useSubmitLinks = false,
+					generateContainingForm = true,
+					allowCookieLogin = false,
+					showLinkAuthByTicketSystem = false,
+					showPersonalID = false,
+					showLogin = false,
+					showBackButton = false;
 
+	private String	styleClass = null,
+					buttonStyleClass = null,
+					action = null,
+					defaultOutput,
+					localeStyle,
+					passwordChangerURL;
+
+	private Map<String, String> parameters = new HashMap<String, String>();
 
 	private Collection<LoggedInUser> loggedIn;
-	private boolean showPersonalID = false;
-	private boolean showLogin = false;
-
-	private String passwordChangerURL;
 
 	/**
 	 * @return the useSubmitLinks
@@ -289,6 +290,14 @@ public class LoginBean extends DefaultSpringBean {
 
 	public String getAuthenticationServletLink() {
 		return getApplication().getSettings().getProperty("login.ext_auth_uri", LoginConstants.TICKET_WEBSERVICE_PATH);
+	}
+
+	public boolean isShowBackButton() {
+		return showBackButton;
+	}
+
+	public void setShowBackButton(boolean showBackButton) {
+		this.showBackButton = showBackButton;
 	}
 
 }
