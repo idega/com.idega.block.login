@@ -147,12 +147,12 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 
 		String portal = getApplicationProperty("sua.portal_address");
 		if (StringUtil.isEmpty(portal)) {
-			serverUrl = portal;
-		} else {
 			serverUrl = iwc.getServerURL();
 			if(serverUrl.endsWith(CoreConstants.SLASH)){
 				serverUrl = serverUrl.substring(0, serverUrl.length()-1);
 			}
+		} else {
+			serverUrl = portal;
 		}
 		return serverUrl + iwc.getRequest().getRequestURI();
 //		FacesContext context = FacesContext.getCurrentInstance();
@@ -229,7 +229,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 		StringBuilder sb = new StringBuilder(getLocalizedMessage(
 			    "mail.new.text.1",
 			    "Hello,\n\n" +
-			    "You (or someone else) entered this email address "));
+			    "You (or someone else) entered this email address")).append(" ");
 		sb.append(email).append(CoreConstants.SPACE);
 		sb.append(getLocalizedMessage("mail.new.text.2", " when trying " +
 			    "to reset the password of an account. However, this email " +
@@ -305,7 +305,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getLocalizedMessage("mail.existing.text.1", "Hello ")).append(user.getName());
 		sb.append(getLocalizedMessage("mail.existing.text.2", ",\n\n" +
-				"You (or someone else) entered this email address "));
+				"You (or someone else) entered this email address")).append(" ");
 		sb.append(email.getEmailAddress());
 		sb.append(getLocalizedMessage("mail.existing.text.3", " when trying " +
 				"to reset the password of an account. If you did not asked " +
@@ -313,7 +313,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 				"password reset, please proceed to "));
 		sb.append(getLink(entity,iwc));
 		sb.append(getLocalizedMessage("mail.existing.text.4", "\n\n" +
-				"Kind regards,\nClient Support."));
+				"Kind regards,\nClient Support.")).append("\n\n");
 		sb.append(getLocalizedMessage("mail.request.from",
 				"This action was requested from IP address: "));
 		sb.append(entity.getIp());
