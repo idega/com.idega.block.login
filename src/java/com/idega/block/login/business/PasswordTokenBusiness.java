@@ -3,82 +3,82 @@
  *
  * Idega Software hf. Source Code Licence Agreement x
  *
- * This agreement, made this 10th of February 2006 by and between 
- * Idega Software hf., a business formed and operating under laws 
- * of Iceland, having its principal place of business in Reykjavik, 
- * Iceland, hereinafter after referred to as "Manufacturer" and Agura 
+ * This agreement, made this 10th of February 2006 by and between
+ * Idega Software hf., a business formed and operating under laws
+ * of Iceland, having its principal place of business in Reykjavik,
+ * Iceland, hereinafter after referred to as "Manufacturer" and Agura
  * IT hereinafter referred to as "Licensee".
- * 1.  License Grant: Upon completion of this agreement, the source 
- *     code that may be made available according to the documentation for 
- *     a particular software product (Software) from Manufacturer 
- *     (Source Code) shall be provided to Licensee, provided that 
- *     (1) funds have been received for payment of the License for Software and 
- *     (2) the appropriate License has been purchased as stated in the 
- *     documentation for Software. As used in this License Agreement, 
- *     Licensee shall also mean the individual using or installing 
- *     the source code together with any individual or entity, including 
- *     but not limited to your employer, on whose behalf you are acting 
- *     in using or installing the Source Code. By completing this agreement, 
- *     Licensee agrees to be bound by the terms and conditions of this Source 
- *     Code License Agreement. This Source Code License Agreement shall 
- *     be an extension of the Software License Agreement for the associated 
- *     product. No additional amendment or modification shall be made 
- *     to this Agreement except in writing signed by Licensee and 
+ * 1.  License Grant: Upon completion of this agreement, the source
+ *     code that may be made available according to the documentation for
+ *     a particular software product (Software) from Manufacturer
+ *     (Source Code) shall be provided to Licensee, provided that
+ *     (1) funds have been received for payment of the License for Software and
+ *     (2) the appropriate License has been purchased as stated in the
+ *     documentation for Software. As used in this License Agreement,
+ *     Licensee shall also mean the individual using or installing
+ *     the source code together with any individual or entity, including
+ *     but not limited to your employer, on whose behalf you are acting
+ *     in using or installing the Source Code. By completing this agreement,
+ *     Licensee agrees to be bound by the terms and conditions of this Source
+ *     Code License Agreement. This Source Code License Agreement shall
+ *     be an extension of the Software License Agreement for the associated
+ *     product. No additional amendment or modification shall be made
+ *     to this Agreement except in writing signed by Licensee and
  *     Manufacturer. This Agreement is effective indefinitely and once
- *     completed, cannot be terminated. Manufacturer hereby grants to 
- *     Licensee a non-transferable, worldwide license during the term of 
- *     this Agreement to use the Source Code for the associated product 
- *     purchased. In the event the Software License Agreement to the 
- *     associated product is terminated; (1) Licensee's rights to use 
- *     the Source Code are revoked and (2) Licensee shall destroy all 
- *     copies of the Source Code including any Source Code used in 
+ *     completed, cannot be terminated. Manufacturer hereby grants to
+ *     Licensee a non-transferable, worldwide license during the term of
+ *     this Agreement to use the Source Code for the associated product
+ *     purchased. In the event the Software License Agreement to the
+ *     associated product is terminated; (1) Licensee's rights to use
+ *     the Source Code are revoked and (2) Licensee shall destroy all
+ *     copies of the Source Code including any Source Code used in
  *     Licensee's applications.
  * 2.  License Limitations
- *     2.1 Licensee may not resell, rent, lease or distribute the 
- *         Source Code alone, it shall only be distributed as a 
+ *     2.1 Licensee may not resell, rent, lease or distribute the
+ *         Source Code alone, it shall only be distributed as a
  *         compiled component of an application.
- *     2.2 Licensee shall protect and keep secure all Source Code 
- *         provided by this this Source Code License Agreement. 
- *         All Source Code provided by this Agreement that is used 
+ *     2.2 Licensee shall protect and keep secure all Source Code
+ *         provided by this this Source Code License Agreement.
+ *         All Source Code provided by this Agreement that is used
  *         with an application that is distributed or accessible outside
- *         Licensee's organization (including use from the Internet), 
- *         must be protected to the extent that it cannot be easily 
+ *         Licensee's organization (including use from the Internet),
+ *         must be protected to the extent that it cannot be easily
  *         extracted or decompiled.
- *     2.3 The Licensee shall not resell, rent, lease or distribute 
- *         the products created from the Source Code in any way that 
+ *     2.3 The Licensee shall not resell, rent, lease or distribute
+ *         the products created from the Source Code in any way that
  *         would compete with Idega Software.
- *     2.4 Manufacturer's copyright notices may not be removed from 
+ *     2.4 Manufacturer's copyright notices may not be removed from
  *         the Source Code.
- *     2.5 All modifications on the source code by Licencee must 
+ *     2.5 All modifications on the source code by Licencee must
  *         be submitted to or provided to Manufacturer.
- * 3.  Copyright: Manufacturer's source code is copyrighted and contains 
- *     proprietary information. Licensee shall not distribute or 
- *     reveal the Source Code to anyone other than the software 
- *     developers of Licensee's organization. Licensee may be held 
- *     legally responsible for any infringement of intellectual property 
- *     rights that is caused or encouraged by Licensee's failure to abide 
- *     by the terms of this Agreement. Licensee may make copies of the 
- *     Source Code provided the copyright and trademark notices are 
- *     reproduced in their entirety on the copy. Manufacturer reserves 
+ * 3.  Copyright: Manufacturer's source code is copyrighted and contains
+ *     proprietary information. Licensee shall not distribute or
+ *     reveal the Source Code to anyone other than the software
+ *     developers of Licensee's organization. Licensee may be held
+ *     legally responsible for any infringement of intellectual property
+ *     rights that is caused or encouraged by Licensee's failure to abide
+ *     by the terms of this Agreement. Licensee may make copies of the
+ *     Source Code provided the copyright and trademark notices are
+ *     reproduced in their entirety on the copy. Manufacturer reserves
  *     all rights not specifically granted to Licensee.
  *
- * 4.  Warranty & Risks: Although efforts have been made to assure that the 
- *     Source Code is correct, reliable, date compliant, and technically 
- *     accurate, the Source Code is licensed to Licensee as is and without 
- *     warranties as to performance of merchantability, fitness for a 
- *     particular purpose or use, or any other warranties whether 
- *     expressed or implied. Licensee's organization and all users 
- *     of the source code assume all risks when using it. The manufacturers, 
- *     distributors and resellers of the Source Code shall not be liable 
- *     for any consequential, incidental, punitive or special damages 
- *     arising out of the use of or inability to use the source code or 
- *     the provision of or failure to provide support services, even if we 
- *     have been advised of the possibility of such damages. In any case, 
- *     the entire liability under any provision of this agreement shall be 
- *     limited to the greater of the amount actually paid by Licensee for the 
- *     Software or 5.00 USD. No returns will be provided for the associated 
- *     License that was purchased to become eligible to receive the Source 
- *     Code after Licensee receives the source code. 
+ * 4.  Warranty & Risks: Although efforts have been made to assure that the
+ *     Source Code is correct, reliable, date compliant, and technically
+ *     accurate, the Source Code is licensed to Licensee as is and without
+ *     warranties as to performance of merchantability, fitness for a
+ *     particular purpose or use, or any other warranties whether
+ *     expressed or implied. Licensee's organization and all users
+ *     of the source code assume all risks when using it. The manufacturers,
+ *     distributors and resellers of the Source Code shall not be liable
+ *     for any consequential, incidental, punitive or special damages
+ *     arising out of the use of or inability to use the source code or
+ *     the provision of or failure to provide support services, even if we
+ *     have been advised of the possibility of such damages. In any case,
+ *     the entire liability under any provision of this agreement shall be
+ *     limited to the greater of the amount actually paid by Licensee for the
+ *     Software or 5.00 USD. No returns will be provided for the associated
+ *     License that was purchased to become eligible to receive the Source
+ *     Code after Licensee receives the source code.
  */
 package com.idega.block.login.business;
 
@@ -88,7 +88,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.ejb.FinderException;
 
@@ -116,6 +115,7 @@ import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.util.CoreConstants;
+import com.idega.util.EmailValidator;
 import com.idega.util.ListUtil;
 import com.idega.util.SendMail;
 import com.idega.util.StringUtil;
@@ -123,7 +123,7 @@ import com.idega.util.expression.ELUtil;
 
 /**
  * <p>Notifier for {@link User}s about request of password change.</p>
- * <p>You can report about problems to: 
+ * <p>You can report about problems to:
  * <a href="mailto:martynas@idega.is">Martynas Stakė</a></p>
  *
  * @version 1.0.0 Jan 15, 2014
@@ -134,16 +134,25 @@ import com.idega.util.expression.ELUtil;
 public class PasswordTokenBusiness extends DefaultSpringBean {
 
 	public static final String BEAN_NAME="passwordTokenBusiness";
+
 	private PasswordTokenEmailMessageSender passwordTokenEmailMessageSender;
+
 	/**
-	 * 
+	 *
 	 * @return link of current request
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
 	public String getCleanURI(IWContext iwc) {
-		String serverUrl = iwc.getServerURL();
-		if(serverUrl.endsWith(CoreConstants.SLASH)){
-			serverUrl = serverUrl.substring(0, serverUrl.length()-1);
+		String serverUrl = null;
+
+		String portal = getApplicationProperty("sua.portal_address");
+		if (StringUtil.isEmpty(portal)) {
+			serverUrl = portal;
+		} else {
+			serverUrl = iwc.getServerURL();
+			if(serverUrl.endsWith(CoreConstants.SLASH)){
+				serverUrl = serverUrl.substring(0, serverUrl.length()-1);
+			}
 		}
 		return serverUrl + iwc.getRequest().getRequestURI();
 //		FacesContext context = FacesContext.getCurrentInstance();
@@ -160,12 +169,12 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 	}
 
 	/**
-	 * 
+	 *
 	 * <p>Searches for valid {@link PasswordTokenEntity}, which has existing
 	 * {@link User} and not expired.</p>
-	 * @param token is {@link PasswordTokenEntity#getToken()}, 
+	 * @param token is {@link PasswordTokenEntity#getToken()},
 	 * not <code>null</code>;
-	 * @return <code>true</code> if matches written criteria, 
+	 * @return <code>true</code> if matches written criteria,
 	 * <code>false</code> otherwise;
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
@@ -178,7 +187,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param token is {@link PasswordTokenEntity#getToken()} to search
 	 * by, not <code>null</code>;
 	 * @return {@link User} by {@link PasswordTokenEntity#getToken()} or
@@ -198,51 +207,51 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 		try {
 			return getUserHome().findUserByUniqueId(tokenEntity.getUuid());
 		} catch (FinderException e) {
-			getLogger().log(Level.WARNING, 
+			getLogger().log(Level.WARNING,
 					"Failed to get user by uuid: " + tokenEntity.getUuid());
 		}
 
 		return null;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * <p>Sends mail to unregistered {@link User} about password reset request.</p>
 	 * @param email is email address of recipient, not <code>null</code>;
 	 * @param ip is IP address of request sender, not <code>null</code>;
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
 	public boolean notifyUnregisteredUser(String email, String ip) {
-		if (StringUtil.isEmpty(email) || StringUtil.isEmpty(ip) || !email.contains("@")) {
+		if (!EmailValidator.getInstance().isValid(email)) {
 			return Boolean.FALSE;
 		}
 
 		StringBuilder sb = new StringBuilder(getLocalizedMessage(
-			    "mail.new.text.1", 
+			    "mail.new.text.1",
 			    "Hello,\n\n" +
 			    "You (or someone else) entered this email address "));
 		sb.append(email).append(CoreConstants.SPACE);
 		sb.append(getLocalizedMessage("mail.new.text.2", " when trying " +
 			    "to reset the password of an account. However, this email " +
 			    "address is not on our database of registered users and " +
-			    "therefore the attempted password reset has failed. " + 
+			    "therefore the attempted password reset has failed. " +
 			    "If you are a registered user and were expecting this email, " +
 			    "please try again using the email address you gave when " +
-			    "opening your account. " + 
+			    "opening your account. " +
 			    "If you are not a registered user, please ignore this email.\n\n" +
 			    "Kind regards,\nClient Support.\n\n"));
-		sb.append(getLocalizedMessage("mail.request.from",
+		sb.append("\n\n" + getLocalizedMessage("mail.request.from",
 				"This action was requested from IP address: "));
 		sb.append(ip);
-		sb.append(getLocalizedMessage("mail.request.more_info", 
+		sb.append(getLocalizedMessage("mail.request.more_info",
 				" find out more about this address here: http://www.whatismyip.com/"));
 
 		try {
-			SendMail.send(getSender(), email, null, null, getMailHost(), 
+			SendMail.send(getSender(), email, null, null, getMailHost(),
 					getSubject(), sb.toString());
 			return Boolean.TRUE;
 		} catch (javax.mail.MessagingException me) {
-			Logger.getLogger(getClass().getName()).log(Level.SEVERE,
+			getLogger().log(Level.SEVERE,
 			    "Exception while sending message about password reset to email: '" + email + "' cause of: ",
 			    me);
 			return Boolean.FALSE;
@@ -250,7 +259,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 	}
 
 	/**
-	 * 
+	 *
 	 * <p>Sends e-mail message to registered {@link User} about process start
 	 * of password reset.</p>
 	 * @param entity is created link for password reset component, not <code>null</code>;
@@ -265,12 +274,12 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 		try {
 			user = getUserHome().findUserByUniqueId(entity.getUuid());
 		} catch (FinderException e) {
-			getLogger().log(Level.WARNING, 
-					"Failed to get " + User.class.getSimpleName() + 
+			getLogger().log(Level.WARNING,
+					"Failed to get " + User.class.getSimpleName() +
 					" by uuid: '" + entity.getUuid() + "'");
 		}
 
-		if (user == null) {			
+		if (user == null) {
 			return Boolean.FALSE;
 		}
 
@@ -278,7 +287,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 		try {
 			email = user.getUsersEmail();
 		} catch (Exception e) {
-			getLogger().log(Level.WARNING, 
+			getLogger().log(Level.WARNING,
 					"Failed to get email for user: '" + user.getName() + "'");
 		}
 
@@ -288,7 +297,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 
 		String message;
 		PasswordTokenEmailMessageSender passwordTokenEmailMessageSender = getPasswordTokenEmailMessageSender();
-		
+
 		if(passwordTokenEmailMessageSender != null){
 			passwordTokenEmailMessageSender.sendMessageForUser(user, iwc, getLink(entity,iwc));
 			return true;
@@ -308,17 +317,17 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 		sb.append(getLocalizedMessage("mail.request.from",
 				"This action was requested from IP address: "));
 		sb.append(entity.getIp());
-		sb.append(getLocalizedMessage("mail.request.more_info", 
+		sb.append(getLocalizedMessage("mail.request.more_info",
 				" find out more about this address here: http://www.whatismyip.com/"));
 		message = sb.toString();
-		
+
 
 		try {
-			SendMail.send(getSender(), email.getEmailAddress(), null, null, 
+			SendMail.send(getSender(), email.getEmailAddress(), null, null,
 					getMailHost(), getSubject(), message);
 			return Boolean.TRUE;
 		} catch (javax.mail.MessagingException me) {
-			Logger.getLogger(getClass().getName()).log(Level.SEVERE,
+			getLogger().log(Level.WARNING,
 			    "Exception while sending message about password reset " +
 			    "to email: '" + email + "' cause of: ", me);
 		}
@@ -327,7 +336,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 	}
 
 	/**
-	 * 
+	 *
 	 * <p>Creates a record about password reset request and notifies {@link User}s .</p>
 	 * @param identifier is mail or personal id or nickname or {@link User}
 	 * to send info for, not <code>null</code>;
@@ -356,10 +365,10 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 	}
 
 	/**
-	 * 
-	 * <p>Changes password for {@link User}, 
+	 *
+	 * <p>Changes password for {@link User},
 	 * removes old {@link PasswordTokenEntity}s.</p>
-	 * @param token is {@link PasswordTokenEntity#getToken()}, 
+	 * @param token is {@link PasswordTokenEntity#getToken()},
 	 * not <code>null</code>;
 	 * @param newPassword not <code>null</code>;
 	 * @return <code>User</code> on success, <code>null</code> on failure;
@@ -386,10 +395,10 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 	}
 
 	/**
-	 * 
+	 *
 	 * <p>Collects all {@link Email}s of {@link User}s found by:</p>
 	 * @param uuid is {@link User#getUniqueId()}, not <code>null</code>;
-	 * @return {@link List} of {@link Email#getEmailAddress()} or 
+	 * @return {@link List} of {@link Email#getEmailAddress()} or
 	 * {@link Collections#emptyList()} on failure;
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
@@ -423,7 +432,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 	}
 
 	/**
-	 * 
+	 *
 	 * <p>Constructs a link to component for changing password.</p>
 	 * @param entity designed to create a link, not <code>null</code>;
 	 * @return designed link or <code>null</code> on failure;
@@ -433,7 +442,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 		if (entity == null) {
 			return null;
 		}
-		
+
 		StringBuilder uri = new StringBuilder(getCleanURI(iwc));
 		uri.append(CoreConstants.QMARK)
 		.append(PasswordTokenCreator.PARAMETER_TOKEN)
@@ -459,13 +468,13 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 
 		return resourceBundle.getLocalizedString(key, value);
 	}
-	
+
 	private String host = null;
-	
+
 	protected String getMailHost() {
 		if (StringUtil.isEmpty(this.host)) {
 			this.host = getApplication().getSettings().getProperty(
-				    CoreConstants.PROP_SYSTEM_SMTP_MAILSERVER, 
+				    CoreConstants.PROP_SYSTEM_SMTP_MAILSERVER,
 				    CoreConstants.EMAIL_DEFAULT_HOST);
 		}
 
@@ -477,7 +486,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 	protected String getSender() {
 		if (StringUtil.isEmpty(this.sender)) {
 			this.sender = getApplication().getSettings().getProperty(
-				    CoreConstants.PROP_SYSTEM_MAIL_FROM_ADDRESS, 
+				    CoreConstants.PROP_SYSTEM_MAIL_FROM_ADDRESS,
 				    CoreConstants.EMAIL_DEFAULT_FROM);
 		}
 
@@ -486,14 +495,14 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 
 	protected String getSubject() {
 		return getLocalizedMessage(
-			    "mail.subject", 
+			    "mail.subject",
 			    "Password reset");
 	}
 
 
 	/**
-	 * 
-	 * @param identificator is {@link Email} or {@link User#getPersonalID()} 
+	 *
+	 * @param identificator is {@link Email} or {@link User#getPersonalID()}
 	 * or username, not <code>null</code>;
 	 * @return {@link User}s by given criteria or {@link Collections#emptyList()}
 	 * on failure;
@@ -559,8 +568,8 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 			try {
 				this.userHome = (UserHome) IDOLookup.getHome(User.class);
 			} catch (IDOLookupException e) {
-				java.util.logging.Logger.getLogger(getClass().getName()).log(
-						Level.WARNING, "Failed to get " + 
+				getLogger().log(
+						Level.WARNING, "Failed to get " +
 								UserHome.class.getSimpleName() + " cause of: ", e);
 			}
 		}
@@ -574,11 +583,10 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 		if (this.userBusiness == null) {
 			try {
 				this.userBusiness = IBOLookup.getServiceInstance(
-						IWContext.getCurrentInstance(), 
+						IWContext.getCurrentInstance(),
 						UserBusiness.class);
 			} catch (IBOLookupException e) {
-				java.util.logging.Logger.getLogger(getClass().getName()).log(
-						Level.WARNING, "", e);
+				getLogger().log(Level.WARNING, "", e);
 			}
 		}
 

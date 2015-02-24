@@ -50,7 +50,37 @@ welcome_message.morning=God morgon
 without_hyphen=Personnummer skall skrivas utan bindestreck
 write_ssn=Skriv personnummer
 wrong_confirm=Bekr\u00E4ftelsen misslyckades
+
 smsCode=SMS koden
 cancel_text=Avbryt
 auth_by_ticket_service=Autentisera med Biljettservice
 back=Tillbaka
+
+reset.capcha_failed=Texten du angav matchar inte texten i bilden
+reset.change=Ändra
+reset.change_password=Ändra lösenord
+reset.enter_text_above=Ange text i bilden
+reset.field_is_required=Detta fält är tvingande
+reset.here=här
+reset.identificator=Personnummer, e-post eller användarnamn
+reset.new_password=Nytt lösenord
+reset.password_reset=Återställ lösenord
+reset.reset=Återställ
+reset.verify_password=Verifiera nytt lösenord
+reset.your_link_not_valid=Din länk är inte giltig längre, försök igen
+
+mail.email_sent=Email skickat!
+mail.email_sent_info=För att återställa ditt lösenord klicka på länken i mailet. Du blir då ombedd att identifiera dig och för att välja ett nytt lösenord.
+mail.email_sent_to=Vi har skickat ett mail med instruktioner till
+mail.subject=Återställning av lösenordet
+mail.new.text.1=Hallå,\n\nDu (eller någon annan) trädde denna e-postadress
+mail.new.text.2= när man försöker återställa lösenordet för ett konto. Detta är dock e-postadressen inte på vår databas med registrerade användare och därför försökt återställning av lösenord har misslyckats. Om du är en registrerad användare och väntade detta mail, vänligen försök igen med hjälp av e-postadress du gav när du öppnar ditt konto. Om du inte är en registrerad användare, vänligen ignorera detta mail.\n\nVänliga hälsningar,\nKlient Support
+mail.request.from=Denna åtgärd begärdes från IP-adress: 
+mail.request.more_info= reda på mer om denna adress här: http://www.whatismyip.com/
+
+mail.existing.text.1=Hallå 
+mail.existing.text.2=,\n\nDu (eller någon annan) trädde denna e-postadress
+mail.existing.text.3=när man försöker återställa lösenordet för ett konto. Om du inte har bett återställning av lösenord kan du ignorera detta mail. Om du vill fortsätta återställningen lösenord, fortsätt till
+mail.existing.text.4=\n\nVänliga hälsningar,\nKlient Support.
+
+password_expired_header=Ditt lösenord har gått ut. Vänligen ändra ditt lösenord
