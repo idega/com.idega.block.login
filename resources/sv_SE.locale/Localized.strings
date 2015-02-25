@@ -65,6 +65,7 @@ reset.here=här
 reset.identificator=Personnummer, e-post eller användarnamn
 reset.new_password=Nytt lösenord
 reset.password_reset=Återställ lösenord
+password_reset=Återställ lösenord
 reset.reset=Återställ
 reset.verify_password=Verifiera nytt lösenord
 reset.your_link_not_valid=Din länk är inte giltig längre, försök igen
@@ -84,3 +85,6 @@ mail.existing.text.3=när man försöker återställa lösenordet för ett konto
 mail.existing.text.4=\n\nVänliga hälsningar,\nKlient Support.
 
 password_expired_header=Ditt lösenord har gått ut. Vänligen ändra ditt lösenord
+
+reseting=Återställa...
+changing=Ändra...
