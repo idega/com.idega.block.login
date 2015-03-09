@@ -6,7 +6,7 @@
 >
 	<ui:component>
 		<div class="#{loginBean.styleClass} loggedOut smsCodeForm">
-			<form class="smsCodeForm" action="#{loginBean.action}" method="post">
+			<form class="smsCodeForm" action="#{loginBean.action}" method="post" onsubmit="showLoadingMessage('#{localizedStrings['com.idega.block.login']['logging_in']}');">
 				<div class="sms">
 					<label for="smsCode">
 						<h:outputText value="#{localizedStrings['com.idega.block.login']['smsCode']}" />

@@ -92,3 +92,5 @@ cancel_text=Cancel
 auth_by_ticket_service=Authenticate by Ticket service
 
 back=Back
+
+logging_in=Logging in...
