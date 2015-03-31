@@ -48,6 +48,7 @@ import com.idega.core.builder.data.ICPage;
 import com.idega.data.SimpleQuerier;
 import com.idega.facelets.ui.FaceletComponent;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWBaseComponent;
 import com.idega.presentation.IWContext;
@@ -195,18 +196,28 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 			page.setMetaTag("Cache-Control","no-store");
 			page.setMetaTag("Pragma","no-cache");
 
-			if (iwc.getIWMainApplication().getSettings().getBoolean("login.no_back_after_logout", Boolean.FALSE)) {
-				PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, Arrays.asList(
-					getJQuery().getBundleURIToJQueryLib(),
-					CoreConstants.DWR_ENGINE_SCRIPT,
-					"/dwr/interface/WebUtil.js",
-					getBundle(context, IW_BUNDLE_IDENTIFIER).getVirtualPathWithFileNameString("javascript/no-back-action.js")
-				));
-				String action = "NoBackActionHelper.initialize({loggedOut: true});";
-				if (!CoreUtil.isSingleComponentRenderingProcess(iwc)) {
-					action = "jQuery(window).load(function() {" + action + "});";
+			IWMainApplicationSettings settings = iwc.getIWMainApplication().getSettings();
+			if (settings.getBoolean("login.no_back_after_logout", Boolean.FALSE)) {
+				boolean skip = false;
+				String propertyToSkip = settings.getProperty("login.skip_no_back_pages");
+				if (!StringUtil.isEmpty(propertyToSkip)) {
+					List<String> pagesToSkip = Arrays.asList(propertyToSkip.split(CoreConstants.COMMA));
+					skip = pagesToSkip.contains(iwc.getRequestURI());
 				}
-				PresentationUtil.addJavaScriptActionToBody(iwc, action);
+
+				if (!skip) {
+					PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, Arrays.asList(
+						getJQuery().getBundleURIToJQueryLib(),
+						CoreConstants.DWR_ENGINE_SCRIPT,
+						"/dwr/interface/WebUtil.js",
+						getBundle(context, IW_BUNDLE_IDENTIFIER).getVirtualPathWithFileNameString("javascript/no-back-action.js")
+					));
+					String action = "NoBackActionHelper.initialize({loggedOut: true});";
+					if (!CoreUtil.isSingleComponentRenderingProcess(iwc)) {
+						action = "jQuery(window).load(function() {" + action + "});";
+					}
+					PresentationUtil.addJavaScriptActionToBody(iwc, action);
+				}
 			}
 		}
 	}
