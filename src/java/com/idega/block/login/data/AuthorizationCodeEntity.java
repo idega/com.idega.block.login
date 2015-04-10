@@ -20,44 +20,48 @@ import javax.persistence.UniqueConstraint;
 )
 @NamedQueries({
 	@NamedQuery(
-			name = AuthorizationCodeEntity.QUERY_GET_ALL, 
+			name = AuthorizationCodeEntity.QUERY_GET_ALL,
 			query = "FROM AuthorizationCodeEntity "),
 	@NamedQuery(
-			name = AuthorizationCodeEntity.QUERY_GET_BY_CODE, 
+			name = AuthorizationCodeEntity.QUERY_GET_BY_CODE,
 			query = "FROM AuthorizationCodeEntity  a WHERE a.code = :" + AuthorizationCodeEntity.PROP_CODE),
 	@NamedQuery(
-			name = AuthorizationCodeEntity.QUERY_GET_BY_AUTHORIZATION_AND_TYPE, 
+			name = AuthorizationCodeEntity.QUERY_GET_BY_AUTHORIZATION_AND_TYPE,
 			query = "FROM AuthorizationCodeEntity  a WHERE a.authorization = :" + AuthorizationCodeEntity.PROP_AUTHORIZATION
-			+ " AND a.type = :" + AuthorizationCodeEntity.PROP_TYPE)
+			+ " AND a.type = :" + AuthorizationCodeEntity.PROP_TYPE),
+	@NamedQuery(
+			name = AuthorizationCodeEntity.QUERY_GET_BY_AUTHORIZATION_AND_TYPE_AND_CODE,
+			query = "FROM AuthorizationCodeEntity  a WHERE a.authorization = :" + AuthorizationCodeEntity.PROP_AUTHORIZATION
+			+ " AND a.type = :" + AuthorizationCodeEntity.PROP_TYPE + " AND a.code = :" + AuthorizationCodeEntity.PROP_CODE)
 })
-public class AuthorizationCodeEntity implements Serializable{
+public class AuthorizationCodeEntity implements Serializable {
 
 	private static final long serialVersionUID = 7951610486528794334L;
+
 	public static final String TABLE_NAME = "ic_authorization_code";
 	public static final String QUERY_GET_ALL = TABLE_NAME + ".getAll";
 	public static final String QUERY_GET_BY_CODE = TABLE_NAME + ".getByCode";
-	public static final String QUERY_GET_BY_AUTHORIZATION_AND_TYPE = TABLE_NAME + ".getByAuthorizationAndType";
-	
-	
-	
+	public static final String QUERY_GET_BY_AUTHORIZATION_AND_TYPE = TABLE_NAME + ".getByAuthorizationAndType",
+								QUERY_GET_BY_AUTHORIZATION_AND_TYPE_AND_CODE = TABLE_NAME + ".getByAuthorizationAndTypeAndCode";
+
 	public static final String PROP_ID = TABLE_NAME + "_id";
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	
+
 	public static final String PROP_CODE = TABLE_NAME + "_code";
 	@Column(name = "code")
 	private String code;
-	
+
 	public static final String PROP_AUTHORIZATION = TABLE_NAME + "_authorization";
 	@Column(name = "authorization")
 	private String authorization;
-	
+
 	public static final String PROP_TYPE = TABLE_NAME + "_type";
 	@Column(name = "type")
 	private String type;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -123,6 +127,6 @@ public class AuthorizationCodeEntity implements Serializable{
 	public void setType(String type) {
 		this.type = type;
 	}
-	
+
 
 }

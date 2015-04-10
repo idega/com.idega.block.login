@@ -45,8 +45,8 @@ public class LoginDAOImpl extends GenericDaoImpl implements LoginDAO {
 	public AuthorizationCodeEntity getByCode(String code) {
 		return getSingleResult(AuthorizationCodeEntity.QUERY_GET_BY_CODE, AuthorizationCodeEntity.class, new Param(AuthorizationCodeEntity.PROP_CODE, code));
 	}
-	
-	
+
+
 	@Override
 	public <T extends IDOEntity> T authorize(String code,Class<T> c){
 		try{
@@ -58,24 +58,55 @@ public class LoginDAOImpl extends GenericDaoImpl implements LoginDAO {
 		}
 		return null;
 	}
-	
+
 	@Transactional(readOnly = false)
 	@Override
-	public String generateNewCode(String authorization, String type){
-		AuthorizationCodeEntity entity = getSingleResult(AuthorizationCodeEntity.QUERY_GET_BY_AUTHORIZATION_AND_TYPE, 
-				AuthorizationCodeEntity.class, 
+	public String generateNewCode(String authorization, String type) {
+		AuthorizationCodeEntity entity = getSingleResult(
+				AuthorizationCodeEntity.QUERY_GET_BY_AUTHORIZATION_AND_TYPE,
+				AuthorizationCodeEntity.class,
 				new Param(AuthorizationCodeEntity.PROP_AUTHORIZATION, authorization),
-				new Param(AuthorizationCodeEntity.PROP_TYPE, type));
-		if(entity == null){
+				new Param(AuthorizationCodeEntity.PROP_TYPE, type)
+		);
+
+		if (entity == null) {
 			entity = new AuthorizationCodeEntity();
 			entity.setAuthorization(authorization);
 			entity.setType(type);
 		}
+
 		String code = UUIDGenerator.getInstance().generateUUID();
 		entity.setCode(code);
 		merge(entity);
 		return code;
 	}
-	
+
+	@Override
+	@Transactional(readOnly = false)
+	public AuthorizationCodeEntity getAuthorizationCode(String authorization, String type, String code) {
+		AuthorizationCodeEntity entity = getSingleResult(
+				AuthorizationCodeEntity.QUERY_GET_BY_AUTHORIZATION_AND_TYPE_AND_CODE,
+				AuthorizationCodeEntity.class,
+				new Param(AuthorizationCodeEntity.PROP_AUTHORIZATION, authorization),
+				new Param(AuthorizationCodeEntity.PROP_TYPE, type),
+				new Param(AuthorizationCodeEntity.PROP_CODE, code)
+		);
+
+		if (entity == null) {
+			entity = new AuthorizationCodeEntity();
+			entity.setAuthorization(authorization);
+			entity.setType(type);
+		}
+
+		entity.setCode(code);
+
+		if (entity.getId() == null) {
+			persist(entity);
+		} else {
+			merge(entity);
+		}
+
+		return entity.getId() == null ? null : entity;
+	}
 
 }
