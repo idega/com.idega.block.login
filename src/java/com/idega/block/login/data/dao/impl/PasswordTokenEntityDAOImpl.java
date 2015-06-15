@@ -139,7 +139,7 @@ public class PasswordTokenEntityDAOImpl extends GenericDaoImpl implements
 				getLogger().warning("Failed to create or update entity " + 
 						entity.getClass().getSimpleName());
 			} else {
-				getLogger().info(entity.getClass().getSimpleName() + " by id: "  + 
+				getLogger().fine(entity.getClass().getSimpleName() + " by id: "  + 
 						entity.getId() + " has been successfully created/updated!");
 			}
 
@@ -220,7 +220,7 @@ public class PasswordTokenEntityDAOImpl extends GenericDaoImpl implements
 	@Override
 	public boolean remove(PasswordTokenEntity entity) {
 		if (entity != null) {
-			getLogger().info(PasswordTokenEntity.class.getSimpleName() + 
+			getLogger().fine(PasswordTokenEntity.class.getSimpleName() + 
 					" by id: '" + entity.getId() + "' removed!");
 			super.remove(entity);
 			return Boolean.TRUE;
