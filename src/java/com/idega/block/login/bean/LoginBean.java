@@ -40,8 +40,13 @@ public class LoginBean extends DefaultSpringBean {
 					action = null,
 					defaultOutput,
 					localeStyle,
-					passwordChangerURL;
+					passwordChangerURL,
+					userImageURL = null;
 
+	private String unAuthenticatedCustomFaceletPath = null;
+	private String authenticatedCustomFaceletPath = null;
+	private String authenticationFailedCustomFaceletPath = null;
+	
 	private Map<String, String> parameters = new HashMap<String, String>();
 
 	private Collection<LoggedInUser> loggedIn;
@@ -298,6 +303,41 @@ public class LoginBean extends DefaultSpringBean {
 
 	public void setShowBackButton(boolean showBackButton) {
 		this.showBackButton = showBackButton;
+	}
+
+	public String getUnAuthenticatedCustomFaceletPath() {
+		return unAuthenticatedCustomFaceletPath;
+	}
+
+	public void setUnAuthenticatedCustomFaceletPath(
+			String unAuthenticatedCustomFaceletPath) {
+		this.unAuthenticatedCustomFaceletPath = unAuthenticatedCustomFaceletPath;
+	}
+
+	public String getAuthenticatedCustomFaceletPath() {
+		return authenticatedCustomFaceletPath;
+	}
+
+	public void setAuthenticatedCustomFaceletPath(
+			String authenticatedCustomFaceletPath) {
+		this.authenticatedCustomFaceletPath = authenticatedCustomFaceletPath;
+	}
+
+	public String getAuthenticationFailedCustomFaceletPath() {
+		return authenticationFailedCustomFaceletPath;
+	}
+
+	public void setAuthenticationFailedCustomFaceletPath(
+			String authenticationFailedCustomFaceletPath) {
+		this.authenticationFailedCustomFaceletPath = authenticationFailedCustomFaceletPath;
+	}
+
+	public String getUserImageURL() {
+		return userImageURL;
+	}
+
+	public void setUserImageURL(String userImageURL) {
+		this.userImageURL = userImageURL;
 	}
 
 }
