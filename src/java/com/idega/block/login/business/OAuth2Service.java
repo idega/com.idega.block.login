@@ -102,4 +102,10 @@ public interface OAuth2Service {
 	 */
 	User getAuthenticatedUser() throws IllegalStateException;
 
+	/**
+	 * 
+	 * <p>Removes current user login session and token</p>
+	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
+	 */
+	boolean logoutUser();
 }
