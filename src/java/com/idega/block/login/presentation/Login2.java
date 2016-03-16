@@ -11,7 +11,6 @@ package com.idega.block.login.presentation;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,7 +35,6 @@ import com.idega.block.web2.business.JQuery;
 import com.idega.block.web2.business.Web2Business;
 import com.idega.builder.bean.AdvancedProperty;
 import com.idega.business.IBOLookup;
-import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.business.LoggedOnInfo;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
@@ -107,8 +105,8 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	private String unAuthenticatedCustomFaceletPath = null;
 	private String authenticatedCustomFaceletPath = null;
 	private String authenticationFailedCustomFaceletPath = null;
-	
-	
+	private boolean showPlaceHolders = false;
+
 	private String unAuthenticatedFaceletPath;
 	private String authenticatedFaceletPath;
 	private String authenticationFailedFaceletPath;
@@ -277,20 +275,20 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 				}
 			}
 		}
-		
-		
+
+
 		if (unAuthenticatedCustomFaceletPath != null) {
 			unAuthenticatedFaceletPath = unAuthenticatedCustomFaceletPath;
 		} else if (unAuthenticatedFaceletPath == null) {
 			unAuthenticatedFaceletPath = getBundle(context, getBundleIdentifier()).getFaceletURI("loggedOut.xhtml");
 		}
-		
+
 		if (authenticatedCustomFaceletPath != null) {
 			authenticatedFaceletPath = authenticatedCustomFaceletPath;
 		} else if (authenticatedFaceletPath == null) {
 			authenticatedFaceletPath = getBundle(context, getBundleIdentifier()).getFaceletURI("loggedIn.xhtml");
 		}
-		
+
 		if (authenticationFailedCustomFaceletPath != null) {
 			authenticationFailedFaceletPath = authenticationFailedCustomFaceletPath;
 		} else if (authenticationFailedFaceletPath == null) {
@@ -308,8 +306,9 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		bean.setShowBackButton(isShowBackButton());
 		bean.setAuthenticatedCustomFaceletPath(authenticatedCustomFaceletPath);
 		bean.setAuthenticationFailedCustomFaceletPath(authenticationFailedCustomFaceletPath);
-		bean.setUnAuthenticatedCustomFaceletPath(unAuthenticatedCustomFaceletPath);	
-		
+		bean.setUnAuthenticatedCustomFaceletPath(unAuthenticatedCustomFaceletPath);
+		bean.setShowPlaceHolders(isShowPlaceHolders());
+
 		IWBundle bundle = getBundle(context, getBundleIdentifier());
 
 		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, getJQuery().getBundleURIToJQueryLib());
@@ -355,9 +354,9 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 				}
 			} catch (Exception e) {
 				getLogger().warning("Exception while getting user image:\n"+e);
-			}	
+			}
 			bean.setUserImageURL(imgUrl);
-			
+
 			if (loginInfo.getAllowedToChange() && loginInfo.getChangeNextTime() && !iwc.isSuperAdmin()) {
 				UserLogin login = loginInfo.getUserLogin();
 				String loginType = login.getLoginType();
@@ -505,8 +504,8 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		this.unAuthenticatedCustomFaceletPath = (String) value[17];
 		this.authenticatedCustomFaceletPath = (String) value[18];
 		this.authenticationFailedCustomFaceletPath = (String) value[19];
-		
-		
+		this.showPlaceHolders = ((Boolean) value[20]).booleanValue();
+
 		IWContext iwc = IWContext.getIWContext(context);
 		LoginBean bean = getBeanInstance("loginBean");
 		bean.setUseSubmitLinks(useSubmitLinks);
@@ -516,7 +515,8 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		bean.setAuthenticatedCustomFaceletPath(authenticatedCustomFaceletPath);
 		bean.setAuthenticationFailedCustomFaceletPath(authenticationFailedCustomFaceletPath);
 		bean.setUnAuthenticatedCustomFaceletPath(unAuthenticatedCustomFaceletPath);
-		
+		bean.setShowPlaceHolders(showPlaceHolders);
+
 		if (iwc.isLoggedOn()) {
 			bean.addParameter(LoginBusinessBean.LoginStateParameter, LoginBusinessBean.LOGIN_EVENT_LOGOFF);
 			bean.setOutput(iwc.getCurrentUser().getName());
@@ -573,7 +573,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 
 	@Override
 	public Object saveState(FacesContext context) {
-		Object[] state = new Object[20];
+		Object[] state = new Object[21];
 		state[0] = super.saveState(context);
 		state[1] = Boolean.valueOf(this.useSubmitLinks);
 		state[2] = Boolean.valueOf(this.generateContainingForm);
@@ -594,7 +594,8 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		state[17] = this.unAuthenticatedCustomFaceletPath;
 		state[18] = this.authenticatedCustomFaceletPath;
 		state[19] = this.authenticationFailedCustomFaceletPath;
-		
+		state[20] = Boolean.valueOf(isShowPlaceHolders());
+
 		return state;
 	}
 
@@ -838,6 +839,14 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	public void setAuthenticationFailedCustomFaceletPath(
 			String authenticationFailedCustomFaceletPath) {
 		this.authenticationFailedCustomFaceletPath = authenticationFailedCustomFaceletPath;
+	}
+
+	public boolean isShowPlaceHolders() {
+		return showPlaceHolders;
+	}
+
+	public void setShowPlaceHolders(boolean showPlaceHolders) {
+		this.showPlaceHolders = showPlaceHolders;
 	}
 
 }

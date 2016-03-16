@@ -33,7 +33,8 @@ public class LoginBean extends DefaultSpringBean {
 					showLinkAuthByTicketSystem = false,
 					showPersonalID = false,
 					showLogin = false,
-					showBackButton = false;
+					showBackButton = false,
+					showPlaceHolders = false;
 
 	private String	styleClass = null,
 					buttonStyleClass = null,
@@ -46,7 +47,7 @@ public class LoginBean extends DefaultSpringBean {
 	private String unAuthenticatedCustomFaceletPath = null;
 	private String authenticatedCustomFaceletPath = null;
 	private String authenticationFailedCustomFaceletPath = null;
-	
+
 	private Map<String, String> parameters = new HashMap<String, String>();
 
 	private Collection<LoggedInUser> loggedIn;
@@ -225,7 +226,6 @@ public class LoginBean extends DefaultSpringBean {
 	 * @param request
 	 */
 	public void addParametersFromRequestToHiddenParameters(HttpServletRequest request) {
-		@SuppressWarnings("unchecked")
 		Map<String, ?> parameters = request.getParameterMap();
 		List<String> excludeParam = new ArrayList<String>();
 		excludeParam.add(LoginBusinessBean.PARAMETER_USERNAME);
@@ -234,7 +234,6 @@ public class LoginBean extends DefaultSpringBean {
 		excludeParam.add(LoginBusinessBean.LoginStateParameter);
 		excludeParam.add(LoginBusinessBean.PARAM_LOGIN_BY_UNIQUE_ID);
 		excludeParam.add(LoginBusinessBean.PARAMETER_SMS_CODE);
-
 
 		if (parameters != null && !parameters.isEmpty()) {
 			Set<String> parametersSet = parameters.keySet();
@@ -338,6 +337,14 @@ public class LoginBean extends DefaultSpringBean {
 
 	public void setUserImageURL(String userImageURL) {
 		this.userImageURL = userImageURL;
+	}
+
+	public boolean isShowPlaceHolders() {
+		return showPlaceHolders;
+	}
+
+	public void setShowPlaceHolders(boolean showPlaceHolders) {
+		this.showPlaceHolders = showPlaceHolders;
 	}
 
 }
