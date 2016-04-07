@@ -1,7 +1,5 @@
 package com.idega.block.login.business;
 
-import java.util.logging.Logger;
-
 import org.springframework.context.ApplicationEvent;
 
 import com.idega.presentation.IWContext;
@@ -17,6 +15,7 @@ import com.idega.user.data.bean.User;
 public class UserLoggedInEvent extends ApplicationEvent {
 
 	private static final long serialVersionUID = 3750860225723036506L;
+
 	private User loggedInUsr;
 	private IWContext iwc;
 
@@ -33,12 +32,11 @@ public class UserLoggedInEvent extends ApplicationEvent {
 
 		if (source instanceof User) {
 			this.loggedInUsr = (User)source;
-		} else {
-			Logger.getLogger(UserLoggedInEvent.class.getName()).warning("Source (" + source + ") is not instance of " + User.class.getName());
 		}
 	}
 
 	public User getLoggedInUsr() {
 		return loggedInUsr;
 	}
+
 }

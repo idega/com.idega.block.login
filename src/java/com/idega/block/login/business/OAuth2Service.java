@@ -82,6 +82,7 @@
  */
 package com.idega.block.login.business;
 
+import com.idega.block.login.bean.OAuthToken;
 import com.idega.user.data.bean.User;
 
 
@@ -103,9 +104,14 @@ public interface OAuth2Service {
 	User getAuthenticatedUser() throws IllegalStateException;
 
 	/**
-	 * 
+	 *
 	 * <p>Removes current user login session and token</p>
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
 	boolean logoutUser();
+
+	public OAuthToken getToken(String serverURL, String clientId, String clientSecret, String username, String password);
+
+	public OAuthToken getToken(String username);
+
 }
