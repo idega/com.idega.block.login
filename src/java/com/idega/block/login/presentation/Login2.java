@@ -159,13 +159,13 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		bean.setAllowCookieLogin(allowCookieLogin);
 		bean.setAction(iwc.getRequestURI(sendToHttps));
 		bean.addParameter(LoginBusinessBean.LoginStateParameter, LoginBusinessBean.LOGIN_EVENT_LOGIN);
-		if (this.redirectUserToPrimaryGroupHomePage) {
-			bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_USER_TO_PRIMARY_GROUP_HOME_PAGE, Boolean.TRUE.toString());
-		} else if (getURLToRedirectToOnLogon() != null) {
+		if (getURLToRedirectToOnLogon() != null) {
 			bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON, getURLToRedirectToOnLogon());
 		} else if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON)) {
 			bean.addParametersFromRequestToHiddenParameters(iwc.getRequest());
 			hiddenParamAdded = true;
+		} else if (this.redirectUserToPrimaryGroupHomePage) {
+			bean.addParameter(IWAuthenticator.PARAMETER_REDIRECT_USER_TO_PRIMARY_GROUP_HOME_PAGE, Boolean.TRUE.toString());
 		}
 
 		//Redirect if login fails
