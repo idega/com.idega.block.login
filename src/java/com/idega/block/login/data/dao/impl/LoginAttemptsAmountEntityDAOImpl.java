@@ -269,7 +269,6 @@ public class LoginAttemptsAmountEntityDAOImpl extends GenericDaoImpl implements
 	 * @param username is {@link LoginTable#getUserLogin()},
 	 * skipped if <code>null</code>;
 	 * @return query for fetching number of entities;
-	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
 	protected CriteriaQuery<Long> getAmountQuery(
 			Date from,
@@ -314,7 +313,6 @@ public class LoginAttemptsAmountEntityDAOImpl extends GenericDaoImpl implements
 	 * @param username is {@link LoginTable#getUserLogin()},
 	 * skipped if <code>null</code>;
 	 * @return query for fetching entities;
-	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
 	protected CriteriaQuery<LoginAttemptsAmountEntity> getQuery(
 			Date from,
@@ -356,7 +354,6 @@ public class LoginAttemptsAmountEntityDAOImpl extends GenericDaoImpl implements
 	 * skipped if <code>null</code>;
 	 * @return {@link Predicate}s for querying data source or
 	 * {@link Collections#emptyList()} on failure;
-	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
 	protected Predicate[] getPredicatesArray(
 			Root<LoginAttemptsAmountEntity> entityRoot,
@@ -392,7 +389,6 @@ public class LoginAttemptsAmountEntityDAOImpl extends GenericDaoImpl implements
 	 * skipped if <code>null</code>;
 	 * @return {@link Predicate}s for querying data source or
 	 * {@link Collections#emptyList()} on failure;
-	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
 	protected ArrayList<Predicate> getPredicates(
 			Root<LoginAttemptsAmountEntity> entityRoot,
