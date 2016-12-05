@@ -35,6 +35,11 @@ public class LoginAuthorizationFilter implements Filter {
 		HttpServletRequest request = (HttpServletRequest) req;
 		String authorization = request.getHeader(USER_AUTHORIZATION_HEADER);
 		if (StringUtil.isEmpty(authorization)) {
+			String uri = request.getRequestURI();
+			if (uri != null && uri.startsWith("/rest")) {
+				LOGGER.warning("Header '" + USER_AUTHORIZATION_HEADER + "' is not provided");
+			}
+
 			filterChain.doFilter(req, response);
 			return;
 		}
@@ -42,14 +47,16 @@ public class LoginAuthorizationFilter implements Filter {
 		try {
 			LoginDAO loginDAO = ELUtil.getInstance().getBean(LoginDAO.BEAN_NAME);
 			User user = loginDAO.authorize(authorization, User.class);
-			if (user != null) {
+			if (user == null) {
+				LOGGER.warning("Failed to authorize user: " + authorization);
+			} else {
 				request.setAttribute(ATTRIBUTE_LOGGED_ON_USER, user);
 				LoginRequestBean loginRequestBean = ELUtil.getInstance().getBean(LoginRequestBean.BEAN_NAME);
 				loginRequestBean.setAuthorizedUser(user);
 				loginRequestBean.setAuthorizedByFilter(true);
 			}
 		} catch (Exception e) {
-			LOGGER.log(Level.WARNING, "Failed authorizing user", e);
+			LOGGER.log(Level.WARNING, "Failed authorizing user: " + authorization, e);
 		}
 		filterChain.doFilter(req, response);
 	}
