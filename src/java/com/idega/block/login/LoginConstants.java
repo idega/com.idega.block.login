@@ -8,7 +8,7 @@ public class LoginConstants {
 
 	public enum LoginType {
 
-		ISLAND_DOT_IS;
+		CREDENTIALS, ISLAND_DOT_IS;
 
 	}
 }
