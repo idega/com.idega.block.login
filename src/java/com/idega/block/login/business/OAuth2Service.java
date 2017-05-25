@@ -113,7 +113,9 @@ public interface OAuth2Service {
 
 	public OAuthToken getToken(String serverURL, String clientId, String clientSecret, String username, String password);
 
-	public OAuthToken getToken(String username);
-	public OAuthToken getToken(LoggedInUserCredentials credentials);
+	public OAuthToken getToken(String clientId, String username);
+	public OAuthToken getToken(String clientId, LoggedInUserCredentials credentials);
+
+	public String getDefaultClientId();
 
 }
