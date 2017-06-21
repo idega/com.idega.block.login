@@ -441,6 +441,8 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 			return iwrb.getLocalizedString("login_wrong_disabled_next_time", "Invalid password, access closed next time login fails");
 		} else if (state.equals(LoginState.DISABLED)) {
 			return iwrb.getLocalizedString("login_blocked", "Temporarily blocked due to too many log-in attempts");
+		} else if (state.equals(LoginState.STEP2FAILED)) {
+			return iwrb.getLocalizedString("step_2_failed", "Failed to send out verification code");
 		} else {
 			return iwrb.getLocalizedString("login_failed", "Login failed");
 		}

@@ -76,3 +76,4 @@ smsCode=SMS code
 cancel_text=Cancel
 auth_by_ticket_service=Authenticate by Ticket service
 back=Back
+step_2_failed=Failed to send out verification code
