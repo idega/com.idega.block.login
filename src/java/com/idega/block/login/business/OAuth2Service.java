@@ -82,7 +82,11 @@
  */
 package com.idega.block.login.business;
 
+import javax.servlet.http.HttpServletRequest;
+
+import com.idega.block.login.bean.LoggedInUser;
 import com.idega.block.login.bean.OAuthToken;
+import com.idega.block.login.bean.UserCredentials;
 import com.idega.core.accesscontrol.event.LoggedInUserCredentials;
 import com.idega.user.data.bean.User;
 
@@ -117,5 +121,7 @@ public interface OAuth2Service {
 	public OAuthToken getToken(String clientId, LoggedInUserCredentials credentials);
 
 	public String getDefaultClientId();
+
+	public LoggedInUser getAuthenticatedUser(HttpServletRequest request, UserCredentials credentials);
 
 }
