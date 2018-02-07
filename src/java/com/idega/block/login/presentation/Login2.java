@@ -363,7 +363,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 				Integer bankCount = login.getBankCount();
 
 				boolean changePassword = false;
-				if (StringUtil.isEmpty(loginType) && bankCount == null) {
+				if (StringUtil.isEmpty(loginType)) {
 					changePassword = true;
 				}
 				if (!"is-pki-stjr".equals(loginType) && bankCount == null) {
@@ -449,14 +449,16 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	}
 
 	private Web2Business getWeb2Business() {
-		if (web2 == null)
+		if (web2 == null) {
 			ELUtil.getInstance().autowire(this);
+		}
 		return web2;
 	}
 
 	private JQuery getJQuery() {
-		if (jQuery == null)
+		if (jQuery == null) {
 			ELUtil.getInstance().autowire(this);
+		}
 		return jQuery;
 	}
 
