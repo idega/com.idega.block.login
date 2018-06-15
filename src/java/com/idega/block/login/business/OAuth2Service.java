@@ -126,6 +126,6 @@ public interface OAuth2Service {
 
 	public LoggedInUser getAuthenticatedUser(HttpServletRequest request, UserCredentials credentials);
 
-	public Object getAuthentication(String token);
+	public Object getAuthentication(String token, String clientId);
 
 }
