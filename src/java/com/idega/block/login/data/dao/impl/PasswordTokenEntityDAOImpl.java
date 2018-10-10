@@ -195,6 +195,14 @@ public class PasswordTokenEntityDAOImpl extends GenericDaoImpl implements
 	 */
 	@Override
 	public PasswordTokenEntity create(String uuid, String ip) {
+		return create(uuid, ip, null);
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.idega.block.login.data.dao.PasswordTokenEntityDAO#create(java.lang.String, java.lang.String, java.lang.Long)
+	 */
+	@Override
+	public PasswordTokenEntity create(String uuid, String ip, Long lifetime) {
 		if (!StringUtil.isEmpty(uuid) && !StringUtil.isEmpty(ip)) {
 			List<PasswordTokenEntity> entities = findAll(uuid);
 			if (!ListUtil.isEmpty(entities)) {
@@ -206,7 +214,7 @@ public class PasswordTokenEntityDAOImpl extends GenericDaoImpl implements
 			return update(
 					null, 
 					new BigInteger(100, this.random).toString(), 
-					null, 
+					lifetime, 
 					uuid,
 					ip);
 		}
