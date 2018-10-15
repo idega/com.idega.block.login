@@ -443,7 +443,11 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 			return null;
 		}
 
-		StringBuilder uri = new StringBuilder(getCleanURI(iwc));
+		String passwordChangeUrl = getApplicationProperty("password_change_url");
+		
+		StringBuilder uri = new StringBuilder(
+				StringUtil.isEmpty(passwordChangeUrl) ? getCleanURI(iwc)
+						: passwordChangeUrl);
 		uri.append(CoreConstants.QMARK)
 		.append(PasswordTokenCreator.PARAMETER_TOKEN)
 		.append(CoreConstants.EQ)
