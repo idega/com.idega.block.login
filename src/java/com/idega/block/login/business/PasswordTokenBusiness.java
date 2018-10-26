@@ -438,7 +438,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 	 * @return designed link or <code>null</code> on failure;
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
-	protected String getLink(PasswordTokenEntity entity,IWContext iwc) {
+	public String getLink(PasswordTokenEntity entity,IWContext iwc) {
 		if (entity == null) {
 			return null;
 		}
