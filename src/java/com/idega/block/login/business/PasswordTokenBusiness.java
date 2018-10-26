@@ -258,6 +258,10 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 		}
 	}
 
+	public boolean notifyRegisteredUser(PasswordTokenEntity entity, IWContext iwc) {
+		return notifyRegisteredUser(entity, iwc, null);
+	}
+	
 	/**
 	 *
 	 * <p>Sends e-mail message to registered {@link User} about process start
@@ -265,7 +269,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 	 * @param entity is created link for password reset component, not <code>null</code>;
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
-	public boolean notifyRegisteredUser(PasswordTokenEntity entity,IWContext iwc) {
+	public boolean notifyRegisteredUser(PasswordTokenEntity entity,IWContext iwc, String customMessage) {
 		if (entity == null) {
 			return Boolean.FALSE;
 		}
@@ -302,26 +306,30 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 			passwordTokenEmailMessageSender.sendMessageForUser(user, iwc, getLink(entity,iwc));
 			return true;
 		}
-		StringBuilder sb = new StringBuilder();
-		sb.append(getLocalizedMessage("mail.existing.text.1", "Hello ")).append(user.getName());
-		sb.append(getLocalizedMessage("mail.existing.text.2", ",\n\n" +
-				"You (or someone else) entered this email address")).append(" ");
-		sb.append(email.getEmailAddress());
-		sb.append(getLocalizedMessage("mail.existing.text.3", " when trying " +
-				"to reset the password of an account. If you did not asked " +
-				"password reset please ignore this email. To continue the " +
-				"password reset, please proceed to "));
-		sb.append(getLink(entity,iwc));
-		sb.append(getLocalizedMessage("mail.existing.text.4", "\n\n" +
-				"Kind regards,\nClient Support.")).append("\n\n");
-		sb.append(getLocalizedMessage("mail.request.from",
-				"This action was requested from IP address: "));
-		sb.append(entity.getIp());
-		sb.append(getLocalizedMessage("mail.request.more_info",
-				" find out more about this address here: http://www.whatismyip.com/"));
-		message = sb.toString();
-
-
+		
+		if (StringUtil.isEmpty(customMessage)) {
+			StringBuilder sb = new StringBuilder();
+			sb.append(getLocalizedMessage("mail.existing.text.1", "Hello ")).append(user.getName());
+			sb.append(getLocalizedMessage("mail.existing.text.2", ",\n\n" +
+					"You (or someone else) entered this email address")).append(" ");
+			sb.append(email.getEmailAddress());
+			sb.append(getLocalizedMessage("mail.existing.text.3", " when trying " +
+					"to reset the password of an account. If you did not asked " +
+					"password reset please ignore this email. To continue the " +
+					"password reset, please proceed to "));
+			sb.append(getLink(entity,iwc));
+			sb.append(getLocalizedMessage("mail.existing.text.4", "\n\n" +
+					"Kind regards,\nClient Support.")).append("\n\n");
+			sb.append(getLocalizedMessage("mail.request.from",
+					"This action was requested from IP address: "));
+			sb.append(entity.getIp());
+			sb.append(getLocalizedMessage("mail.request.more_info",
+					" find out more about this address here: http://www.whatismyip.com/"));
+			message = sb.toString();
+		} else {
+			message = customMessage;
+		}
+		
 		try {
 			SendMail.send(getSender(), email.getEmailAddress(), null, null,
 					getMailHost(), getSubject(), message);
