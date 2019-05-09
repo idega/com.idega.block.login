@@ -384,6 +384,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 	 */
 	public User completePasswordReset(String token, String newPassword) {
 		if (StringUtil.isEmpty(newPassword)) {
+			getLogger().warning("New password not provided");
 			return null;
 		}
 
@@ -393,14 +394,15 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 			return null;
 		}
 
-		if (!getPasswordTokenEntityDAO().removeByUUID(user.getUniqueId())) {
-			return null;
-		}
+		if (getUserBusiness().changeUserPassword(user, newPassword)) {
+			try {
+				getPasswordTokenEntityDAO().removeByUUID(user.getUniqueId());
+			} catch (Exception e) {}
 
-		if (getUserBusiness().changeUserPassword(user, newPassword)){
 			return user;
 		}
 
+		getLogger().warning("Failed to reset password for " + user + " ID: " + user.getId());
 		return null;
 	}
 
