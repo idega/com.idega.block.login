@@ -261,7 +261,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 	public boolean notifyRegisteredUser(PasswordTokenEntity entity, IWContext iwc) {
 		return notifyRegisteredUser(entity, iwc, null);
 	}
-	
+
 	/**
 	 *
 	 * <p>Sends e-mail message to registered {@link User} about process start
@@ -306,7 +306,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 			passwordTokenEmailMessageSender.sendMessageForUser(user, iwc, getLink(entity,iwc));
 			return true;
 		}
-		
+
 		if (StringUtil.isEmpty(customMessage)) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(getLocalizedMessage("mail.existing.text.1", "Hello ")).append(user.getName());
@@ -329,7 +329,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 		} else {
 			message = customMessage;
 		}
-		
+
 		try {
 			SendMail.send(getSender(), email.getEmailAddress(), null, null,
 					getMailHost(), getSubject(), message);
@@ -389,6 +389,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 
 		User user = getUserByToken(token);
 		if (user == null) {
+			getLogger().warning("User was not found by token " + token);
 			return null;
 		}
 
@@ -396,9 +397,10 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 			return null;
 		}
 
-		if(getUserBusiness().changeUserPassword(user, newPassword)){
+		if (getUserBusiness().changeUserPassword(user, newPassword)){
 			return user;
 		}
+
 		return null;
 	}
 
@@ -452,7 +454,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 		}
 
 		String passwordChangeUrl = getApplicationProperty("password_change_url");
-		
+
 		StringBuilder uri = new StringBuilder(
 				StringUtil.isEmpty(passwordChangeUrl) ? getCleanURI(iwc)
 						: passwordChangeUrl);
