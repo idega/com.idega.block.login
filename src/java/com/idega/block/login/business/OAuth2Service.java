@@ -88,6 +88,7 @@ import com.idega.block.login.bean.LoggedInUser;
 import com.idega.block.login.bean.OAuthToken;
 import com.idega.block.login.bean.UserCredentials;
 import com.idega.core.accesscontrol.event.LoggedInUserCredentials;
+import com.idega.presentation.IWContext;
 import com.idega.user.data.bean.User;
 
 
@@ -106,14 +107,14 @@ public interface OAuth2Service {
 	 * @return provides user, authenticated via OAuth
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
-	User getAuthenticatedUser() throws IllegalStateException;
+	User getAuthenticatedUser(IWContext iwc) throws IllegalStateException;
 
 	/**
 	 *
 	 * <p>Removes current user login session and token</p>
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
-	boolean logoutUser();
+	boolean logoutUser(IWContext iwc);
 
 	public OAuthToken getToken(String serverURL, String clientId, String clientSecret, String username, String password);
 
@@ -124,7 +125,7 @@ public interface OAuth2Service {
 
 	public String getDefaultClientId();
 
-	public LoggedInUser getAuthenticatedUser(HttpServletRequest request, UserCredentials credentials);
+	public LoggedInUser getAuthenticatedUser(IWContext iwc, UserCredentials credentials);
 
 	public Object getAuthentication(String token, String clientId);
 
