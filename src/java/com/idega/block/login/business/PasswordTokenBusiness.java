@@ -485,16 +485,8 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 		return resourceBundle.getLocalizedString(key, value);
 	}
 
-	private String host = null;
-
 	protected String getMailHost() {
-		if (StringUtil.isEmpty(this.host)) {
-			this.host = getApplication().getSettings().getProperty(
-				    CoreConstants.PROP_SYSTEM_SMTP_MAILSERVER,
-				    CoreConstants.EMAIL_DEFAULT_HOST);
-		}
-
-		return this.host;
+		return getSettings().getProperty(CoreConstants.PROP_SYSTEM_SMTP_MAILSERVER, CoreConstants.EMAIL_DEFAULT_HOST);
 	}
 
 	private String sender = null;
