@@ -9,6 +9,7 @@ public class LoggedInUser implements Serializable {
 	private String name;
 	private String personalID;
 	private String login;
+	private String uuid;
 
 	private OAuthToken token;
 
@@ -42,6 +43,14 @@ public class LoggedInUser implements Serializable {
 
 	public void setToken(OAuthToken token) {
 		this.token = token;
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 
 }
