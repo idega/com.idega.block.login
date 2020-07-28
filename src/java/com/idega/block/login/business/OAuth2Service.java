@@ -125,8 +125,17 @@ public interface OAuth2Service {
 
 	public String getDefaultClientId();
 
+	public String getUnexpiringClientId();
+
 	public LoggedInUser getAuthenticatedUser(IWContext iwc, UserCredentials credentials);
 
 	public Object getAuthentication(String token, String clientId);
+
+	public Boolean createOAuthClient(
+			String clientId,
+			String clientSecret,
+			Integer accessTokenValiditySeconds,
+			Integer refreshTokenValiditySeconds
+	);
 
 }
