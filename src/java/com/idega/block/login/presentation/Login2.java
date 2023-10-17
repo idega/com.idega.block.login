@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -95,8 +96,8 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	private String urlToRedirectToOnLogon = null;
 	private String urlToRedirectToOnLogoff = null;
 	private String urlToRedirectToOnLogonFailed = null;
-	private Map<String, String> extraLogonParameters = new HashMap<String, String>();
-	private Map<String, String> extraLogoffParameters = new HashMap<String, String>();
+	private Map<String, String> extraLogonParameters = new HashMap<>();
+	private Map<String, String> extraLogoffParameters = new HashMap<>();
 	private boolean allowCookieLogin = false;
 	private boolean focusOnLoad = false;
 	private boolean showBackButton = false;
@@ -347,13 +348,13 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 				com.idega.user.data.User user = userBusiness.getUser(loggedOnInfo.getUser().getId());
 				Image userImage = null;
 				if (user.getSystemImageID() > 0) {
-						userImage = new Image(user.getSystemImageID());
+					userImage = new Image(user.getSystemImageID());
 				}
 				if (userImage != null){
 					imgUrl = userImage.getMediaURL(iwc);
 				}
 			} catch (Exception e) {
-				getLogger().warning("Exception while getting user image:\n"+e);
+				getLogger().log(Level.WARNING, "Exception while getting user image", e);
 			}
 			bean.setUserImageURL(imgUrl);
 
