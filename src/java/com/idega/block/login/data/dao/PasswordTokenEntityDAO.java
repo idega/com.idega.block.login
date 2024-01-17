@@ -226,4 +226,17 @@ public interface PasswordTokenEntityDAO extends GenericDao {
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
 	PasswordTokenEntity findById(Long id);
+
+
+	/**
+	 * <p>Generates unique token and sets provided lifetime
+	 * Creates {@link PasswordTokenEntity} with:</p>
+	 * @param uuid is {@link User#getUniqueId()}, not <code>null</code>;
+	 * @param ip is IP address of connected {@link User}, not <code>null</code>;
+	 * @param lifetime is milliseconds of time when token will be active,
+	 * @param strictLength is strict length of the generated key,
+	 * @return created or updated entity or <code>null</code> on failure;
+	 */
+	PasswordTokenEntity create(String uuid, String ip, Long lifetime, Integer strictLength);
+
 }

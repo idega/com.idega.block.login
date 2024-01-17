@@ -77,3 +77,5 @@ cancel_text=Cancel
 auth_by_ticket_service=Authenticate by Ticket service
 back=Back
 step_2_failed=Failed to send out verification code
+
+incorrect_two_factor_auth_code=Incorrect two factor authentication code.

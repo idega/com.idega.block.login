@@ -94,3 +94,5 @@ auth_by_ticket_service=Authenticate by Ticket service
 back=Back
 
 logging_in=Logging in...
+
+incorrect_two_factor_auth_code=Incorrect two factor authentication code.

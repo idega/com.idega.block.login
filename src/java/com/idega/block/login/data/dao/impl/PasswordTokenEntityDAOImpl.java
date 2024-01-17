@@ -358,4 +358,44 @@ public class PasswordTokenEntityDAOImpl extends GenericDaoImpl implements
 						new Date(System.currentTimeMillis())));
 	}
 
+	@Override
+	public PasswordTokenEntity create(String uuid, String ip, Long lifetime, Integer strictLength) {
+		if (strictLength == null) {
+			return create(uuid, ip, lifetime);
+		}
+
+		if (StringUtil.isEmpty(uuid) || StringUtil.isEmpty(ip)) {
+			return null;
+		}
+
+		List<PasswordTokenEntity> entities = findAll(uuid);
+		if (!ListUtil.isEmpty(entities)) {
+			for (PasswordTokenEntity entity : entities) {
+				remove(entity);
+			}
+		}
+
+		String key = null;
+		if (strictLength == 6) {
+			key = new BigInteger(20, this.random).toString();
+			if (!StringUtil.isEmpty(key)) {
+				if (key.length() > 6) {
+					key = key.substring(0, 6);
+				} else if (key.length() < 6) {
+					while (key.length() < 6) {
+						key = key + "0";
+					}
+				}
+			}
+		}
+
+		return update(
+				null,
+				key,
+				lifetime,
+				uuid,
+				ip
+		);
+	}
+
 }
