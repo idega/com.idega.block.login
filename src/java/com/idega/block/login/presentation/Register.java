@@ -46,7 +46,7 @@ import com.idega.util.SendMail;
 import com.idega.util.text.Name;
 
 public class Register extends Block {
-	
+
 	public static final String COMPONENT_TYPE = "com.idega.Register";
 
 	public static String prmUserId = "user_id";
@@ -69,7 +69,7 @@ public class Register extends Block {
 	private boolean generateContainingForm = true;
 	private boolean displayCloseButton = true;
 	private Integer code;
-	
+
 	@Override
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
@@ -83,16 +83,16 @@ public class Register extends Block {
 		} else {
 			T.add(getForm(iwc, code), 1, 2);
 		}
-		
+
 		return T;
 	}
-	
+
 	@Override
 	public void decode(FacesContext fc) {
 		super.decode(fc);
-		
+
 		IWContext iwc = IWContext.getIWContext(fc);
-		
+
 		int code = INIT;
 		if (iwc.isParameterSet("send.x")) {
 			try {
@@ -102,23 +102,23 @@ public class Register extends Block {
 			}
 		}
 		if (code == SENT) {
-			
+
 			RegisterEvent event = new RegisterEvent(this);
 			event.setRegisterSuccess(true);
 			fireRegisterEvent(fc, event);
 		}
-		
+
 		setCode(code);
 	}
-	
+
 	protected void fireRegisterEvent(FacesContext ctx, RegisterEvent event) {
 
 		RegisterListener registerListener = (RegisterListener)getValueBindingByAttributeExp(ctx, "registerListener");
-		
+
 		if(registerListener != null) {
-		
+
 			addRegisterListener(registerListener);
-			
+
 			event.setPhaseId(PhaseId.APPLY_REQUEST_VALUES);
 			queueEvent(event);
 		}
@@ -137,15 +137,15 @@ public class Register extends Block {
 		}
 		return code;
 	}
-	
+
 	protected IWResourceBundle getIWRB(IWContext iwc) {
-		
+
 		if(iwrb == null)
 			iwrb = getResourceBundle(iwc);
-		
+
 		return iwrb;
 	}
-	
+
 	private PresentationObject getForm(IWContext iwc, int code) {
 		Table T = new Table(2, 9);
 		IWResourceBundle iwrb = getIWRB(iwc);
@@ -191,47 +191,47 @@ public class Register extends Block {
 		if (message != null) {
 			T.add(message, 1, 7);
 		}
-		
+
 		UIComponent sendButton;
-		
+
 		if(isDisplayCloseButton()) {
-		
+
 			CloseButton close = new CloseButton(iwrb.getLocalizedImageButton("close", "Close"));
 			T.add(close, 2, 9);
 		}
-		
+
 		if(isGenerateContainingForm()) {
-			
+
 			sendButton =
 				new SubmitButton(
 					iwrb.getLocalizedImageButton("send", "Send"),
 					"send");
-			
+
 		} else {
-			
+
 			Parameter param = new Parameter("send.x", "");
 			T.add(param);
-			
+
 			GenericButton gbutton = new GenericButton("send", iwrb.getLocalizedString("send", "Send"));
 			gbutton.setOnClick("this.form.elements['send.x'].value='1';this.form.submit();");
 	//		gbutton.setOnClick("this.form.submit();");
 			sendButton = gbutton;
 		}
-		
+
 		T.add(sendButton, 2, 9);
-		
+
 		if(isGenerateContainingForm()) {
-			
+
 			Form myForm = new Form();
 			myForm.add(T);
 			return myForm;
-			
+
 		} else {
-			
+
 			return T;
 		}
 	}
-	
+
 	public PresentationObject getAnswer(IWContext iwc) {
 		Table table = new Table(1,1);
 		table.setCellpaddingAndCellspacing(0);
@@ -268,7 +268,7 @@ public class Register extends Block {
 			return NO_EMAIL;
 		}
 
-		
+
 		if (!EmailValidator.getInstance().isValid(emailAddress)) {
 			return ILLEGAL_EMAIL;
 		}
@@ -308,7 +308,7 @@ public class Register extends Block {
 
 			Name name = new Name(userRealName);
 			//createUserWithLogin(String firstname, String middlename, String lastname, String displayname, String description, Integer gender, IWTimestamp date_of_birth, Integer primary_group, String userLogin, String password, Boolean accountEnabled, IWTimestamp modified, int daysOfValidity, Boolean passwordExpires, Boolean userAllowedToChangePassw, Boolean changeNextTime,String encryptionType) throws CreateException{
-			getUserBusiness(iwc).createUserWithLogin(name.getFirstName(),name.getMiddleName(),name.getLastName(),null,    null,                      null,                  null,                                      null,                             usr,                      pass,                    Boolean.TRUE ,                                IWTimestamp.RightNow(),5000,               Boolean.FALSE,    				Boolean.TRUE ,                                      Boolean.FALSE,                                 null);
+			getUserBusiness(iwc).createUserWithLogin(iwc, name.getFirstName(),name.getMiddleName(),name.getLastName(),null,    null,                      null,                  null,                                      null,                             usr,                      pass,                    Boolean.TRUE ,                                IWTimestamp.RightNow(),5000,               Boolean.FALSE,    				Boolean.TRUE ,                                      Boolean.FALSE,                                 null);
 
 			Object[] objs = {usr,pass};
 			String body = MessageFormat.format(letter,objs);
@@ -394,31 +394,31 @@ public class Register extends Block {
 		}
 		return msg;
 	}
-	
+
 	public UserBusiness getUserBusiness(IWApplicationContext iwac) throws RemoteException{
-		return (UserBusiness) IBOLookup.getServiceInstance(iwac,UserBusiness.class);
+		return IBOLookup.getServiceInstance(iwac,UserBusiness.class);
 	}
 
 	@Override
-	public void main(IWContext iwc) throws RemoteException { 
-		
-		
+	public void main(IWContext iwc) throws RemoteException {
+
+
 	}
-	
+
 	@Override
 	public void encodeChildren(FacesContext context) throws IOException {
 		super.encodeChildren(context);
-		
+
 		IWContext iwc = IWContext.getIWContext(context);
 		UIComponent c = getComponent(iwc);
 		renderChild(context, c);
 	}
-	
+
 	public interface RegisterListener extends FacesListener {
-		
+
 		public abstract void registerSuccess();
 	}
-	
+
 	public class RegisterEvent extends FacesEvent {
 
 		private static final long serialVersionUID = 4244895460153563070L;
@@ -434,11 +434,11 @@ public class Register extends Block {
 
 		@Override
 		public void processListener(FacesListener faceslistener) {
-			
+
 			if(faceslistener instanceof RegisterListener) {
-				
+
 				RegisterListener listener = (RegisterListener)faceslistener;
-			
+
 				if(getRegisterSuccess())
 					listener.registerSuccess();
 			}
@@ -450,11 +450,11 @@ public class Register extends Block {
 			this.registerSuccess = registerSuccess;
 		}
 	}
-	
+
 	public void addRegisterListener(RegisterListener listener) {
 
 		if(!listenerAdded()) {
-		
+
 			addFacesListener(listener);
 			listenerAdded(true);
 		}
@@ -467,7 +467,7 @@ public class Register extends Block {
 	public void setGenerateContainingForm(boolean generateContainingForm) {
 		this.generateContainingForm = generateContainingForm;
 	}
-	
+
 	@Override
 	public void restoreState(FacesContext context, Object state) {
 		Object[] value = (Object[]) state;
@@ -484,7 +484,7 @@ public class Register extends Block {
 		state[1] = generateContainingForm;
 		state[2] = displayCloseButton;
 		state[3] = code;
-		
+
 		return state;
 	}
 

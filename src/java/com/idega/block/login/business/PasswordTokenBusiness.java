@@ -382,7 +382,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 	 * @return <code>User</code> on success, <code>null</code> on failure;
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
-	public User completePasswordReset(String token, String newPassword) {
+	public User completePasswordReset(IWContext iwc, String token, String newPassword) {
 		if (StringUtil.isEmpty(newPassword)) {
 			getLogger().warning("New password not provided");
 			return null;
@@ -394,7 +394,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 			return null;
 		}
 
-		if (getUserBusiness().changeUserPassword(user, newPassword)) {
+		if (getUserBusiness().changeUserPassword(iwc, user, newPassword)) {
 			try {
 				getPasswordTokenEntityDAO().removeByUUID(user.getUniqueId());
 			} catch (Exception e) {}
@@ -424,7 +424,7 @@ public class PasswordTokenBusiness extends DefaultSpringBean {
 			return Collections.emptyList();
 		}
 
-		ArrayList<String> emails = new ArrayList<String>();
+		ArrayList<String> emails = new ArrayList<>();
 		for (User user : users) {
 			Email email = null;
 			try {

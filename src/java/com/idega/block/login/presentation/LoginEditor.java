@@ -1,24 +1,26 @@
 package com.idega.block.login.presentation;
 
 /**
- * 
+ *
  * Title:
- * 
+ *
  * Description:
- * 
+ *
  * Copyright: Copyright (c) 2001
- * 
+ *
  * Company: idega multimedia
- * 
+ *
  * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
- * 
+ *
  * @version 1.0
- * 
+ *
  */
 import java.awt.Color;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+
 import javax.ejb.FinderException;
+
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
@@ -58,6 +60,7 @@ public class LoginEditor extends PresentationObjectContainer {
 
 	private static final String BUNDEL_PRPERTY_NAME_USERNAME_CONSTANT = "cannot_change_username";
 
+	@Override
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
@@ -145,7 +148,7 @@ public class LoginEditor extends PresentationObjectContainer {
 		if (sLogin != null && sPasswd != null && sConfirm != null) {
 			if (sLogin.length() > 0 && sPasswd.length() > 0 && sConfirm.length() > 0) {
 				try {
-					register = registerMemberLogin(iUserId, sLogin, sPasswd, sConfirm);
+					register = registerMemberLogin(iwc, iUserId, sLogin, sPasswd, sConfirm);
 				}
 				catch (SQLException sql) {
 					sql.printStackTrace();
@@ -218,14 +221,14 @@ public class LoginEditor extends PresentationObjectContainer {
 		return myForm;
 	}
 
-	public boolean registerMemberLogin(int iUserId, String sUserLogin, String sPasswd, String sConfirm) throws SQLException {
+	private boolean registerMemberLogin(IWContext iwc, int iUserId, String sUserLogin, String sPasswd, String sConfirm) throws SQLException {
 		boolean returner = false;
 		if (sPasswd.equals(sConfirm)) {
 			LoginTable logTable = LoginDBHandler.getUserLogin(iUserId);
 			if (logTable == null) {
 				try {
 					if (sPasswd.equals(sConfirm)) {
-						LoginDBHandler.createLogin(iUserId, sUserLogin, sPasswd);
+						LoginDBHandler.createLogin(iwc, iUserId, sUserLogin, sPasswd);
 						returner = true;
 						this.errorMsg = this.iwrb.getLocalizedString("login_created", "Login created");
 					}
@@ -240,7 +243,7 @@ public class LoginEditor extends PresentationObjectContainer {
 			else if (logTable != null) {
 				try {
 					if (sPasswd.equals(sConfirm)) {
-						LoginDBHandler.updateLogin(iUserId, sUserLogin, sPasswd);
+						LoginDBHandler.updateLogin(iwc, iUserId, sUserLogin, sPasswd);
 						if (this.changeNextTime) {
 							LoginDBHandler.changeNextTime(logTable, false);
 						}
@@ -296,6 +299,7 @@ public class LoginEditor extends PresentationObjectContainer {
 		O.setMarkupAttribute("style", this.styleAttribute);
 	}
 
+	@Override
 	public void main(IWContext iwc) {
 		this.iwrb = getResourceBundle(iwc);
 		this.iwb = getBundle(iwc);
@@ -318,7 +322,7 @@ public class LoginEditor extends PresentationObjectContainer {
 	/**
 	 * Gets the value for a property name ... replaces the bundle properties that
 	 * were used previously
-	 * 
+	 *
 	 * @param propertyName
 	 * @return
 	 */
