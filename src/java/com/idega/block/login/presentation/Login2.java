@@ -112,6 +112,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	private String authenticatedFaceletPath;
 	private String authenticationFailedFaceletPath;
 	private String smsAuthenticationFaceletPath;
+	private String twoStepAuthenticationFaceletPath;
 
 	public static final String	LOGIN_SCRIPT = "javascript/LoginHelper.js",
 								USER_BUSINESS_DWR_SCRIPT = "/dwr/interface/UserBusiness.js";
@@ -297,6 +298,9 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		}
 		if (smsAuthenticationFaceletPath == null) {
 			smsAuthenticationFaceletPath = getBundle(context, getBundleIdentifier()).getFaceletURI("smsLogin.xhtml");
+		}
+		if (twoStepAuthenticationFaceletPath == null) {
+			twoStepAuthenticationFaceletPath = getBundle(context, getBundleIdentifier()).getFaceletURI("twoStepAuthLogin.xhtml");
 		}
 
 		LoginBean bean = getBeanInstance("loginBean");
@@ -510,6 +514,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		this.authenticatedCustomFaceletPath = (String) value[18];
 		this.authenticationFailedCustomFaceletPath = (String) value[19];
 		this.showPlaceHolders = ((Boolean) value[20]).booleanValue();
+		this.twoStepAuthenticationFaceletPath = (String) value[21];
 
 		IWContext iwc = IWContext.getIWContext(context);
 		LoginBean bean = getBeanInstance("loginBean");
@@ -578,7 +583,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 
 	@Override
 	public Object saveState(FacesContext context) {
-		Object[] state = new Object[21];
+		Object[] state = new Object[22];
 		state[0] = super.saveState(context);
 		state[1] = Boolean.valueOf(this.useSubmitLinks);
 		state[2] = Boolean.valueOf(this.generateContainingForm);
@@ -600,6 +605,7 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 		state[18] = this.authenticatedCustomFaceletPath;
 		state[19] = this.authenticationFailedCustomFaceletPath;
 		state[20] = Boolean.valueOf(isShowPlaceHolders());
+		state[21] = this.twoStepAuthenticationFaceletPath;
 
 		return state;
 	}
@@ -809,6 +815,15 @@ public class Login2 extends IWBaseComponent implements ActionListener {
 	public void setSmsAuthenticationFaceletPath(
 			String smsAuthenticationFaceletPath) {
 		this.smsAuthenticationFaceletPath = smsAuthenticationFaceletPath;
+	}
+
+	public String getTwoStepAuthenticationFaceletPath() {
+		return twoStepAuthenticationFaceletPath;
+	}
+
+	public void setTwoStepAuthenticationFaceletPath(
+			String twoStepAuthenticationFaceletPath) {
+		this.twoStepAuthenticationFaceletPath = twoStepAuthenticationFaceletPath;
 	}
 
 	public boolean isShowBackButton() {

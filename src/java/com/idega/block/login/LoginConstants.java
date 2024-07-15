@@ -9,9 +9,13 @@ public class LoginConstants {
 								OAUTH_DEFAULT_CLIENT_ID = "oauth.default_client_id",
 								OAUTH_UNEXPIRING_CLIENT_ID = "oauth.unexpiring_client_id";
 
+	public static final String APP_PROPERTY_USE_2_STEP_AUTH = "portal.use_2_step_auth";
+
 	public enum LoginType {
 
 		CREDENTIALS, ISLAND_DOT_IS;
 
 	}
+
+
 }

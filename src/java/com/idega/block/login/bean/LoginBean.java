@@ -234,6 +234,9 @@ public class LoginBean extends DefaultSpringBean {
 		excludeParam.add(LoginBusinessBean.LoginStateParameter);
 		excludeParam.add(LoginBusinessBean.PARAM_LOGIN_BY_UNIQUE_ID);
 		excludeParam.add(LoginBusinessBean.PARAMETER_SMS_CODE);
+		excludeParam.add(LoginBusinessBean.PARAMETER_2_STEP_AUTH_CODE);
+		excludeParam.add(LoginBusinessBean.PARAMETER_2_STEP_AUTH_CODE_VALIDITY);
+		excludeParam.add(LoginBusinessBean.PARAMETER_EMAIL);
 
 		if (parameters != null && !parameters.isEmpty()) {
 			Set<String> parametersSet = parameters.keySet();

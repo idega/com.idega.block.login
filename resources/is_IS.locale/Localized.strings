@@ -96,3 +96,11 @@ logging_in=Skógarhögg í...
 mail.subject=Týnt lykilorð
 
 incorrect_two_factor_auth_code=Rangur tveggja þátta auðkenningarkóði.
+
+2_step_auth_email.subject=Staðfesting á innskráningu {0}
+2_step_auth_email.body=<strong>Innskráningarstaðfesting {0}</strong><br /><br />Staðfestingarkóði þinn:<br /><br /><span><strong>{1}</strong></span><br /> <br />Staðfestingarkóðinn mun gilda í {2} mínútur. Vinsamlegast ekki deila þessum kóða með neinum.
+login.2_step_auth.header=Vinsamlegast sláðu inn kóða
+login.2_step_auth.explanation.hidden_email=Kóði var sendur á eftirfarandi netfang:
+login.2_step_auth.explanation.code_validity_time=Kóði gildir til: 
+minutes.short=mín
+seconds.short=sek

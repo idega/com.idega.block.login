@@ -128,6 +128,11 @@ a.passwordChanger {
 	display: none;	
 }
 
+.login div.explanation-text {
+	font-size: 10px !important;
+}
+
+
 /* 
 For reference
 
