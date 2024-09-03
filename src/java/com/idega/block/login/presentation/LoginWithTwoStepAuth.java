@@ -273,6 +273,9 @@ public class LoginWithTwoStepAuth extends Login2 {
 		iwc.getRequest().removeAttribute(LoginBusinessBean.PARAMETER_2_STEP_AUTH_CODE);
 		iwc.getRequest().removeAttribute(LoginBusinessBean.PARAMETER_EMAIL);
 		iwc.getRequest().removeAttribute(LoginBusinessBean.PARAMETER_2_STEP_AUTH_CODE_VALIDITY);
+		iwc.removeSessionAttribute(LoginBusinessBean.PARAMETER_2_STEP_AUTH_CODE);
+		iwc.removeSessionAttribute(LoginBusinessBean.PARAMETER_EMAIL);
+		iwc.removeSessionAttribute(LoginBusinessBean.PARAMETER_2_STEP_AUTH_CODE_VALIDITY);
 
 
 		FaceletComponent facelet = (FaceletComponent) iwc.getApplication().createComponent(FaceletComponent.COMPONENT_TYPE);
