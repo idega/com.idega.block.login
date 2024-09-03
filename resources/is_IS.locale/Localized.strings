@@ -104,3 +104,4 @@ login.2_step_auth.explanation.hidden_email=Kóði var sendur á eftirfarandi net
 login.2_step_auth.explanation.code_validity_time=Kóði gildir til: 
 minutes.short=mín
 seconds.short=sek
+cancel_text=Hætta við
