@@ -26,7 +26,6 @@ import com.idega.util.SendMail;
 import com.idega.util.StringUtil;
 import com.idega.util.expression.ELUtil;
 
-
 @Service
 @Scope(BeanDefinition.SCOPE_SINGLETON)
 public class TwoStepEmailLoginVerificatorImpl extends DefaultSpringBean implements TwoStepEmailLoginVerificator {
@@ -36,7 +35,6 @@ public class TwoStepEmailLoginVerificatorImpl extends DefaultSpringBean implemen
 
 	@Autowired
 	private PasswordTokenBusiness passwordTokenBusiness;
-
 
 	@Override
 	public String generateSecondStepAuthKey(
@@ -85,9 +83,8 @@ public class TwoStepEmailLoginVerificatorImpl extends DefaultSpringBean implemen
 						emailBody,
 						StringUtil.isEmpty(serverName) ? CoreConstants.EMPTY : (CoreConstants.BRACKET_LEFT + serverName + CoreConstants.BRACKET_RIGHT),
 						key,
-						CoreConstants.EMPTY + (secondsForSecondStepAuthValidity / 60 )
+						String.valueOf(secondsForSecondStepAuthValidity / 60)
 				);
-
 
 				//Send the mail to the user with the 2-STEP auth key/token
 				Message messageAfterEmailSending = SendMail.send(
@@ -108,14 +105,11 @@ public class TwoStepEmailLoginVerificatorImpl extends DefaultSpringBean implemen
 					return null;
 				}
 			}
-
 		} catch (Exception e) {
 			getLogger().log(Level.WARNING, "Error while trying to generate 2-STEP auth key for user: " + user, e);
 		}
 		return null;
 	}
-
-
 
 	protected PasswordTokenBusiness getPasswordTokenBusiness() {
 		if (this.passwordTokenBusiness == null) {
