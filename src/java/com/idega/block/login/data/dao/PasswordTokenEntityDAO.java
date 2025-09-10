@@ -239,4 +239,5 @@ public interface PasswordTokenEntityDAO extends GenericDao {
 	 */
 	PasswordTokenEntity create(String uuid, String ip, Long lifetime, Integer strictLength);
 
+	public String getUserUniqueToken(String uuid, String userTokenValidity, String userTokenDefaultIp);
 }

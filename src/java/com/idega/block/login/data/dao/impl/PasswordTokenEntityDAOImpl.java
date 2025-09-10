@@ -88,6 +88,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -99,6 +100,7 @@ import com.idega.block.login.data.dao.PasswordTokenEntityDAO;
 import com.idega.core.persistence.Param;
 import com.idega.core.persistence.impl.GenericDaoImpl;
 import com.idega.util.ListUtil;
+import com.idega.util.StringHandler;
 import com.idega.util.StringUtil;
 
 /**
@@ -397,5 +399,48 @@ public class PasswordTokenEntityDAOImpl extends GenericDaoImpl implements
 				ip
 		);
 	}
+
+	public String getUserUniqueToken(String userUUID, String userTokenValidity, String userTokenDefaultIp) {
+		String userToken = null;
+		try {
+			if (
+					!StringUtil.isEmpty(userUUID)
+			) {
+				PasswordTokenEntity passwordTokenEntity = null;
+
+				//Get the token, if any exist
+				List<PasswordTokenEntity> validTokens = findAllValid(userUUID);
+				if (!ListUtil.isEmpty(validTokens)) {
+					for (PasswordTokenEntity pte : validTokens) {
+						if (
+								pte != null
+								&& !StringUtil.isEmpty(pte.getToken())
+						) {
+							passwordTokenEntity = pte;
+							break;
+						}
+					}
+				} else {
+					if (StringHandler.isNumeric(userTokenValidity) && !StringUtil.isEmpty(userTokenDefaultIp)) {
+						passwordTokenEntity = create(
+								userUUID,
+								userTokenDefaultIp,
+								Long.valueOf(userTokenValidity)
+						);
+					}
+				}
+
+				if (passwordTokenEntity != null) {
+					userToken = passwordTokenEntity.getToken();
+				} else {
+					getLogger().warning("Could not get/create the unique user token for user with UUID: " + userUUID);
+				}
+			}
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Could not get/create the unique user token for user with uuid: " + userUUID, e);
+		}
+		return userToken;
+	}
+
 
 }
