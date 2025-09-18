@@ -45,10 +45,12 @@ public class TwoStepEmailLoginVerificatorImpl extends DefaultSpringBean implemen
 	) {
 		try {
 			if (user == null || StringUtil.isEmpty(user.getUniqueId())) {
+				getLogger().warning("User not provided or user (" + user + ") does not have unique ID");
 				return null;
 			}
 
 			if (StringUtil.isEmpty(emailAddress)) {
+				getLogger().warning(user + " does not have email address");
 				return null;
 			}
 
@@ -102,8 +104,11 @@ public class TwoStepEmailLoginVerificatorImpl extends DefaultSpringBean implemen
 				if (messageAfterEmailSending != null) {
 					return key;
 				} else {
+					getLogger().warning("Failed to send email to " + emailAddress + " with 2-STEP auth key (" + key + ") for user " + user);
 					return null;
 				}
+			} else {
+				getLogger().warning("Failed to generate 2-STEP auth key (" + passwordToken + ") for user: " + user);
 			}
 		} catch (Exception e) {
 			getLogger().log(Level.WARNING, "Error while trying to generate 2-STEP auth key for user: " + user, e);
