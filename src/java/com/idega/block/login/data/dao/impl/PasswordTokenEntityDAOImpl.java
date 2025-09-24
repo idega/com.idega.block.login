@@ -114,15 +114,12 @@ import com.idega.util.StringUtil;
 @Repository(PasswordTokenEntityDAO.BEAN_NAME)
 @Transactional(readOnly = false)
 @Scope(BeanDefinition.SCOPE_SINGLETON)
-public class PasswordTokenEntityDAOImpl extends GenericDaoImpl implements
-		PasswordTokenEntityDAO {
+public class PasswordTokenEntityDAOImpl extends GenericDaoImpl implements PasswordTokenEntityDAO {
 
 	private SecureRandom random = new SecureRandom();
 
-	/* (non-Javadoc)
-	 * @see com.idega.block.login.data.dao.PasswordTokenEntityDAO#update(com.idega.block.login.data.PasswordTokenEntity)
-	 */
 	@Override
+	@Transactional(readOnly = false)
 	public PasswordTokenEntity update(PasswordTokenEntity entity) {
 		if (
 				entity != null &&
@@ -153,12 +150,9 @@ public class PasswordTokenEntityDAOImpl extends GenericDaoImpl implements
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.idega.block.login.data.dao.PasswordTokenEntityDAO#update(java.lang.Long, java.lang.String, java.lang.Long, java.lang.String, java.lang.String)
-	 */
 	@Override
-	public PasswordTokenEntity update(Long id, String token, Long lifetime,
-			String uuid, String ip) {
+	@Transactional(readOnly = false)
+	public PasswordTokenEntity update(Long id, String token, Long lifetime, String uuid, String ip) {
 		PasswordTokenEntity entity = findById(id);
 		if (entity == null) {
 			entity = new PasswordTokenEntity();
@@ -192,18 +186,14 @@ public class PasswordTokenEntityDAOImpl extends GenericDaoImpl implements
 		return update(entity);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.idega.block.login.data.dao.PasswordTokenEntityDAO#create(java.lang.String, java.lang.String)
-	 */
 	@Override
+	@Transactional(readOnly = false)
 	public PasswordTokenEntity create(String uuid, String ip) {
 		return create(uuid, ip, null);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.idega.block.login.data.dao.PasswordTokenEntityDAO#create(java.lang.String, java.lang.String, java.lang.Long)
-	 */
 	@Override
+	@Transactional(readOnly = false)
 	public PasswordTokenEntity create(String uuid, String ip, Long lifetime) {
 		if (StringUtil.isEmpty(uuid) || StringUtil.isEmpty(ip)) {
 			return null;
@@ -212,23 +202,33 @@ public class PasswordTokenEntityDAOImpl extends GenericDaoImpl implements
 		List<PasswordTokenEntity> entities = findAll(uuid);
 		if (!ListUtil.isEmpty(entities)) {
 			for (PasswordTokenEntity entity : entities) {
-				remove(entity);
+				try {
+					remove(entity);
+				} catch (Exception e) {
+					getLogger().log(Level.WARNING, "Error removing " + entity + ". UUID: " + uuid, e);
+				}
 			}
 		}
 
-		return update(
-				null,
-				new BigInteger(100, this.random).toString(),
-				lifetime,
-				uuid,
-				ip
-		);
+		PasswordTokenEntity entity = null;
+		try {
+			entity = update(
+					null,
+					new BigInteger(100, this.random).toString(),
+					lifetime,
+					uuid,
+					ip
+			);
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error creating entity for UUID " + uuid + ". IP: " + ip + ", life time: " + lifetime, e);
+		}
+		return entity == null || entity.getId() == null ?
+				null :
+				entity;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.idega.block.login.data.dao.PasswordTokenEntityDAO#remove(com.idega.block.login.data.PasswordTokenEntity)
-	 */
 	@Override
+	@Transactional(readOnly = false)
 	public boolean remove(PasswordTokenEntity entity) {
 		if (entity != null) {
 			getLogger().fine(PasswordTokenEntity.class.getSimpleName() +
@@ -241,19 +241,14 @@ public class PasswordTokenEntityDAOImpl extends GenericDaoImpl implements
 		return Boolean.FALSE;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.idega.block.login.data.dao.PasswordTokenEntityDAO#remove(long)
-	 */
 	@Override
+	@Transactional(readOnly = false)
 	public boolean remove(long primaryKey) {
 		return remove(findById(primaryKey));
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.idega.block.login.data.dao.PasswordTokenEntityDAO#removeByUUID(java.lang.String)
-	 */
 	@Override
+	@Transactional(readOnly = false)
 	public boolean removeByUUID(String uuid) {
 		if (StringUtil.isEmpty(uuid)) {
 			return Boolean.FALSE;
@@ -269,10 +264,6 @@ public class PasswordTokenEntityDAOImpl extends GenericDaoImpl implements
 		return Boolean.TRUE;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.idega.block.login.data.dao.PasswordTokenEntityDAO#findById(long)
-	 */
 	@Override
 	public PasswordTokenEntity findById(Long id) {
 		if (id != null) {
@@ -285,9 +276,6 @@ public class PasswordTokenEntityDAOImpl extends GenericDaoImpl implements
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.idega.block.login.data.dao.PasswordTokenEntityDAO#findAll()
-	 */
 	@Override
 	public List<PasswordTokenEntity> findAll() {
 		return getResultList(
@@ -295,9 +283,6 @@ public class PasswordTokenEntityDAOImpl extends GenericDaoImpl implements
 				PasswordTokenEntity.class);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.idega.block.login.data.dao.PasswordTokenEntityDAO#findAll(java.lang.String)
-	 */
 	@Override
 	public List<PasswordTokenEntity> findAll(String uuid) {
 		if (!StringUtil.isEmpty(uuid)) {
@@ -310,9 +295,6 @@ public class PasswordTokenEntityDAOImpl extends GenericDaoImpl implements
 		return Collections.emptyList();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.idega.block.login.data.dao.PasswordTokenEntityDAO#findAllValid()
-	 */
 	@Override
 	public List<PasswordTokenEntity> findAllValid() {
 		return getResultList(
@@ -323,9 +305,6 @@ public class PasswordTokenEntityDAOImpl extends GenericDaoImpl implements
 						new Date(System.currentTimeMillis())));
 	}
 
-	/* (non-Javadoc)
-	 * @see com.idega.block.login.data.dao.PasswordTokenEntityDAO#findAllValid(java.lang.String)
-	 */
 	@Override
 	public List<PasswordTokenEntity> findAllValid(String uuid) {
 		if (!StringUtil.isEmpty(uuid)) {
@@ -341,10 +320,6 @@ public class PasswordTokenEntityDAOImpl extends GenericDaoImpl implements
 		return Collections.emptyList();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.idega.block.login.data.dao.PasswordTokenEntityDAO#findByToken(java.lang.String)
-	 */
 	@Override
 	public PasswordTokenEntity findByToken(String token) {
 		if (StringUtil.isEmpty(token)) {
@@ -361,6 +336,7 @@ public class PasswordTokenEntityDAOImpl extends GenericDaoImpl implements
 	}
 
 	@Override
+	@Transactional(readOnly = false)
 	public PasswordTokenEntity create(String uuid, String ip, Long lifetime, Integer strictLength) {
 		if (strictLength == null) {
 			return create(uuid, ip, lifetime);
@@ -400,6 +376,8 @@ public class PasswordTokenEntityDAOImpl extends GenericDaoImpl implements
 		);
 	}
 
+	@Override
+	@Transactional(readOnly = false)
 	public String getUserUniqueToken(String userUUID, String userTokenValidity, String userTokenDefaultIp) {
 		String userToken = null;
 		try {
@@ -437,10 +415,9 @@ public class PasswordTokenEntityDAOImpl extends GenericDaoImpl implements
 				}
 			}
 		} catch (Exception e) {
-			getLogger().log(Level.WARNING, "Could not get/create the unique user token for user with uuid: " + userUUID, e);
+			getLogger().log(Level.WARNING, "Error creating user token for user with uuid: " + userUUID, e);
 		}
 		return userToken;
 	}
-
 
 }
