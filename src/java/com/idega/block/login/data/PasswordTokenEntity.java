@@ -270,7 +270,7 @@ public class PasswordTokenEntity implements Serializable{
 
 	@Override
 	public String toString() {
-		return "UUID: " + getUuid();
+		return "UUID: " + getUuid() + ". Expired: " + isExpired();
 	}
 
 }
