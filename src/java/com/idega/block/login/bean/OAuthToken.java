@@ -6,6 +6,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.idega.util.CoreConstants;
+
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class OAuthToken implements Serializable {
@@ -58,7 +60,7 @@ public class OAuthToken implements Serializable {
 
 	@Override
 	public String toString() {
-		return getAccess_token();
+		return CoreConstants.GSON.toJson(this);
 	}
 
 }
