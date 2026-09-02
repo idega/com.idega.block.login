@@ -79,6 +79,9 @@ public class TwoStepEmailLoginVerificatorImpl extends DefaultSpringBean implemen
 				} else {
 					emailSubject = MessageFormat.format(emailSubject, CoreConstants.BRACKET_LEFT + serverName + CoreConstants.BRACKET_RIGHT);
 				}
+				if (iwc.getApplicationSettings().getBoolean("login.auth_digits_in_subject", true)) {
+					emailSubject = emailSubject.concat(": ").concat(key);
+				}
 
 				String emailBody = iwrb.getLocalizedString("2_step_auth_email.body", "<strong>Login Verification {0}</strong><br /><br />Your verification code:<br /><br /><span><strong>{1}</strong></span><br /><br />The verification code will be valid for {2} minutes. Please do not share this code with anyone.");
 				emailBody = MessageFormat.format(
